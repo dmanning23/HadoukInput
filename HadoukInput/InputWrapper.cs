@@ -374,21 +374,21 @@ namespace HadoukInput
 			MoveListXML myXML = rXmlContent.Load<MoveListXML>(strResource);
 
 			//read in the state names
-			for (int i = 0; i < myXML.Moves.Count; i++)
+			for (int i = 0; i < myXML.moves.Count; i++)
 			{
 				//get the state machine message
-				string strMessageName = myXML.Moves[i].name;
+				string strMessageName = myXML.moves[i].name;
 				int iMessage = rStates(strMessageName);
 				Debug.Assert(iMessage >= 0);
 
 				//put the input into a proper list
 				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
-				for (int j = 0; j < myXML.Moves[i].keystrokes.Count; j++)
+				for (int j = 0; j < myXML.moves[i].keystrokes.Count; j++)
 				{
 					EKeystroke myKeystroke = EKeystroke.NumKeystrokes;
 					for (EKeystroke x = 0; x < EKeystroke.NumKeystrokes; x++)
 					{
-						if (x.ToString() == myXML.Moves[i].keystrokes[j])
+						if (x.ToString() == myXML.moves[i].keystrokes[j])
 						{
 							myKeystroke = x;
 							break;

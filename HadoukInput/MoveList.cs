@@ -7,13 +7,13 @@ namespace HadoukInput
 	/// </summary>
 	public class MoveListXML
 	{
-		public List<MoveNodeXML> Moves = new List<MoveNodeXML>();
+		public List<MoveXML> moves = new List<MoveXML>();
 	}
 
 	/// <summary>
 	/// This object holds the data for a single move after the move list is loaded from XML by the XMLImporter
 	/// </summary>
-	public class MoveNodeXML
+	public class MoveXML
 	{
 		public string name = "";
 		public List<string> keystrokes = new List<string>();
