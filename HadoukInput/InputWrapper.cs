@@ -1,0 +1,415 @@
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using System.Text;
+
+namespace HadoukInput
+{
+	/// <summary>
+	/// A delegate to a method that takes a message name and spits out an integer ID
+	/// </summary>
+	/// <param name="strMessageName">name of the message to get ID for</param>
+	/// <returns>ID of that message</returns>
+	public delegate int MessageNameToID(string strMessageName);
+
+	/// <summary>
+	/// A delegate to get the current time.
+	/// </summary>
+	/// <returns>float: the current time in seconds.</returns>
+	public delegate float CurrentTime();
+
+	/// <summary>
+	/// This is the guts of the input lib... 
+	/// This class queues up input from the player, condenses input into the correct keystrokes, and parses queued input to look for patterns.
+	/// </summary>
+	public class InputWrapper
+	{
+		#region Members
+
+		/// <summary>
+		/// state machine for combining the keystrokes of input items
+		/// This is an 2d array that takes 2 keystrokes and returns the keystroke that results from combining them
+		/// </summary>
+		private static EKeystroke[,] g_InputTransitions;
+
+		/// <summary>
+		/// This is the buffer for input before it is put in the listInput
+		/// this allows for simultaneous button presses
+		/// Input is held in here for a split second, condensed into keystrokes as they come in, then put in the queue.
+		/// </summary>
+		private List<InputItem> m_listBufferedInput;
+
+		/// <summary>
+		/// list of queued input
+		/// This is used to look for patterns as loaded from the move list.
+		/// Input is held in here for a little bit while it parses for moves.
+		/// </summary>
+		private List<InputItem> m_listQueuedInput;
+
+		/// <summary>
+		/// The move tree, which acutally holds the wholle move list
+		/// </summary>
+		private MoveNode [] m_MoveTree;
+
+		/// <summary>
+		/// The controller this dude will use
+		/// </summary>
+		private ControllerWrapper m_Controller;
+
+		/// <summary>
+		/// Callback to a method to get the current time, used to time the input
+		/// </summary>
+		private CurrentTime GetCurrentTime;
+
+		/// <summary>
+		/// Length of time input items are held in the buffer before being put in the queue
+		/// </summary>
+		private const float m_fBufferedInputExpire = 0.1f;
+
+		/// <summary>
+		/// Length of time input items are held in the queue before they are discarded.
+		/// </summary>
+		private const float m_fQueuedInputExpire = 0.55f;
+
+		#endregion //Members
+
+		#region Properties
+
+		public ControllerWrapper Controller
+		{
+			get { return m_Controller; }
+		}
+
+		#endregion //Properties
+
+		#region Methods
+
+		/// <summary>
+		/// Setup the state machine for combining input
+		/// </summary>
+		static InputWrapper()
+		{
+			//setup the state machine for doing input transitions
+			g_InputTransitions = new EKeystroke[(int)EKeystroke.NumKeystrokes, (int)EKeystroke.NumKeystrokes];
+
+			//set all the keystrokes to default to the row item
+			int NumKeystrokes = (int)EKeystroke.NumKeystrokes;
+			for (int i = 0; i < NumKeystrokes; i++)
+			{
+				for (int j = 0; j < NumKeystrokes; j++)
+				{
+					g_InputTransitions[i,j] = (EKeystroke)i;
+				}
+			}
+
+			//set the direction + button transition
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.A] = EKeystroke.AUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.B] = EKeystroke.BUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.X] = EKeystroke.XUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.Y] = EKeystroke.YUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.LShoulder] = EKeystroke.LShoulderUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.RShoulder] = EKeystroke.RShoulderUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.LTrigger] = EKeystroke.LTriggerUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.RTrigger] = EKeystroke.RTriggerUp;
+
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.A] = EKeystroke.ADown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.B] = EKeystroke.BDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.X] = EKeystroke.XDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.Y] = EKeystroke.YDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.LShoulder] = EKeystroke.LShoulderDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.RShoulder] = EKeystroke.RShoulderDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.LTrigger] = EKeystroke.LTriggerDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.RTrigger] = EKeystroke.RTriggerDown;
+
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.A] = EKeystroke.AForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.B] = EKeystroke.BForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.X] = EKeystroke.XForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.Y] = EKeystroke.YForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.LShoulder] = EKeystroke.LShoulderForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.RShoulder] = EKeystroke.RShoulderForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.LTrigger] = EKeystroke.LTriggerForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.RTrigger] = EKeystroke.RTriggerForward;
+
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.A] = EKeystroke.ABack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.B] = EKeystroke.BBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.X] = EKeystroke.XBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.Y] = EKeystroke.YBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.LShoulder] = EKeystroke.LShoulderBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.RShoulder] = EKeystroke.RShoulderBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.LTrigger] = EKeystroke.LTriggerBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.RTrigger] = EKeystroke.RTriggerBack;
+
+			//set the button + direction transitions
+			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Up] = EKeystroke.AUp;
+			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Down] = EKeystroke.ADown;
+			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Forward] = EKeystroke.AForward;
+			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Back] = EKeystroke.ABack;
+
+			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Up] = EKeystroke.BUp;
+			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Down] = EKeystroke.BDown;
+			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Forward] = EKeystroke.BForward;
+			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Back] = EKeystroke.BBack;
+
+			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Up] = EKeystroke.XUp;
+			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Down] = EKeystroke.XDown;
+			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Forward] = EKeystroke.XForward;
+			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Back] = EKeystroke.XBack;
+
+			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Up] = EKeystroke.YUp;
+			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Down] = EKeystroke.YDown;
+			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Forward] = EKeystroke.YForward;
+			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Back] = EKeystroke.YBack;
+
+			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Up] = EKeystroke.LShoulderUp;
+			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Down] = EKeystroke.LShoulderDown;
+			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Forward] = EKeystroke.LShoulderForward;
+			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Back] = EKeystroke.LShoulderBack;
+
+			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Up] = EKeystroke.RShoulderUp;
+			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Down] = EKeystroke.RShoulderDown;
+			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Forward] = EKeystroke.RShoulderForward;
+			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Back] = EKeystroke.RShoulderBack;
+
+			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Up] = EKeystroke.LTriggerUp;
+			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Down] = EKeystroke.LTriggerDown;
+			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Forward] = EKeystroke.LTriggerForward;
+			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Back] = EKeystroke.LTriggerBack;
+
+			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Up] = EKeystroke.RTriggerUp;
+			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Down] = EKeystroke.RTriggerDown;
+			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Forward] = EKeystroke.RTriggerForward;
+			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Back] = EKeystroke.RTriggerBack;
+		}
+
+		/// <summary>
+		/// contructor
+		/// </summary>
+		/// <param name="iPlayerIndex">index of the controller this player will use</param>
+		/// <param name="rClock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
+		public InputWrapper(PlayerIndex iPlayerIndex, CurrentTime rClock)
+		{
+			Debug.Assert(null != rClock);
+
+			m_listBufferedInput = new List<InputItem>();
+			m_listQueuedInput = new List<InputItem>();
+			m_Controller = new ControllerWrapper(iPlayerIndex);
+			GetCurrentTime = rClock;
+
+			//set up the Movee tree
+			m_MoveTree = new MoveNode[(int)EKeystroke.NumKeystrokes];
+			for (EKeystroke i = 0; i < EKeystroke.NumKeystrokes; i++)
+			{
+				m_MoveTree[(int)i] = new MoveNode(i);
+			}
+		}
+
+		/// <summary>
+		/// clear out all the stored input
+		/// </summary>
+		public void Clear()
+		{
+			m_listBufferedInput.Clear();
+			m_listQueuedInput.Clear();
+		}
+
+		/// <summary>
+		/// Parse the move lists and queues.  This method is called every frame, unless the game is paused.
+		/// This update function will read input from the controller and then parse the move lists and queues.
+		/// </summary>
+		/// <param name="rInputState">the current input state of the game.
+		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
+		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
+		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		public void Update(InputState rInputState, bool bFlipped)
+		{
+			Debug.Assert(null != m_Controller);
+
+			//first update the controller if an input state was passed in.
+			if (null != rInputState)
+			{
+				m_Controller.Update(rInputState);
+			}
+
+			UpdateMoveQueue(bFlipped);
+		}
+
+		/// <summary>
+		/// update all the queues that hold the move data
+		/// </summary>
+		/// <param name="rPlayer">the object that uses this input queue</param>
+		protected void UpdateMoveQueue(bool bFlipped)
+		{
+			//first, remove any old input from the system
+			float fCurrentTime = GetCurrentTime();
+			float fMinInputItemTime = - m_fQueuedInputExpire;
+			while (m_listQueuedInput.Count > 0)
+			{
+				if (m_listQueuedInput[0].Time <= fMinInputItemTime)
+				{
+					m_listQueuedInput.RemoveAt(0);
+				}
+				else
+				{
+					//got out all the old input
+					break;
+				}
+			}
+
+			//loop through and check directions and single actions
+			for (EKeystroke i = 0; i <= EKeystroke.RTrigger; i++)
+			{
+				//get the result of checking that input button
+				if (m_Controller.CheckKeystroke(i, bFlipped))
+				{
+					//add to the buffered input for checking later
+					InputItem rItem = new InputItem(fCurrentTime, i);
+					m_listBufferedInput.Add(rItem);
+				}
+			}
+	
+			//okay, check all the buffered input for simultaneous keys
+			int iCur = 0;
+			while (iCur < (m_listBufferedInput.Count - 1))
+			{
+				//check this item with the next one in the list
+				int iNext = iCur + 1;
+				while (iNext < m_listBufferedInput.Count)
+				{
+					//get the two keystrokes
+					EKeystroke eCurKey = m_listBufferedInput[iCur].Keystroke;
+					EKeystroke eNextKey = m_listBufferedInput[iNext].Keystroke;
+					Debug.Assert(eCurKey < EKeystroke.NumKeystrokes);
+					Debug.Assert(eNextKey < EKeystroke.NumKeystrokes);
+
+					//see if the two keystrokes can be combined
+					EKeystroke eCombined = (EKeystroke)g_InputTransitions[(int)eCurKey, (int)eNextKey];
+					if ((eCurKey != eCombined) || (eCurKey == eNextKey))
+					{
+						//if found one, change this to the new keystroke
+						m_listBufferedInput[iCur].Keystroke = eCombined;
+
+						//remove the next item from the buffered input
+						m_listBufferedInput.RemoveAt(iNext);
+					}
+					else
+					{
+						iNext++;
+					}
+				}
+
+				iCur++;
+			}
+
+			//check if any buffered input keys are expired
+			fMinInputItemTime = fCurrentTime - m_fBufferedInputExpire;
+			while (m_listBufferedInput.Count > 0)
+			{
+				if (m_listBufferedInput[0].Time <= fMinInputItemTime)
+				{
+					//if so, add the input message to the input list and remove from this one
+					m_listQueuedInput.Add(m_listBufferedInput[0]);
+					m_listBufferedInput.RemoveAt(0);
+				}
+				else
+				{
+					//got out all the old buffered input
+					break;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Get the next Move out of the queue
+		/// This clears the move out of the queue, so you can only get it once!
+		/// </summary>
+		/// <returns>int: the id of the Move (as message index in statemachine). -1 for no Move</returns>
+		public int GetNextMove()
+		{
+			Debug.Assert(null != m_MoveTree);
+			for (int i = 0; i < m_listQueuedInput.Count; i++)
+			{
+				//get the branch of the Move tree for the current keystroke
+				Debug.Assert(EKeystroke.NumKeystrokes != m_listQueuedInput[i].Keystroke);
+				int iKeystrokeIndex = (int)m_listQueuedInput[i].Keystroke;
+				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
+				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
+				int iMove = m_MoveTree[iKeystrokeIndex].ParseInput(m_listQueuedInput, i);
+				if (-1 != iMove)
+				{
+					return iMove;
+				}
+			}
+
+			//no Moves were found
+			return -1;
+		}
+
+		public override string ToString()
+		{
+			StringBuilder myText = new StringBuilder();
+			for (int i = 0; i < m_listQueuedInput.Count; i++)
+			{
+				myText.AppendFormat("{0}, ", m_listQueuedInput[i].Keystroke.ToString());
+			}
+
+			return myText.ToString();
+		}
+
+		#endregion //Methods
+
+		#region File IO
+
+		/// <summary>
+		/// read input from a xna resource
+		/// </summary>
+		/// <param name="rContent">xna content manager</param>
+		/// <param name="strResource">name of the resource to load</param>
+		/// <returns>bool: whether or not it was able to load the input list</returns>
+		public bool ReadSerializedFile(ContentManager rXmlContent, string strResource, MessageNameToID rStates)
+		{
+			Debug.Assert(null != m_MoveTree);
+
+			//read in serialized xna input list
+			MoveListXML myXML = rXmlContent.Load<MoveListXML>(strResource);
+
+			//read in the state names
+			for (int i = 0; i < myXML.Moves.Count; i++)
+			{
+				//get the state machine message
+				string strMessageName = myXML.Moves[i].name;
+				int iMessage = rStates(strMessageName);
+				Debug.Assert(iMessage >= 0);
+
+				//put the input into a proper list
+				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
+				for (int j = 0; j < myXML.Moves[i].keystrokes.Count; j++)
+				{
+					EKeystroke myKeystroke = EKeystroke.NumKeystrokes;
+					for (EKeystroke x = 0; x < EKeystroke.NumKeystrokes; x++)
+					{
+						if (x.ToString() == myXML.Moves[i].keystrokes[j])
+						{
+							myKeystroke = x;
+							break;
+						}
+					}
+
+					Debug.Assert(EKeystroke.NumKeystrokes != myKeystroke);
+					listKeystrokes.Add(myKeystroke);
+				}
+
+				//add the move to the Move tree
+				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
+				int iKeystrokeIndex = (int)listKeystrokes[0];
+				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
+				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
+				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
+			}
+
+			return true;
+		}
+
+		#endregion //File IO
+	}
+}
