@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using System.Text;
+using System;
 
 namespace HadoukInput
 {
@@ -383,20 +384,18 @@ namespace HadoukInput
 
 				//put the input into a proper list
 				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
-				for (int j = 0; j < myXML.moves[i].keystrokes.Count; j++)
+				try
 				{
-					EKeystroke myKeystroke = EKeystroke.NumKeystrokes;
-					for (EKeystroke x = 0; x < EKeystroke.NumKeystrokes; x++)
+					for (int j = 0; j < myXML.moves[i].keystrokes.Count; j++)
 					{
-						if (x.ToString() == myXML.moves[i].keystrokes[j])
-						{
-							myKeystroke = x;
-							break;
-						}
+						EKeystroke myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), myXML.moves[i].keystrokes[j]);
+						listKeystrokes.Add(myKeystroke);
 					}
-
-					Debug.Assert(EKeystroke.NumKeystrokes != myKeystroke);
-					listKeystrokes.Add(myKeystroke);
+				}
+				catch (ArgumentException ex)
+				{
+					Debug.Assert(false, "Bad xml in the move list xml...");
+					return false;
 				}
 
 				//add the move to the Move tree
