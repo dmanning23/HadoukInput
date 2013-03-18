@@ -135,9 +135,28 @@ namespace HadoukInput
 
 		#region Properties
 
-		public bool[] ControllerActionHeld
+		/// <summary>
+		/// Get access to check if a specific keystroke was pressed this frame
+		/// </summary>
+		public bool[] KeystrokePress
+		{
+			get { return m_bControllerActionPress; }
+		}
+
+		/// <summary>
+		/// Get access to check if a specific keystroke is held this frame
+		/// </summary>
+		public bool[] KeystrokeHeld
 		{
 			get { return m_bControllerActionHeld; }
+		}
+
+		/// <summary>
+		/// Get access to check if a specific keystroke was released this frame
+		/// </summary>
+		public bool[] KeystrokeRelease
+		{
+			get { return m_bControllerActionRelease; }
 		}
 
 		public Vector2 LeftThumbstickDirection
@@ -711,7 +730,7 @@ namespace HadoukInput
 					break;
 				case EControllerAction.Left:
 					{
-						if (CheckKeyDown(rInputState, i, Keys.Left))
+						if (CheckKeyUp(rInputState, i, Keys.Left))
 						{
 							return true;
 						}
@@ -868,7 +887,7 @@ namespace HadoukInput
 		/// <returns>bool: true if the key was released this update.</returns>
 		private bool CheckKeyUp(InputState rInputState, int i, Keys myKey)
 		{
-			return (rInputState.m_CurrentKeyboardStates[i].IsKeyUp(Keys.Up) && rInputState.m_LastKeyboardStates[i].IsKeyDown(Keys.Up));
+			return (rInputState.m_CurrentKeyboardStates[i].IsKeyUp(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyDown(myKey));
 		}
 
 		/// <summary>
@@ -878,7 +897,7 @@ namespace HadoukInput
 		/// <returns>float: the input value run through the power curve</returns>
 		private float PowerCurve(float fValue)
 		{
-			return (float)System.Math.Pow(System.Math.Abs(fValue), m_fPower) * System.Math.Sign(fValue);
+			return (float)System.Math.Pow(System.Math.Abs(fValue), ThumbstickPower) * System.Math.Sign(fValue);
 		}
 
 		/// <summary>
