@@ -243,7 +243,7 @@ namespace HadoukInput
 		{
 			//first, remove any old input from the system
 			float fCurrentTime = GetCurrentTime();
-			float fMinInputItemTime = - m_fQueuedInputExpire;
+			float fMinInputItemTime = fCurrentTime - m_fQueuedInputExpire;
 			while (m_listQueuedInput.Count > 0)
 			{
 				if (m_listQueuedInput[0].Time <= fMinInputItemTime)
@@ -352,6 +352,21 @@ namespace HadoukInput
 			for (int i = 0; i < m_listQueuedInput.Count; i++)
 			{
 				myText.AppendFormat("{0}, ", m_listQueuedInput[i].Keystroke.ToString());
+			}
+
+			return myText.ToString();
+		}
+
+		/// <summary>
+		/// A method used for test harness to output to the screen
+		/// </summary>
+		/// <returns></returns>
+		public string GetBufferedInput()
+		{
+			StringBuilder myText = new StringBuilder();
+			for (int i = 0; i < m_listBufferedInput.Count; i++)
+			{
+				myText.AppendFormat("{0}, ", m_listBufferedInput[i].Keystroke.ToString());
 			}
 
 			return myText.ToString();
