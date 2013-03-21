@@ -407,9 +407,9 @@ namespace HadoukInput
 						listKeystrokes.Add(myKeystroke);
 					}
 				}
-				catch (ArgumentException ex)
+				catch (Exception)
 				{
-					Debug.Assert(false, "Bad xml in the move list xml...");
+					Debug.Assert(false, "Bad xml in the move list");
 					return false;
 				}
 
