@@ -258,7 +258,7 @@ namespace HadoukInput
 			}
 
 			//loop through and check directions and single actions
-			for (EKeystroke i = 0; i <= EKeystroke.RTrigger; i++)
+			for (EKeystroke i = 0; i <= EKeystroke.RTriggerRelease; i++)
 			{
 				//get the result of checking that input button
 				if (m_Controller.CheckKeystroke(i, bFlipped))
