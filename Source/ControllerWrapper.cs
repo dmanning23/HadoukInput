@@ -875,7 +875,11 @@ namespace HadoukInput
 		/// <returns>bool: key was pressed this update</returns>
 		private bool CheckKeyDown(InputState rInputState, int i, Keys myKey)
 		{
+			#if WINDOWS
 			return (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyUp(myKey));
+#else
+			return false;
+#endif
 		}
 
 		/// <summary>
@@ -887,7 +891,11 @@ namespace HadoukInput
 		/// <returns>bool: true if the key was released this update.</returns>
 		private bool CheckKeyUp(InputState rInputState, int i, Keys myKey)
 		{
+			#if WINDOWS
 			return (rInputState.m_CurrentKeyboardStates[i].IsKeyUp(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyDown(myKey));
+			#else
+			return false;
+			#endif
 		}
 
 		/// <summary>
