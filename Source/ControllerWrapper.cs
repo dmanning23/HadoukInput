@@ -316,7 +316,7 @@ namespace HadoukInput
 					myThumbstick.X = 1.0f;
 				}
 
-#if WINDOWS
+#if KEYBOARD
 				//Check keyboard so we can test this stuff on computer
 				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Up))
 				{
@@ -381,7 +381,7 @@ namespace HadoukInput
 		{
 			Debug.Assert(iAction < EControllerAction.NumControllerActions);
 
-#if WINDOWS
+#if KEYBOARD
 			//first do the keyboard check
 			//First check if it is a direction
 			switch (iAction)
@@ -548,7 +548,7 @@ namespace HadoukInput
 		/// <returns>bool: whether or not that button is held this frame</returns>
 		private bool CheckControllerActionHeld(InputState rInputState, int i, EControllerAction iAction)
 		{
-#if WINDOWS
+#if KEYBOARD
 			//First check if it is a direction
 			switch (iAction)
 			{
@@ -707,7 +707,7 @@ namespace HadoukInput
 		{
 			Debug.Assert(iAction < EControllerAction.NumControllerActions);
 
-#if WINDOWS
+#if KEYBOARD
 			//first do the keyboard check
 			//First check if it is a direction
 			switch (iAction)
@@ -875,7 +875,7 @@ namespace HadoukInput
 		/// <returns>bool: key was pressed this update</returns>
 		private bool CheckKeyDown(InputState rInputState, int i, Keys myKey)
 		{
-			#if WINDOWS
+			#if KEYBOARD
 			return (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyUp(myKey));
 #else
 			return false;
@@ -891,7 +891,7 @@ namespace HadoukInput
 		/// <returns>bool: true if the key was released this update.</returns>
 		private bool CheckKeyUp(InputState rInputState, int i, Keys myKey)
 		{
-			#if WINDOWS
+			#if KEYBOARD
 			return (rInputState.m_CurrentKeyboardStates[i].IsKeyUp(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyDown(myKey));
 			#else
 			return false;
