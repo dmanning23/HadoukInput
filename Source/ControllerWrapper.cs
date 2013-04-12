@@ -111,25 +111,10 @@ namespace HadoukInput
 		private bool[] m_bControllerActionRelease;
 
 		/// <summary>
-		/// how do we want to clean up thumbsticks?
+		/// Gets the controller sticks.
 		/// </summary>
-		public ThumbstickType ThumbstickScrubbing { get; set; }
-
-		/// <summary>
-		/// The current direction of the left thumbstick, cleaned up however we want.
-		/// </summary>
-		private Vector2 m_LeftThumbstickDirection;
-
-		/// <summary>
-		/// The current direction of the right thumbstick, cleaned up however we want.
-		/// </summary>
-		private Vector2 m_RightThumbstickDirection;
-
-		/// <summary>
-		/// constant value used to direct the thumbstick power curve
-		/// between -3 -> 3
-		/// </summary>
-		private float m_fPower = 3.0f;
+		/// <value>The controller sticks.</value>
+		public ThumbsticksWrapper Thumbsticks { get; private set; }
 
 		#endregion //Member Variables
 
@@ -159,28 +144,6 @@ namespace HadoukInput
 			get { return m_bControllerActionRelease; }
 		}
 
-		public Vector2 LeftThumbstickDirection
-		{
-			get { return m_LeftThumbstickDirection; }
-		}
-
-		public Vector2 RightThumbstickDirection
-		{
-			get { return m_RightThumbstickDirection; }
-		}
-
-		public float ThumbstickPower
-		{
-			get { return m_fPower; }
-			set
-			{
-				if ((value <= 3.0f) && (value >= -3.0f))
-				{
-					m_fPower = value;
-				}
-			}
-		}
-
 		#endregion //Properties
 
 		#region Initialization / Cleanup
@@ -191,6 +154,8 @@ namespace HadoukInput
 		/// <param name="iGamePadIndex">If this isn't a keyboard, which gamepad index it should use.</param>
 		public ControllerWrapper(PlayerIndex? eGamePadIndex)
 		{
+			Thumbsticks = new ThumbsticksWrapper();
+
 			if (eGamePadIndex.HasValue)
 			{
 				m_eGamePadIndex = eGamePadIndex.Value;
@@ -199,8 +164,6 @@ namespace HadoukInput
 			m_bControllerActionPress = new bool[(int)EControllerAction.NumControllerActions];
 			m_bControllerActionHeld = new bool[(int)EControllerAction.NumControllerActions];
 			m_bControllerActionRelease = new bool[(int)EControllerAction.NumControllerActions];
-
-			ThumbstickScrubbing = ThumbstickType.Scrubbed;
 
 			//initialize input states
 			ResetController();
@@ -211,9 +174,7 @@ namespace HadoukInput
 		/// </summary>
 		public void ResetController()
 		{
-			m_LeftThumbstickDirection = Vector2.Zero;
-			m_RightThumbstickDirection = Vector2.Zero;
-
+			Thumbsticks.Reset();
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
 			{
 				m_bControllerActionPress[i] = false;
@@ -237,7 +198,7 @@ namespace HadoukInput
 			int i = (int)m_eGamePadIndex;
 
 			//update the thumbstick
-			UpdateThumbsticks(rInputState, i);
+			Thumbsticks.UpdateThumbsticks(rInputState, i);
 
 			for (EControllerAction j = 0; j < EControllerAction.NumControllerActions; j++)
 			{
@@ -249,125 +210,6 @@ namespace HadoukInput
 
 				//update which dircetions are released this frame
 				m_bControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
-			}
-		}
-
-		/// <summary>
-		/// called each frame to update the thumbstick vector and the cleaned "direction" vector
-		/// </summary>
-		/// <param name="rInputState"></param>
-		/// <param name="i"></param>
-		private void UpdateThumbsticks(InputState rInputState, int i)
-		{
-			//update the left thumbstick
-			UpdateSingleThumbstick(rInputState, i, ref m_LeftThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left, true);
-			UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
-		}
-
-		/// <summary>
-		/// Update one single thumbsticks.
-		/// </summary>
-		/// <param name="rInputState">The current input state.</param>
-		/// <param name="i">controller index to check</param>
-		/// <param name="myThumbstick">the vector to hold the scrubbed thumbstick direction</param>
-		/// <param name="controllerThumbstick">the raw thumbstick input from the controller</param>
-		/// <param name="bLeft">whether or not this thumbstick is the left</param>
-		private void UpdateSingleThumbstick(InputState rInputState, int i, ref Vector2 myThumbstick, Vector2 controllerThumbstick, bool bLeft)
-		{
-			//flag used to tell if direction needs to be normalized
-			bool bDirection = false;
-
-			//if either of the axis are larger than 0.1, the length squared will be greater than 0.01
-			if (controllerThumbstick.LengthSquared() >= 0.01f)
-			{
-				bDirection = true;
-				myThumbstick = controllerThumbstick;
-
-				//thumbstick needs to be flipped on Y to match screen coords
-				myThumbstick.Y *= -1.0f;
-			}
-
-			//Check dpad if this is the left thumbstick
-			if (bLeft)
-			{
-				if (rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed)
-				{
-					//check up... 
-					bDirection = true;
-					myThumbstick.Y = -1.0f;
-				}
-				else if (rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed)
-				{
-					//check down... 
-					bDirection = true;
-					myThumbstick.Y = 1.0f;
-				}
-
-				if (rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed)
-				{
-					//check left
-					bDirection = true;
-					myThumbstick.X = -1.0f;
-				}
-				else if (rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed)
-				{
-					//check right
-					bDirection = true;
-					myThumbstick.X = 1.0f;
-				}
-
-#if KEYBOARD
-				//Check keyboard so we can test this stuff on computer
-				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Up))
-				{
-					//check up... 
-					bDirection = true;
-					myThumbstick.Y = -1.0f;
-				}
-				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Down))
-				{
-					//check down... 
-					bDirection = true;
-					myThumbstick.Y = 1.0f;
-				}
-
-				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
-				{
-					//check left
-					bDirection = true;
-					myThumbstick.X = -1.0f;
-				}
-				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Right))
-				{
-					//check right
-					bDirection = true;
-					myThumbstick.X = 1.0f;
-				}
-#endif
-			}
-
-			//normalize, or set to 0
-			if (bDirection)
-			{
-				//are we doing scurbbing, or powercurving?
-				switch (ThumbstickScrubbing)
-				{
-					case ThumbstickType.PowerCurve:
-						{
-							myThumbstick.X += PowerCurve(myThumbstick.X);
-							myThumbstick.Y += PowerCurve(myThumbstick.Y);
-						}
-						break;
-					default:
-						{
-							myThumbstick.Normalize();
-						}
-						break;
-				}
-			}
-			else
-			{
-				myThumbstick = Vector2.Zero;
 			}
 		}
 
@@ -505,29 +347,29 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > 0.1f) &&
-							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= 0.1f)) ||
+					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > Thumbsticks.DeadZone) &&
+							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= Thumbsticks.DeadZone)) ||
 							((rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed) &&
 							(rInputState.m_LastGamePadStates[i].DPad.Up == ButtonState.Released));
 				}
 				case EControllerAction.Down:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -0.1f) &&
-							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= -0.1f)) ||
+					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -Thumbsticks.DeadZone) &&
+							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= -Thumbsticks.DeadZone)) ||
 							((rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed) &&
 							(rInputState.m_LastGamePadStates[i].DPad.Down == ButtonState.Released));
 				}
 				case EControllerAction.Left:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -0.1f) &&
-							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= -0.1f)) ||
+					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -Thumbsticks.DeadZone) &&
+							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= -Thumbsticks.DeadZone)) ||
 							((rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed) &&
 							(rInputState.m_LastGamePadStates[i].DPad.Left == ButtonState.Released));
 				}
 				case EControllerAction.Right:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > 0.1f) &&
-							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= 0.1f)) ||
+					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > Thumbsticks.DeadZone) &&
+							(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= Thumbsticks.DeadZone)) ||
 							((rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed) &&
 							(rInputState.m_LastGamePadStates[i].DPad.Right == ButtonState.Released));
 				}
@@ -670,22 +512,22 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > 0.1f) ||
+					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > Thumbsticks.DeadZone) ||
 						(rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed);
 				}
 				case EControllerAction.Down:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -0.1f) ||
+					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -Thumbsticks.DeadZone) ||
 						(rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed);
 				}
 				case EControllerAction.Left:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -0.1f) ||
+					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -Thumbsticks.DeadZone) ||
 						(rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed);
 				}
 				case EControllerAction.Right:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > 0.1f) ||
+					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > Thumbsticks.DeadZone) ||
 						(rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed);
 				}
 				default:
@@ -831,29 +673,29 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 					{
-						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < 0.1f) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= 0.1f)) ||
+						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < Thumbsticks.DeadZone) &&
+						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= Thumbsticks.DeadZone)) ||
 						((rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Released) &&
 						(rInputState.m_LastGamePadStates[i].DPad.Up == ButtonState.Pressed));
 					}
 				case EControllerAction.Down:
 					{
-						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > -0.1f) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= -0.1f)) ||
+						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > -Thumbsticks.DeadZone) &&
+						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= -Thumbsticks.DeadZone)) ||
 						((rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Released) &&
 						(rInputState.m_LastGamePadStates[i].DPad.Down == ButtonState.Pressed));
 					}
 				case EControllerAction.Left:
 					{
-						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > -0.1f) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= -0.1f)) ||
+						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > -Thumbsticks.DeadZone) &&
+						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= -Thumbsticks.DeadZone)) ||
 						((rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Released) &&
 						(rInputState.m_LastGamePadStates[i].DPad.Left == ButtonState.Pressed));
 					}
 				case EControllerAction.Right:
 					{
-						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < 0.1f) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= 0.1f)) ||
+						return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < Thumbsticks.DeadZone) &&
+						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= Thumbsticks.DeadZone)) ||
 						((rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Released) &&
 						(rInputState.m_LastGamePadStates[i].DPad.Right == ButtonState.Pressed));
 					}
@@ -896,16 +738,6 @@ namespace HadoukInput
 			#else
 			return false;
 			#endif
-		}
-
-		/// <summary>
-		/// Run the thumbstick direction through a power curve to clean it up a bit.
-		/// </summary>
-		/// <param name="fValue">the value to run through the power curve, -1.0 - 1.0</param>
-		/// <returns>float: the input value run through the power curve</returns>
-		private float PowerCurve(float fValue)
-		{
-			return (float)System.Math.Pow(System.Math.Abs(fValue), ThumbstickPower) * System.Math.Sign(fValue);
 		}
 
 		/// <summary>
@@ -1100,8 +932,7 @@ namespace HadoukInput
 		/// </summary>
 		public void ReadFromNetwork(PacketReader packetReader)
 		{
-			m_LeftThumbstickDirection = packetReader.ReadVector2();
-			m_RightThumbstickDirection = packetReader.ReadVector2();
+			Thumbsticks.ReadFromNetwork(packetReader);
 
 			//read in buttons
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
@@ -1127,8 +958,7 @@ namespace HadoukInput
 		/// </summary>
 		public void WriteToNetwork(PacketWriter packetWriter)
 		{
-			packetWriter.Write(m_LeftThumbstickDirection);
-			packetWriter.Write(m_RightThumbstickDirection);
+			Thumbsticks.WriteToNetwork(packetWriter);
 
 			//write out buttons
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)

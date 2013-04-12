@@ -64,8 +64,11 @@
     <Compile Include="..\Source\MoveNode.cs">
       <Link>MoveNode.cs</Link>
     </Compile>
-    <Compile Include="..\Source\ThumbstickType.cs">
-      <Link>ThumbstickType.cs</Link>
+    <Compile Include="..\Source\DeadZoneType.cs">
+      <Link>DeadZoneType.cs</Link>
+    </Compile>
+	<Compile Include="..\Source\ThumbsticksWrapper.cs">
+      <Link>ThumbsticksWrapper.cs</Link>
     </Compile>
     <Compile Include="..\Source\Properties\AssemblyInfo.cs">
       <Link>Properties\AssemblyInfo.cs</Link>
