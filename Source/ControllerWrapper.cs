@@ -149,6 +149,15 @@ namespace HadoukInput
 		#region Initialization / Cleanup
 
 		/// <summary>
+		/// Initializes the <see cref="HadoukInput.ControllerWrapper"/> class.
+		/// Thereare a few variables in Monogame that screw stuff up... set them here
+		/// </summary>
+		static ControllerWrapper()
+		{
+			GamePadThumbSticks.Gate = GamePadThumbSticks.GateType.None;
+		}
+
+		/// <summary>
 		///	hello, standard constructor!
 		/// </summary>
 		/// <param name="iGamePadIndex">If this isn't a keyboard, which gamepad index it should use.</param>
