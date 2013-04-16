@@ -131,7 +131,7 @@ namespace HadoukInput
 		{
 			//update the left thumbstick
 			UpdateSingleThumbstick(rInputState, i, ref m_LeftThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left, true);
-			UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
+			//UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
 		}
 		
 		/// <summary>
@@ -144,6 +144,9 @@ namespace HadoukInput
 		/// <param name="bLeft">whether or not this thumbstick is the left</param>
 		private void UpdateSingleThumbstick(InputState rInputState, int i, ref Vector2 myThumbstick, Vector2 controllerThumbstick, bool bLeft)
 		{
+			//TODO: this is to work around a monogame bug where the thumbsticks go from -2 - 2 instead of -1 - 1
+			controllerThumbstick *= 0.5f;
+
 			//first set the thumbstick to 0.  it will be set to the real value below
 			myThumbstick = Vector2.Zero;
 
@@ -265,11 +268,17 @@ namespace HadoukInput
 						//this gives a nice linear thumbstick, starting at the deadzone, but small values are smaller allowing for better precision
 						Vector2 normalizedThumbstick = myThumbstick;
 						normalizedThumbstick.Normalize();
-						myThumbstick.X = normalizedThumbstick.X * ((PowerCurve(myThumbstick.X) - DeadZone) / (1 - DeadZone));
-						myThumbstick.Y = normalizedThumbstick.Y * ((PowerCurve(myThumbstick.Y) - DeadZone) / (1 - DeadZone));
+						myThumbstick.X = PowerCurve(myThumbstick.X);
+						myThumbstick.Y = PowerCurve(myThumbstick.Y);
 					}
 					break;
 				}
+			}
+
+			//constrain the thumbstick to length of one
+			if (myThumbstick.LengthSquared() > 1.0f)
+			{
+				myThumbstick.Normalize();
 			}
 		}
 
