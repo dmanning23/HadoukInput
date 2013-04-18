@@ -67,7 +67,7 @@
     <Compile Include="..\Source\DeadZoneType.cs">
       <Link>DeadZoneType.cs</Link>
     </Compile>
-	<Compile Include="..\Source\ThumbsticksWrapper.cs">
+    <Compile Include="..\Source\ThumbsticksWrapper.cs">
       <Link>ThumbsticksWrapper.cs</Link>
     </Compile>
     <Compile Include="..\Source\Properties\AssemblyInfo.cs">
