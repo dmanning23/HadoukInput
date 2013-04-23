@@ -5,17 +5,15 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{39043C47-7BAF-4D47-AF1D-427A2E6A20DF}</ProjectGuid>
+    <ProjectGuid>{923BA483-4C0F-4485-B969-1FE3255781DA}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>HadoukInput.Android</RootNamespace>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidResgenClass>Resource</AndroidResgenClass>
-    <AndroidApplication>True</AndroidApplication>
-    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AssemblyName>HadoukInput.Android</AssemblyName>
-    <TargetFrameworkVersion>v2.3</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,33 +32,57 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
     <ConsolePause>false</ConsolePause>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
-    <Reference Include="OpenTK" />
-    <Reference Include="MonoGame.Framework" />
-    <Reference Include="Lidgren.Network" />
+    <Reference Include="Lidgren.Network">
+      <HintPath>..\externals\MonoGame\MonoGame.Framework\bin\Android\Debug\Lidgren.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\externals\MonoGame\MonoGame.Framework\bin\Android\Debug\MonoGame.Framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activity1.cs" />
-    <Compile Include="Game1.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Source\ControllerWrapper.cs">
+      <Link>ControllerWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\DeadZoneType.cs">
+      <Link>DeadZoneType.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\InputItem.cs">
+      <Link>InputItem.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\InputState.cs">
+      <Link>InputState.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\InputWrapper.cs">
+      <Link>InputWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\Keystroke.cs">
+      <Link>Keystroke.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\MoveList.cs">
+      <Link>MoveList.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\MoveNode.cs">
+      <Link>MoveNode.cs</Link>
+    </Compile>
+    <Compile Include="..\Source\ThumbsticksWrapper.cs">
+      <Link>ThumbsticksWrapper.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
-    <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\Icon.png" />
-    <AndroidResource Include="Resources\drawable\Splash.png" />
-    <AndroidResource Include="Resources\values\Styles.xml" />
+    <AndroidResource Include="Resources\values\Strings.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>
