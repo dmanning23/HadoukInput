@@ -28,7 +28,7 @@ namespace HadoukInput
 		///	<summary>
 		///	if this	is a leaf node,	the	name of	the	Move
 		///	</summary>
-		private string m_strMoveName;
+		public string MoveName { get; private set; }
 
 		#endregion //Members
 
@@ -73,7 +73,7 @@ namespace HadoukInput
 			if (iInputIndex == (rgInputItems.Count - 1))
 			{
 				m_iMessageID = iMessageID;
-				m_strMoveName = strMoveName;
+				MoveName = strMoveName;
 				return;
 			}
 
