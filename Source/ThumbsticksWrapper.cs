@@ -73,6 +73,7 @@ namespace HadoukInput
 		
 		/// <summary>
 		/// Gets or sets the size of the thumbstick dead zone.
+		/// To square off the dead zone, set the DeadZoneType to Axial and set this to 0.5f
 		/// </summary>
 		/// <value>The size of the dead zone.</value>
 		public float DeadZone
