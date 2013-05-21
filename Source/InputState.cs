@@ -14,11 +14,9 @@ namespace HadoukInput
 		#region Fields
 
 		private const int MaxInputs = 4;
-
-#if KEYBOARD
+		
 		public readonly KeyboardState[] m_CurrentKeyboardStates;
 		public readonly KeyboardState[] m_LastKeyboardStates;
-#endif
 
 		public readonly GamePadState[] m_CurrentGamePadStates;
 		public readonly GamePadState[] m_LastGamePadStates;
@@ -34,10 +32,8 @@ namespace HadoukInput
 		/// </summary>
 		public InputState()
 		{
-#if KEYBOARD
 			m_CurrentKeyboardStates = new KeyboardState[MaxInputs];
 			m_LastKeyboardStates = new KeyboardState[MaxInputs];
-#endif
 
 			m_CurrentGamePadStates = new GamePadState[MaxInputs];
 			m_LastGamePadStates = new GamePadState[MaxInputs];
@@ -56,10 +52,8 @@ namespace HadoukInput
 		{
 			for (int i = 0; i < MaxInputs; i++)
 			{
-#if KEYBOARD
 				m_LastKeyboardStates[i] = m_CurrentKeyboardStates[i];
 				m_CurrentKeyboardStates[i] = Keyboard.GetState((PlayerIndex)i);
-#endif
 
 				m_LastGamePadStates[i] = m_CurrentGamePadStates[i];
 				m_CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
@@ -72,7 +66,6 @@ namespace HadoukInput
 			}
 		}
 
-#if KEYBOARD
 		/// <summary>
 		/// Helper for checking if a key was newly pressed during this update. The
 		/// controllingPlayer parameter specifies which player to read input for.
@@ -100,7 +93,6 @@ namespace HadoukInput
 						IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
 			}
 		}
-#endif
 
 		/// <summary>
 		/// Helper for checking if a button was newly pressed during this update.
@@ -139,11 +131,9 @@ namespace HadoukInput
 		public bool IsMenuSelect(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
 		{
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
 				IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
 				IsNewKeyPress(Keys.X, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
@@ -157,10 +147,8 @@ namespace HadoukInput
 		public bool IsMenuCancel(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
 		{
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
 				IsNewKeyPress(Keys.V, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
 		}
@@ -175,9 +163,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Up, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
 		}
@@ -192,9 +178,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Down, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
 		}
@@ -209,9 +193,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
 		}
@@ -226,9 +208,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
 		}
@@ -243,9 +223,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return 
-#if KEYBOARD
 				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-#endif
 				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}

@@ -192,8 +192,7 @@ namespace HadoukInput
 					bThumbstickDirection = false;
 					myThumbstick.X = 1.0f;
 				}
-				
-				#if KEYBOARD
+
 				//Check keyboard so we can test this stuff on computer
 				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Up))
 				{
@@ -220,7 +219,6 @@ namespace HadoukInput
 					bThumbstickDirection = false;
 					myThumbstick.X = 1.0f;
 				}
-				#endif
 			}
 			
 			//do we need to apply dead zone scrubbing?
