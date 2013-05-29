@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System.Text;
 using System;
@@ -370,6 +371,24 @@ namespace HadoukInput
 			}
 
 			return myText.ToString();
+		}
+
+		/// <summary>
+		/// get the number of connected gamepads
+		/// </summary>
+		/// <returns>The num of gamepads.</returns>
+		public static int NumGamepads()
+		{
+			int iTotal = 0;
+			for (PlayerIndex i = PlayerIndex.One; i <= PlayerIndex.Four; i++)
+			{
+				if (GamePad.GetState(i).IsConnected)
+				{
+					iTotal++;
+				}
+			}
+
+			return iTotal;
 		}
 
 		#endregion //Methods

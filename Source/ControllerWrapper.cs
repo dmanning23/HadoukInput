@@ -91,7 +91,7 @@ namespace HadoukInput
 		/// <summary>
 		/// If this is a gamepad input, which gamepad is it?
 		/// </summary>
-		private PlayerIndex m_eGamePadIndex;
+		public PlayerIndex GamePadIndex { get; set; }
 
 		///<summary>
 		///flags for which actions are pressed
@@ -175,7 +175,7 @@ namespace HadoukInput
 
 			if (eGamePadIndex.HasValue)
 			{
-				m_eGamePadIndex = eGamePadIndex.Value;
+				GamePadIndex = eGamePadIndex.Value;
 			}
 
 			m_bControllerActionPress = new bool[(int)EControllerAction.NumControllerActions];
@@ -212,7 +212,7 @@ namespace HadoukInput
 		/// <param name="bFlip">true if the character this thing controls is facing left</param>
 		public void Update(InputState rInputState)
 		{
-			int i = (int)m_eGamePadIndex;
+			int i = (int)GamePadIndex;
 
 			//update the thumbstick
 			Thumbsticks.UpdateThumbsticks(rInputState, i);
