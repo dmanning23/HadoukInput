@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-#if !NO_NETWORKING
+#if NETWORKING
 using Microsoft.Xna.Framework.Net;
 #endif
 
@@ -145,8 +145,11 @@ namespace HadoukInput
 		/// <param name="bLeft">whether or not this thumbstick is the left</param>
 		private void UpdateSingleThumbstick(InputState rInputState, int i, ref Vector2 myThumbstick, Vector2 controllerThumbstick, bool bLeft)
 		{
+#if WINDOWS
 			//TODO: this is to work around a monogame bug where the thumbsticks go from -2 - 2 instead of -1 - 1
 			controllerThumbstick *= 0.5f;
+#else
+#endif
 
 			//first set the thumbstick to 0.  it will be set to the real value below
 			myThumbstick = Vector2.Zero;
@@ -160,8 +163,12 @@ namespace HadoukInput
 				bThumbstickDirection = true;
 				myThumbstick = controllerThumbstick;
 				
+
+#if WINDOWS
 				//thumbstick needs to be flipped on Y to match screen coords
 				myThumbstick.Y *= -1.0f;
+#else
+#endif
 			}
 			
 			//Check dpad if this is the left thumbstick
@@ -295,7 +302,7 @@ namespace HadoukInput
 
 		#region Networking
 		
-		#if !NO_NETWORKING
+#if NETWORKING
 		
 		/// <summary>
 		/// Read this object from a network packet reader.
@@ -315,7 +322,7 @@ namespace HadoukInput
 			packetWriter.Write(m_RightThumbstickDirection);
 		}
 		
-		#endif
+#endif
 		
 		#endregion //Networking
 	}
