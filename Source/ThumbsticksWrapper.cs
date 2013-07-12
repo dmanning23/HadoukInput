@@ -162,13 +162,6 @@ namespace HadoukInput
 			{
 				bThumbstickDirection = true;
 				myThumbstick = controllerThumbstick;
-				
-
-#if WINDOWS
-				//thumbstick needs to be flipped on Y to match screen coords
-				myThumbstick.Y *= -1.0f;
-#else
-#endif
 			}
 			
 			//Check dpad if this is the left thumbstick
@@ -178,13 +171,13 @@ namespace HadoukInput
 				{
 					//check up... 
 					bThumbstickDirection = false;
-					myThumbstick.Y = -1.0f;
+					myThumbstick.Y = 1.0f;
 				}
 				else if (rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed)
 				{
 					//check down... 
 					bThumbstickDirection = false;
-					myThumbstick.Y = 1.0f;
+					myThumbstick.Y = -1.0f;
 				}
 				
 				if (rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed)
@@ -205,13 +198,13 @@ namespace HadoukInput
 				{
 					//check up... 
 					bThumbstickDirection = false;
-					myThumbstick.Y = -1.0f;
+					myThumbstick.Y = 1.0f;
 				}
 				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Down))
 				{
 					//check down... 
 					bThumbstickDirection = false;
-					myThumbstick.Y = 1.0f;
+					myThumbstick.Y = -1.0f;
 				}
 				
 				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
@@ -227,6 +220,12 @@ namespace HadoukInput
 					myThumbstick.X = 1.0f;
 				}
 			}
+
+#if WINDOWS
+			//thumbstick needs to be flipped on Y to match screen coords
+			myThumbstick.Y *= -1.0f;
+#else
+#endif
 			
 			//do we need to apply dead zone scrubbing?
 			if (bThumbstickDirection)
