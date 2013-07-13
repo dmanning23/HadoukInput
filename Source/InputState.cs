@@ -18,8 +18,8 @@ namespace HadoukInput
 		public readonly KeyboardState[] m_CurrentKeyboardStates;
 		public readonly KeyboardState[] m_LastKeyboardStates;
 
-		internal readonly GamePadState[] m_CurrentGamePadStates;
-		internal readonly GamePadState[] m_LastGamePadStates;
+		public readonly GamePadState[] m_CurrentGamePadStates;
+		public readonly GamePadState[] m_LastGamePadStates;
 
 		public readonly bool[] m_bGamePadWasConnected;
 
