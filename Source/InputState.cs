@@ -89,7 +89,7 @@ namespace HadoukInput
 
 			m_bGamePadWasConnected = new bool[MaxInputs];
 
-			DeadZone = 0.3f;
+			DeadZone = 0.27f;
 		}
 
 		#endregion //Initialization

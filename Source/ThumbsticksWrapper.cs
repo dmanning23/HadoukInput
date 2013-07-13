@@ -123,13 +123,23 @@ namespace HadoukInput
 				{
 					//check up... 
 					bThumbstickDirection = false;
+#if OUYA
+					//godammit, y axis is backwards on the dpad but not the thumbstick
+					myThumbstick.Y = -1.0f;
+#else
 					myThumbstick.Y = 1.0f;
+#endif
 				}
 				else if (rInputState.ButtonDown(i, Buttons.DPadDown))
 				{
 					//check down... 
 					bThumbstickDirection = false;
+#if OUYA
+					//godammit, y axis is backwards on the dpad but not the thumbstick
+					myThumbstick.Y = 1.0f;
+#else
 					myThumbstick.Y = -1.0f;
+#endif
 				}
 				else if (rInputState.ButtonDown(i, Buttons.DPadLeft))
 				{
