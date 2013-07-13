@@ -198,7 +198,10 @@ namespace HadoukInput
 						}
 
 						//Normalize the thumbsticks direction
-						myThumbstick.Normalize();
+						if (myThumbstick.LengthSquared() != 0.0f)
+						{
+							myThumbstick.Normalize();
+						}
 					}
 					break;
 
@@ -219,10 +222,18 @@ namespace HadoukInput
 
 					case DeadZoneType.ScaledRadial:
 					{
-						//this gives a nice linear thumbstick, starting at the deadzone
-						Vector2 normalizedThumbstick = myThumbstick;
-						normalizedThumbstick.Normalize();
-						myThumbstick = normalizedThumbstick * ((myThumbstick.Length() - rInputState.DeadZone) / (1 - rInputState.DeadZone));
+						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
+						{
+							//this gives a nice linear thumbstick, starting at the deadzone
+							Vector2 normalizedThumbstick = myThumbstick;
+							normalizedThumbstick.Normalize();
+							myThumbstick = normalizedThumbstick * ((myThumbstick.Length() - rInputState.DeadZone) / (1 - rInputState.DeadZone));
+						}
+						else
+						{
+							//stick is not outside the deadzone
+							myThumbstick = Vector2.Zero;
+						}
 					}
 					break;
 
