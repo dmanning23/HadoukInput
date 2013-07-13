@@ -34,16 +34,6 @@ namespace HadoukInput
 		/// between -3 -> 3
 		/// </summary>
 		private float m_fPower = 3.0f;
-		
-		/// <summary>
-		/// the radius of the controller dead zone
-		/// </summary>
-		private float _deadZone;
-		
-		/// <summary>
-		/// the square of the dead zone
-		/// </summary>
-		private float _deadZoneSquared;
 
 		#endregion //Members
 
@@ -70,36 +60,6 @@ namespace HadoukInput
 				}
 			}
 		}
-		
-		/// <summary>
-		/// Gets or sets the size of the thumbstick dead zone.
-		/// To square off the dead zone, set the DeadZoneType to Axial and set this to 0.5f
-		/// </summary>
-		/// <value>The size of the dead zone.</value>
-		public float DeadZone
-		{
-			get
-			{
-				return _deadZone;
-			}
-			set
-			{
-				_deadZone = value;
-				_deadZoneSquared = _deadZone * _deadZone;
-			}
-		}
-		
-		/// <summary>
-		/// Gets the dead zone squared.
-		/// </summary>
-		/// <value>The dead zone squared.</value>
-		private float DeadZoneSquared
-		{
-			get 
-			{
-				return _deadZoneSquared;
-			}
-		}
 
 		#endregion //Properties
 
@@ -110,7 +70,6 @@ namespace HadoukInput
 		/// </summary>
 		public ThumbsticksWrapper()
 		{
-			DeadZone = 0.2f;
 			ThumbstickScrubbing = DeadZoneType.Radial;
 		}
 
@@ -132,7 +91,7 @@ namespace HadoukInput
 		{
 			//update the left thumbstick
 			UpdateSingleThumbstick(rInputState, i, ref m_LeftThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left, true);
-			//UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
+			UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
 		}
 		
 		/// <summary>
@@ -152,41 +111,33 @@ namespace HadoukInput
 #endif
 
 			//first set the thumbstick to 0.  it will be set to the real value below
-			myThumbstick = Vector2.Zero;
+			myThumbstick = controllerThumbstick;
 
 			//flag used to tell if direction is from thumbstick or not.  if this flag is true, apply the deadzone logic
-			bool bThumbstickDirection = false;
-			
-			//if either of the axis are larger than 0.1, the length squared will be greater than 0.01
-			if (controllerThumbstick.LengthSquared() >= DeadZoneSquared)
-			{
-				bThumbstickDirection = true;
-				myThumbstick = controllerThumbstick;
-			}
-			
+			bool bThumbstickDirection = true;
+
 			//Check dpad if this is the left thumbstick
 			if (bLeft)
 			{
-				if (rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed)
+				if (rInputState.ButtonDown(i, Buttons.DPadUp))
 				{
 					//check up... 
 					bThumbstickDirection = false;
 					myThumbstick.Y = 1.0f;
 				}
-				else if (rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed)
+				else if (rInputState.ButtonDown(i, Buttons.DPadDown))
 				{
 					//check down... 
 					bThumbstickDirection = false;
 					myThumbstick.Y = -1.0f;
 				}
-				
-				if (rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed)
+				else if (rInputState.ButtonDown(i, Buttons.DPadLeft))
 				{
 					//check left
 					bThumbstickDirection = false;
 					myThumbstick.X = -1.0f;
 				}
-				else if (rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed)
+				else if (rInputState.ButtonDown(i, Buttons.DPadRight))
 				{
 					//check right
 					bThumbstickDirection = false;
@@ -206,8 +157,7 @@ namespace HadoukInput
 					bThumbstickDirection = false;
 					myThumbstick.Y = -1.0f;
 				}
-				
-				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
+				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
 				{
 					//check left
 					bThumbstickDirection = false;
@@ -238,11 +188,11 @@ namespace HadoukInput
 						//This will give us a really sticky controller that square gates all the time
 
 						//First set the sticks to ignore the dead zone
-						if(Math.Abs(myThumbstick.X) < DeadZone)
+						if(Math.Abs(myThumbstick.X) < rInputState.DeadZone)
 						{
 							myThumbstick.X = 0.0f;
 						}
-						if(Math.Abs(myThumbstick.Y) < DeadZone)
+						if(Math.Abs(myThumbstick.Y) < rInputState.DeadZone)
 						{
 							myThumbstick.Y = 0.0f;
 						}
@@ -254,8 +204,16 @@ namespace HadoukInput
 
 					case DeadZoneType.Radial:
 					{
-						//Radial just cares about the direction, so just normalize the stick
-						myThumbstick.Normalize();
+						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
+						{
+							//Radial just cares about the direction, so just normalize the stick
+							myThumbstick.Normalize();
+						}
+						else
+						{
+							//stick is not outside the deadzone
+							myThumbstick = Vector2.Zero;
+						}
 					}
 					break;
 
@@ -264,7 +222,7 @@ namespace HadoukInput
 						//this gives a nice linear thumbstick, starting at the deadzone
 						Vector2 normalizedThumbstick = myThumbstick;
 						normalizedThumbstick.Normalize();
-						myThumbstick = normalizedThumbstick * ((myThumbstick.Length() - DeadZone) / (1 - DeadZone));
+						myThumbstick = normalizedThumbstick * ((myThumbstick.Length() - rInputState.DeadZone) / (1 - rInputState.DeadZone));
 					}
 					break;
 

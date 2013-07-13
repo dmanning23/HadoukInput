@@ -83,7 +83,7 @@ namespace HadoukInput
 			}
 		};
 
-		#endregion //Mapped Keys
+		#endregion
 
 		#region Member Variables
 
@@ -120,9 +120,13 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard { get; set; }
+		public bool UseKeyboard
+		{ 
+			get;
+			set;
+		}
 
-		#endregion //Member Variables
+		#endregion
 
 		#region Properties
 
@@ -150,7 +154,7 @@ namespace HadoukInput
 			get { return m_bControllerActionRelease; }
 		}
 
-		#endregion //Properties
+		#endregion
 
 		#region Initialization / Cleanup
 
@@ -170,7 +174,13 @@ namespace HadoukInput
 		public ControllerWrapper(PlayerIndex? eGamePadIndex, bool bUseKeyboard = false)
 		{
 			Thumbsticks = new ThumbsticksWrapper();
+
+#if OUYA
+			//no keyboard at all on the Ouya
+			UseKeyboard = false;
+#else
 			UseKeyboard = bUseKeyboard;
+#endif
 
 			if (eGamePadIndex.HasValue)
 			{
@@ -199,7 +209,7 @@ namespace HadoukInput
 			}
 		}
 
-		#endregion //Initialization / Cleanup
+		#endregion
 
 		#region Methods
 
@@ -228,6 +238,189 @@ namespace HadoukInput
 				m_bControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
 			}
 		}
+
+		/// <summary>
+		/// Check for a specific keystroke.
+		/// </summary>
+		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
+		/// <returns>bool: the keystroke is being held</returns>
+		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped)
+		{
+			switch (eKeystroke)
+			{
+				//CHECK THE DIRECTIONS
+
+				case EKeystroke.Up:
+				{
+					//get the direction to check for 'up'
+					return m_bControllerActionHeld[(int)EControllerAction.Up];
+				}
+				case EKeystroke.Down:
+				{
+					//Don't send down if left or right are held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.Left] || m_bControllerActionHeld[(int)EControllerAction.Right])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'down'
+					return m_bControllerActionHeld[(int)EControllerAction.Down];
+				}
+				case EKeystroke.Forward:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.Up])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'forward'
+					if (bFlipped)
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.Left];
+					}
+					else
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.Right];
+					}
+				}
+				case EKeystroke.Back:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.Up])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'Back'
+					if (bFlipped)
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.Right];
+					}
+					else
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.Left];
+					}
+				}
+
+				//CHECK DIRECTIONS RELEASED
+
+				case EKeystroke.UpRelease:
+				{
+					//get the direction to check for 'up'
+					return m_bControllerActionRelease[(int)EControllerAction.Up];
+				}
+				case EKeystroke.DownRelease:
+				{
+					//get the direction to check for 'down'
+					return m_bControllerActionRelease[(int)EControllerAction.Down];
+				}
+				case EKeystroke.ForwardRelease:
+				{
+					//get the direction to check for 'forward'
+					if (bFlipped)
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.Left];
+					}
+					else
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.Right];
+					}
+				}
+				case EKeystroke.BackRelease:
+				{
+					//get the direction to check for 'back'
+					if (bFlipped)
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.Right];
+					}
+					else
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.Left];
+					}
+				}
+
+				//CHECK BUTTONS
+
+				case EKeystroke.A:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.A];
+				}
+				case EKeystroke.B:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.B];
+				}
+				case EKeystroke.X:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.X];
+				}
+				case EKeystroke.Y:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulder:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulder:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTrigger:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTrigger:
+				{
+					return m_bControllerActionPress[(int)EControllerAction.RTrigger];
+				}
+
+				//CHECK BUTTONS RELEASED
+
+				case EKeystroke.ARelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.A];
+				}
+				case EKeystroke.BRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.B];
+				}
+				case EKeystroke.XRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.X];
+				}
+				case EKeystroke.YRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulderRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulderRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTriggerRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTriggerRelease:
+				{
+					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
+				}
+
+				default:
+				{
+					//you passed in one of the direction+button keystrokes?
+					Debug.Assert(false);
+					return false;
+				}
+			}
+		}
+
+		#region Private Methods
 
 		/// <summary>
 		/// Check whether the player is hitting a mapped button
@@ -364,37 +557,37 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Up == ButtonState.Released));
+					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
+					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
+						(rInputState.ButtonDown(i, Buttons.DPadUp) &&
+						!rInputState.PrevButtonDown(i, Buttons.DPadUp)));
 				}
 				case EControllerAction.Down:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= -Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Down == ButtonState.Released));
+					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
+					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
+						(rInputState.ButtonDown(i, Buttons.DPadDown) &&
+						!rInputState.PrevButtonDown(i, Buttons.DPadDown)));
 				}
 				case EControllerAction.Left:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= -Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Left == ButtonState.Released));
+					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
+					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
+						(rInputState.ButtonDown(i, Buttons.DPadLeft) &&
+						!rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
 				}
 				case EControllerAction.Right:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Right == ButtonState.Released));
+					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
+					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
+						(rInputState.ButtonDown(i, Buttons.DPadRight) &&
+						!rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
 				default:
 				{
 					//get the attack button to check
 					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
-					return (rInputState.m_CurrentGamePadStates[i].IsButtonDown(mappedButton) && rInputState.m_LastGamePadStates[i].IsButtonUp(mappedButton));
+					return (rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
 		}
@@ -531,29 +724,29 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > Thumbsticks.DeadZone) ||
-						(rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Pressed);
+					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) ||
+						rInputState.ButtonDown(i, Buttons.DPadUp));
 				}
 				case EControllerAction.Down:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < -Thumbsticks.DeadZone) ||
-						(rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Pressed);
+					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) ||
+						rInputState.ButtonDown(i, Buttons.DPadDown));
 				}
 				case EControllerAction.Left:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < -Thumbsticks.DeadZone) ||
-						(rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Pressed);
+					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) ||
+						rInputState.ButtonDown(i, Buttons.DPadLeft));
 				}
 				case EControllerAction.Right:
 				{
-					return (rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > Thumbsticks.DeadZone) ||
-						(rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Pressed);
+					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) ||
+						rInputState.ButtonDown(i, Buttons.DPadRight));
 				}
 				default:
 				{
 					//get the attack button to check
 					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
-					return rInputState.m_CurrentGamePadStates[i].IsButtonDown(mappedButton);
+					return rInputState.ButtonDown(i, mappedButton);
 				}
 			}
 		}
@@ -567,7 +760,6 @@ namespace HadoukInput
 		private bool CheckControllerActionReleased(InputState rInputState, int i, EControllerAction iAction)
 		{
 			Debug.Assert(iAction < EControllerAction.NumControllerActions);
-
 
 			if (UseKeyboard)
 			{
@@ -694,37 +886,37 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y < Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y >= Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Up == ButtonState.Released) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Up == ButtonState.Pressed));
+					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
+					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
+						(!rInputState.ButtonDown(i, Buttons.DPadUp) &&
+						rInputState.PrevButtonDown(i, Buttons.DPadUp)));
 				}
 				case EControllerAction.Down:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.Y > -Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.Y <= -Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Down == ButtonState.Released) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Down == ButtonState.Pressed));
+					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
+					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
+						(!rInputState.ButtonDown(i, Buttons.DPadDown) &&
+						rInputState.PrevButtonDown(i, Buttons.DPadDown)));
 				}
 				case EControllerAction.Left:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X > -Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X <= -Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Left == ButtonState.Released) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Left == ButtonState.Pressed));
+					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
+					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
+						(!rInputState.ButtonDown(i, Buttons.DPadLeft) &&
+						rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
 				}
 				case EControllerAction.Right:
 				{
-					return ((rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left.X < Thumbsticks.DeadZone) &&
-						(rInputState.m_LastGamePadStates[i].ThumbSticks.Left.X >= Thumbsticks.DeadZone)) ||
-						((rInputState.m_CurrentGamePadStates[i].DPad.Right == ButtonState.Released) &&
-						(rInputState.m_LastGamePadStates[i].DPad.Right == ButtonState.Pressed));
+					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
+					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
+						(!rInputState.ButtonDown(i, Buttons.DPadRight) &&
+						rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
 				default:
 				{
 					//get the attack button to check
 					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
-					return (rInputState.m_CurrentGamePadStates[i].IsButtonUp(mappedButton) && rInputState.m_LastGamePadStates[i].IsButtonDown(mappedButton));
+					return (!rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
 		}
@@ -767,193 +959,14 @@ namespace HadoukInput
 			}
 		}
 
-		/// <summary>
-		/// Check for a specific keystroke.
-		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
-		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
-		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped)
-		{
-			switch (eKeystroke)
-			{
-			//CHECK THE DIRECTIONS
+		#endregion
 
-				case EKeystroke.Up:
-				{
-					//get the direction to check for 'up'
-					return m_bControllerActionHeld[(int)EControllerAction.Up];
-				}
-				case EKeystroke.Down:
-				{
-					//Don't send down if left or right are held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Left] || m_bControllerActionHeld[(int)EControllerAction.Right])
-					{
-						return false;
-					}
-
-					//get the direction to check for 'down'
-					return m_bControllerActionHeld[(int)EControllerAction.Down];
-				}
-				case EKeystroke.Forward:
-				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Up])
-					{
-						return false;
-					}
-
-					//get the direction to check for 'forward'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Left];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Right];
-					}
-				}
-				case EKeystroke.Back:
-				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Up])
-					{
-						return false;
-					}
-
-					//get the direction to check for 'Back'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Right];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Left];
-					}
-				}
-
-			//CHECK DIRECTIONS RELEASED
-
-				case EKeystroke.UpRelease:
-				{
-					//get the direction to check for 'up'
-					return m_bControllerActionRelease[(int)EControllerAction.Up];
-				}
-				case EKeystroke.DownRelease:
-				{
-					//get the direction to check for 'down'
-					return m_bControllerActionRelease[(int)EControllerAction.Down];
-				}
-				case EKeystroke.ForwardRelease:
-				{
-					//get the direction to check for 'forward'
-					if (bFlipped)
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Left];
-					}
-					else
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Right];
-					}
-				}
-				case EKeystroke.BackRelease:
-				{
-					//get the direction to check for 'back'
-					if (bFlipped)
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Right];
-					}
-					else
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Left];
-					}
-				}
-
-			//CHECK BUTTONS
-
-				case EKeystroke.A:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.A];
-				}
-				case EKeystroke.B:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.B];
-				}
-				case EKeystroke.X:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.X];
-				}
-				case EKeystroke.Y:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.Y];
-				}
-				case EKeystroke.LShoulder:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.LShoulder];
-				}
-				case EKeystroke.RShoulder:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.RShoulder];
-				}
-				case EKeystroke.LTrigger:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.LTrigger];
-				}
-				case EKeystroke.RTrigger:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.RTrigger];
-				}
-
-			//CHECK BUTTONS RELEASED
-
-				case EKeystroke.ARelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.A];
-				}
-				case EKeystroke.BRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.B];
-				}
-				case EKeystroke.XRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.X];
-				}
-				case EKeystroke.YRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.Y];
-				}
-				case EKeystroke.LShoulderRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.LShoulder];
-				}
-				case EKeystroke.RShoulderRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.RShoulder];
-				}
-				case EKeystroke.LTriggerRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.LTrigger];
-				}
-				case EKeystroke.RTriggerRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
-				}
-				
-				default:
-				{
-					//you passed in one of the direction+button keystrokes?
-					Debug.Assert(false);
-					return false;
-				}
-			}
-		}
-
-		#endregion //Methods
+		#endregion
 
 		#region Networking
 
-#if NETWORKING
-
+		#if NETWORKING
+		
 		/// <summary>
 		/// Read this object from a network packet reader.
 		/// </summary>
@@ -1006,8 +1019,9 @@ namespace HadoukInput
 			}
 		}
 
-#endif
 
-		#endregion //Networking
+		#endif
+
+		#endregion
 	}
 }

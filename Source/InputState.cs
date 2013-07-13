@@ -18,12 +18,61 @@ namespace HadoukInput
 		public readonly KeyboardState[] m_CurrentKeyboardStates;
 		public readonly KeyboardState[] m_LastKeyboardStates;
 
-		public readonly GamePadState[] m_CurrentGamePadStates;
-		public readonly GamePadState[] m_LastGamePadStates;
+		internal readonly GamePadState[] m_CurrentGamePadStates;
+		internal readonly GamePadState[] m_LastGamePadStates;
 
 		public readonly bool[] m_bGamePadWasConnected;
 
+		/// <summary>
+		/// The trigger dead zone.
+		/// </summary>
+		private const float TriggerDeadZone = 0.25f;
+
+		/// <summary>
+		/// the radius of the controller thumbstick dead zone
+		/// </summary>
+		private float _deadZone;
+
+		/// <summary>
+		/// the square of the thumbstick dead zone
+		/// </summary>
+		private float _deadZoneSquared;
+
 		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// Gets or sets the size of the thumbstick dead zone.
+		/// To square off the dead zone, set the DeadZoneType to Axial and set this to 0.5f
+		/// </summary>
+		/// <value>The size of the dead zone.</value>
+		public float DeadZone
+		{
+			get
+			{
+				return _deadZone;
+			}
+			set
+			{
+				_deadZone = value;
+				_deadZoneSquared = _deadZone * _deadZone;
+			}
+		}
+
+		/// <summary>
+		/// Gets the dead zone squared.
+		/// </summary>
+		/// <value>The dead zone squared.</value>
+		public float DeadZoneSquared
+		{
+			get 
+			{
+				return _deadZoneSquared;
+			}
+		}
+
+		#endregion //Properties
 
 		#region Initialization
 
@@ -39,9 +88,11 @@ namespace HadoukInput
 			m_LastGamePadStates = new GamePadState[MaxInputs];
 
 			m_bGamePadWasConnected = new bool[MaxInputs];
+
+			DeadZone = 0.2f;
 		}
 
-		#endregion
+		#endregion //Initialization
 
 		#region Public Methods
 
@@ -106,11 +157,8 @@ namespace HadoukInput
 			{
 				// Read input from the specified player.
 				playerIndex = controllingPlayer.Value;
-
-				int i = (int)playerIndex;
-
-				return (m_CurrentGamePadStates[i].IsButtonDown(button) &&
-						m_LastGamePadStates[i].IsButtonUp(button));
+				return (ButtonDown(playerIndex, button) &&
+					!PrevButtonDown(playerIndex, button));
 			}
 			else
 			{
@@ -121,6 +169,8 @@ namespace HadoukInput
 						IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
 			}
 		}
+
+		#region Menu Methods
 
 		/// <summary>
 		/// Checks for a "menu select" input action.
@@ -213,6 +263,8 @@ namespace HadoukInput
 				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
 		}
 
+		#endregion //Menu Methods
+
 		/// <summary>
 		/// Checks for a "pause the game" input action.
 		/// The controllingPlayer parameter specifies which player to read
@@ -220,6 +272,7 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsPauseGame(PlayerIndex? controllingPlayer)
 		{
+			//blah throwaway variable
 			PlayerIndex playerIndex;
 
 			return 
@@ -228,6 +281,181 @@ namespace HadoukInput
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
 
-		#endregion
+		#region Button Press Methods
+
+		/// <summary>
+		/// Check if the is button down.
+		/// </summary>
+		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
+		/// <param name="myPlayer">My player.</param>
+		/// <param name="button">Button.</param>
+		public bool ButtonDown(PlayerIndex myPlayer, Buttons button)
+		{
+			return ButtonDown((int)myPlayer, button);
+		}
+
+		/// <summary>
+		/// Check if the wass button down last time
+		/// </summary>
+		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
+		/// <param name="myPlayer">My player.</param>
+		/// <param name="button">Button.</param>
+		public bool PrevButtonDown(PlayerIndex myPlayer, Buttons button)
+		{
+			//Get the game pad state
+			return PrevButtonDown((int)myPlayer, button);
+
+		}
+
+		/// <summary>
+		/// Check if the is button down.
+		/// </summary>
+		/// <returns><c>true</c>, if down was buttoned, <c>false</c> otherwise.</returns>
+		/// <param name="iPlayerIndex">I player index.</param>
+		/// <param name="button">Button.</param>
+		public bool ButtonDown(int iPlayerIndex, Buttons button)
+		{
+			//check that button on that gamepad
+			return CheckButton(m_CurrentGamePadStates[iPlayerIndex], button);
+		}
+
+		/// <summary>
+		/// Check if the wass button down last time
+		/// </summary>
+		/// <returns><c>true</c>, if button down was previoused, <c>false</c> otherwise.</returns>
+		/// <param name="iPlayerIndex">I player index.</param>
+		/// <param name="button">Button.</param>
+		public bool PrevButtonDown(int iPlayerIndex, Buttons button)
+		{
+			//check that button on that gamepad
+			return CheckButton(m_LastGamePadStates[iPlayerIndex], button);
+		}
+
+		/// <summary>
+		/// Given a game pad state and a button, check if the button is down on that gamepadstate
+		/// </summary>
+		/// <returns><c>true</c>, if button was checked, <c>false</c> otherwise.</returns>
+		/// <param name="myGamePad">My game pad.</param>
+		/// <param name="button">Button.</param>
+		private bool CheckButton(GamePadState myGamePad, Buttons button)
+		{
+			switch (button)
+			{
+				case Buttons.DPadUp:
+				{
+					return ButtonState.Pressed == myGamePad.DPad.Up;
+				}
+				case Buttons.DPadDown:
+				{
+					//don't do down if a horizontal direction is held
+					return (!CheckButton(myGamePad, Buttons.DPadLeft) &&
+							!CheckButton(myGamePad, Buttons.DPadRight) &&
+						(ButtonState.Pressed == myGamePad.DPad.Down));
+				}
+				case Buttons.DPadLeft:
+				{
+					//don't do horizontal if up direction is held
+					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
+						(ButtonState.Pressed == myGamePad.DPad.Left));
+				}
+				case Buttons.DPadRight:
+				{
+					//don't do horizontal if up direction is held
+					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
+						(ButtonState.Pressed == myGamePad.DPad.Right));
+				}
+				case Buttons.Start:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.Start;
+				}
+				case Buttons.Back:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.Back;
+				}
+				case Buttons.LeftStick:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.LeftStick;
+				}
+				case Buttons.RightStick:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.RightStick;
+				}
+				case Buttons.LeftShoulder:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.LeftShoulder;
+				}
+				case Buttons.RightShoulder:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.RightShoulder;
+				}
+				case Buttons.BigButton:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.BigButton;
+				}
+				case Buttons.A:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.A;
+				}
+				case Buttons.B:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.B;
+				}
+				case Buttons.X:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.X;
+				}
+				case Buttons.Y:
+				{
+					return ButtonState.Pressed == myGamePad.Buttons.Y;
+				}
+				case Buttons.RightTrigger:
+				{
+					return myGamePad.Triggers.Right > TriggerDeadZone;
+				}
+				case Buttons.LeftTrigger:
+				{
+					return myGamePad.Triggers.Left > TriggerDeadZone;
+				}
+				case Buttons.LeftThumbstickUp:
+				{
+#if OUYA
+					return myGamePad.ThumbSticks.Left.Y < -DeadZone;
+#else
+					return myGamePad.ThumbSticks.Left.Y > DeadZone;
+#endif
+				}
+				case Buttons.LeftThumbstickDown:
+				{
+					//don't do down if a horizontal direction is held
+					return (!CheckButton(myGamePad, Buttons.LeftThumbstickLeft) &&
+					        !CheckButton(myGamePad, Buttons.LeftThumbstickRight) &&
+#if OUYA
+					        (myGamePad.ThumbSticks.Left.Y > DeadZone));
+#else
+					        (myGamePad.ThumbSticks.Left.Y < -DeadZone));
+#endif
+				}
+				case Buttons.LeftThumbstickLeft:
+				{
+					//don't do horizontal if up direction is held
+					return (!CheckButton(myGamePad, Buttons.LeftThumbstickUp) &&
+					        (myGamePad.ThumbSticks.Left.X < -DeadZone));
+				}
+				case Buttons.LeftThumbstickRight:
+				{
+					//don't do horizontal if up direction is held
+					return (!CheckButton(myGamePad, Buttons.LeftThumbstickUp) &&
+					        (myGamePad.ThumbSticks.Left.X > DeadZone));
+				}
+				default:
+				{
+					return false;
+				}
+			}
+		}
+
+		#endregion //Button Press Methods
+
+		#endregion //Public Methods
 	}
 }
