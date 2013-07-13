@@ -587,7 +587,7 @@ namespace HadoukInput
 				{
 					//get the attack button to check
 					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
-					return (rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
+					return (rInputState.ButtonDown(i, mappedButton) && !rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
 		}
