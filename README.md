@@ -1,9 +1,9 @@
 HadoukInput
 ===========
 
-some nice 2d fighting game code for sanitizing controller input and pattern matching. 
+HadoukInput is a library for sanitizing controller input and pattern matching.
 
-This is written in CSharp, and uses the XNA/Monogame libraries.
+This is written in CSharp, and uses the XNA/Monogame libraries.  It is currently tested in Windows and Ouya, but would be easy to use on any platform supported by XNA and MonoGame.
 
 ## features of this library
 
@@ -35,20 +35,27 @@ This is written in CSharp, and uses the XNA/Monogame libraries.
 
 ## Some notes
 
-This library puts the thumbsticks in a square gate, and sanitizes all thumbstick and dpad input to up, down, forward, and back.  If you still need to get thumbstick directions, it supports two methods of scrubbing thumbstick input:
-* Scrubbed, which has a nice big dead zone and normalizes thumbstick direction
-* Powercurve, which curves the thumbstick input for a nice, organic feel:  
+This library puts the thumbsticks in a square gate, and sanitizes all thumbstick and dpad input to up, down, forward, and back.  If you still need to get thumbstick directions, it supports several methods of scrubbing thumbstick input:
+* Axial: Normalized Tile-based (4-way) movement. The Axial Dead Zone actually works well here since it snaps analog input to the only four input vectors that are actually relevant.
+* Radial: normalized direciont-centric movement. radial works well here since it is a very small area in the center of the stick within which input is ignored.
+* ScaledRadial: as you push the stick away from the center, the gradient value changes smoothly while the dead zone is still preserved.
+* Powercurve: like scaled radial, but the small is smaller.  works good for sneaking games etc. where you want a definite analog feel 
 https://blogs.msdn.com/b/shawnhar/archive/2007/03/30/massaging-thumbsticks.aspx?Redirected=true
 
 Input is buffered for a split second so it can be combined into single keystrokes, so button+direction presses don't have to be exact
 
 The pattern matching is very forgiving, something like "down, back, forward, A-button" will still throw a hadouken.  It does this because it will also insert extra input like "DownRelease", "ForwardRelease", or might combine forward + A-button into "AForward".  It's better to be lenient anyway, "Be strict in what you send, but generous in what you receive."
 
-If you'd like to see an example of how to use this library, check out the sample at https://github.com/dmanning23/HadoukInputSample
+Note: This lib uses a couple of submodules, so make sure to run "git submodule init; git submodule update" after cloning.
 
-## Future Improvements
-* better monogame support.  It should just load up, but I haven't tried it for sure in MonoDevelop yet.
-* better networking support: add some methods to tell if the controller state has changed, because otherwise it doesn't need to be sent down the line.  This would save a LOT of bandwidth over just dumping the controller state every time a client's network is updated.
-* better button re-mapping support.  There is currently a layer inserted bewteen the raw controller and ControllerWrapper to abstract buttons, but the interface for changing it needs work.
+If you'd like to see an example of how to use this library, check out a few different samples:
 
-Cheers!
+https://github.com/dmanning23/RawControllerWrapperSample
+
+https://github.com/dmanning23/ControllerWrapperTest
+
+https://github.com/dmanning23/HadoukInputSample
+
+## License
+
+MIT
