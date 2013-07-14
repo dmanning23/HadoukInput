@@ -249,11 +249,19 @@ namespace HadoukInput
 
 					case DeadZoneType.PowerCurve:
 					{
-						//this gives a nice linear thumbstick, starting at the deadzone, but small values are smaller allowing for better precision
-						Vector2 normalizedThumbstick = myThumbstick;
-						normalizedThumbstick.Normalize();
-						myThumbstick.X = PowerCurve(myThumbstick.X);
-						myThumbstick.Y = PowerCurve(myThumbstick.Y);
+						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
+						{
+							//this gives a nice linear thumbstick, starting at the deadzone, but small values are smaller allowing for better precision
+							Vector2 normalizedThumbstick = myThumbstick;
+							normalizedThumbstick.Normalize();
+							myThumbstick.X = PowerCurve(myThumbstick.X);
+							myThumbstick.Y = PowerCurve(myThumbstick.Y);
+						}
+						else
+						{
+							//stick is not outside the deadzone
+							myThumbstick = Vector2.Zero;
+						}
 					}
 					break;
 				}
