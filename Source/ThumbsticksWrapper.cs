@@ -104,12 +104,6 @@ namespace HadoukInput
 		/// <param name="bLeft">whether or not this thumbstick is the left</param>
 		private void UpdateSingleThumbstick(InputState rInputState, int i, ref Vector2 myThumbstick, Vector2 controllerThumbstick, bool bLeft)
 		{
-#if WINDOWS
-			//TODO: this is to work around a monogame bug where the thumbsticks go from -2 - 2 instead of -1 - 1
-			controllerThumbstick *= 0.5f;
-#else
-#endif
-
 			//first set the thumbstick to 0.  it will be set to the real value below
 			myThumbstick = controllerThumbstick;
 
