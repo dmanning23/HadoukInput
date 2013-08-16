@@ -14,9 +14,6 @@ namespace HadoukInput
 		#region Fields
 
 		private const int MaxInputs = 4;
-		
-		public readonly KeyboardState[] m_CurrentKeyboardStates;
-		public readonly KeyboardState[] m_LastKeyboardStates;
 
 		public readonly GamePadState[] m_CurrentGamePadStates;
 		public readonly GamePadState[] m_LastGamePadStates;
@@ -41,6 +38,10 @@ namespace HadoukInput
 		#endregion
 
 		#region Properties
+
+		public KeyboardState CurrentKeyboardState { get; private set; }
+
+		public KeyboardState LastKeyboardState { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the size of the thumbstick dead zone.
@@ -81,8 +82,8 @@ namespace HadoukInput
 		/// </summary>
 		public InputState()
 		{
-			m_CurrentKeyboardStates = new KeyboardState[MaxInputs];
-			m_LastKeyboardStates = new KeyboardState[MaxInputs];
+			CurrentKeyboardState = new KeyboardState();
+			LastKeyboardState = new KeyboardState();
 
 			m_CurrentGamePadStates = new GamePadState[MaxInputs];
 			m_LastGamePadStates = new GamePadState[MaxInputs];
@@ -101,11 +102,11 @@ namespace HadoukInput
 		/// </summary>
 		public void Update()
 		{
+			LastKeyboardState = CurrentKeyboardState;
+			CurrentKeyboardState = Keyboard.GetState();
+
 			for (int i = 0; i < MaxInputs; i++)
 			{
-				m_LastKeyboardStates[i] = m_CurrentKeyboardStates[i];
-				m_CurrentKeyboardStates[i] = Keyboard.GetState((PlayerIndex)i);
-
 				m_LastGamePadStates[i] = m_CurrentGamePadStates[i];
 				m_CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
 
@@ -132,8 +133,8 @@ namespace HadoukInput
 
 				int i = (int)playerIndex;
 
-				return (m_CurrentKeyboardStates[i].IsKeyDown(key) &&
-						m_LastKeyboardStates[i].IsKeyUp(key));
+				return (CurrentKeyboardState.IsKeyDown(key) &&
+						LastKeyboardState.IsKeyUp(key));
 			}
 			else
 			{

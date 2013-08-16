@@ -149,25 +149,25 @@ namespace HadoukInput
 				}
 
 				//Check keyboard so we can test this stuff on computer
-				if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Up))
+				if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Up))
 				{
 					//check up... 
 					bThumbstickDirection = false;
 					myThumbstick.Y = 1.0f;
 				}
-				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Down))
+				else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
 				{
 					//check down... 
 					bThumbstickDirection = false;
 					myThumbstick.Y = -1.0f;
 				}
-				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
+				else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
 				{
 					//check left
 					bThumbstickDirection = false;
 					myThumbstick.X = -1.0f;
 				}
-				else if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Right))
+				else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
 				{
 					//check right
 					bThumbstickDirection = false;

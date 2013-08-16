@@ -610,7 +610,7 @@ namespace HadoukInput
 				{
 					case EControllerAction.Up:
 					{
-						if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Up))
+						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Up))
 						{
 							return true;
 						}
@@ -618,7 +618,7 @@ namespace HadoukInput
 					break;
 					case EControllerAction.Down:
 					{
-						if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Down))
+						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
 						{
 							return true;
 						}
@@ -626,7 +626,7 @@ namespace HadoukInput
 					break;
 					case EControllerAction.Left:
 					{
-						if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Left))
+						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
 						{
 							return true;
 						}
@@ -634,7 +634,7 @@ namespace HadoukInput
 					break;
 					case EControllerAction.Right:
 					{
-						if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Right))
+						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
 						{
 							return true;
 						}
@@ -648,7 +648,7 @@ namespace HadoukInput
 						{
 							case Buttons.A:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.Z))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Z))
 								{
 									return true;
 								}
@@ -656,7 +656,7 @@ namespace HadoukInput
 							break;
 							case Buttons.B:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.X))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.X))
 								{
 									return true;
 								}
@@ -664,7 +664,7 @@ namespace HadoukInput
 							break;
 							case Buttons.X:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.A))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.A))
 								{
 									return true;
 								}
@@ -672,7 +672,7 @@ namespace HadoukInput
 							break;
 							case Buttons.Y:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.S))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.S))
 								{
 									return true;
 								}
@@ -680,7 +680,7 @@ namespace HadoukInput
 							break;
 							case Buttons.LeftShoulder:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.D))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.D))
 								{
 									return true;
 								}
@@ -688,7 +688,7 @@ namespace HadoukInput
 							break;
 							case Buttons.RightShoulder:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.F))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.F))
 								{
 									return true;
 								}
@@ -696,7 +696,7 @@ namespace HadoukInput
 							break;
 							case Buttons.LeftTrigger:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.C))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.C))
 								{
 									return true;
 								}
@@ -704,7 +704,7 @@ namespace HadoukInput
 							break;
 							case Buttons.RightTrigger:
 							{
-								if (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(Keys.V))
+								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.V))
 								{
 									return true;
 								}
@@ -935,7 +935,7 @@ namespace HadoukInput
 		{
 			if (UseKeyboard)
 			{
-				return (rInputState.m_CurrentKeyboardStates[i].IsKeyDown(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyUp(myKey));
+				return (rInputState.CurrentKeyboardState.IsKeyDown(myKey) && rInputState.LastKeyboardState.IsKeyUp(myKey));
 			}
 			else
 			{
@@ -954,7 +954,7 @@ namespace HadoukInput
 		{
 			if (UseKeyboard)
 			{
-				return (rInputState.m_CurrentKeyboardStates[i].IsKeyUp(myKey) && rInputState.m_LastKeyboardStates[i].IsKeyDown(myKey));
+				return (rInputState.CurrentKeyboardState.IsKeyUp(myKey) && rInputState.LastKeyboardState.IsKeyDown(myKey));
 			}
 			else
 			{
