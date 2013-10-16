@@ -85,6 +85,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Filename\Windows\Filename.Windows.csproj">
+      <Project>{2a84dfe8-75e0-4774-baaf-00629ed44405}</Project>
+      <Name>Filename.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MonoGame\ThirdParty\Lidgren.Network\Lidgren.Network.Windows.csproj">
       <Project>{AE483C29-042E-4226-BA52-D247CE7676DA}</Project>
       <Name>Lidgren.Network.Windows</Name>

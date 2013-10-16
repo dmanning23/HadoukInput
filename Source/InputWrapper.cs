@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System.Text;
 using System;
+using System.IO;
+using System.Xml;
+using FilenameBuddy;
 
 namespace HadoukInput
 {
@@ -394,6 +397,105 @@ namespace HadoukInput
 		#endregion //Methods
 
 		#region File IO
+
+		/// <summary>
+		/// read input from a xna resource
+		/// </summary>
+		/// <param name="rContent">xna content manager</param>
+		/// <param name="strResource">name of the resource to load</param>
+		/// <returns>bool: whether or not it was able to load the input list</returns>
+		public bool ReadXmlFile(string strResource, MessageNameToID rStates)
+		{
+			Debug.Assert(null != m_MoveTree);
+
+			//Open the file.
+			FileStream stream = File.Open(strResource, FileMode.Open, FileAccess.Read);
+			XmlDocument xmlDoc = new XmlDocument();
+			xmlDoc.Load(stream);
+			XmlNode rootNode = xmlDoc.DocumentElement;
+
+			//make sure it is actually an xml node
+			if (rootNode.NodeType != XmlNodeType.Element)
+			{
+				//should be an xml node!!!
+				return false;
+			}
+
+			//eat up the name of that xml node
+			string strElementName = rootNode.Name;
+			if (("XnaContent" != strElementName) || !rootNode.HasChildNodes)
+			{
+				return false;
+			}
+
+			//next node is "<Asset Type="SPFSettings.MoveListXML">"
+			XmlNode AssetNode = rootNode.FirstChild;
+			if (null == AssetNode)
+			{
+				Debug.Assert(false);
+				return false;
+			}
+			if (!AssetNode.HasChildNodes)
+			{
+				Debug.Assert(false);
+				return false;
+			}
+			if ("Asset" != AssetNode.Name)
+			{
+				Debug.Assert(false);
+				return false;
+			}
+
+			//Read in all the moves
+			XmlNode movesNode = AssetNode.FirstChild;
+			for (XmlNode moveNode = movesNode.FirstChild;
+				null != moveNode;
+				moveNode = moveNode.NextSibling)
+			{
+				//if it isnt an element node, continue
+				if (moveNode.NodeType != XmlNodeType.Element)
+				{
+					continue;
+				}
+				//Get teh name node
+				XmlNode childNode = moveNode.FirstChild;
+				string strMessageName = childNode.InnerXml;
+				int iMessage = rStates(strMessageName);
+				Debug.Assert(iMessage >= 0);
+
+				//get the keystrokes node
+				XmlNode keystrokesNode = childNode.NextSibling;
+
+				//put the input into a proper list
+				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
+				try
+				{
+					for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
+						null != keystrokeNode;
+						keystrokeNode = keystrokeNode.NextSibling)
+					{
+						EKeystroke myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
+						listKeystrokes.Add(myKeystroke);
+					}
+				}
+				catch (Exception)
+				{
+					Debug.Assert(false, "Bad xml in the move list");
+					return false;
+				}
+
+				//add the move to the Move tree
+				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
+				int iKeystrokeIndex = (int)listKeystrokes[0];
+				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
+				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
+				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
+			}
+
+			// Close the file.
+			stream.Close();
+			return true;
+		}
 
 		/// <summary>
 		/// read input from a xna resource
