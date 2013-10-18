@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
 #endif
