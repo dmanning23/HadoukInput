@@ -1,5 +1,4 @@
-﻿
-namespace HadoukInput
+﻿namespace HadoukInput
 {
 	/// <summary>
 	/// Different ways that thumbstick directions can be cleaned up.

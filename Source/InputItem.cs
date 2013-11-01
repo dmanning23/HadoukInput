@@ -1,5 +1,4 @@
-﻿
-namespace HadoukInput
+﻿namespace HadoukInput
 {
 	/// <summary>
 	/// This is a single directional/button press input from the player.

@@ -1,6 +1,7 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
+
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
 #endif
@@ -18,17 +19,17 @@ namespace HadoukInput
 		/// how do we want to clean up thumbsticks?
 		/// </summary>
 		public DeadZoneType ThumbstickScrubbing { get; set; }
-		
+
 		/// <summary>
 		/// The current direction of the left thumbstick, cleaned up however we want.
 		/// </summary>
 		private Vector2 m_LeftThumbstickDirection;
-		
+
 		/// <summary>
 		/// The current direction of the right thumbstick, cleaned up however we want.
 		/// </summary>
 		private Vector2 m_RightThumbstickDirection;
-		
+
 		/// <summary>
 		/// constant value used to direct the thumbstick power curve
 		/// between -3 -> 3
@@ -43,12 +44,12 @@ namespace HadoukInput
 		{
 			get { return m_LeftThumbstickDirection; }
 		}
-		
+
 		public Vector2 RightThumbstickDirection
 		{
 			get { return m_RightThumbstickDirection; }
 		}
-		
+
 		public float ThumbstickPower
 		{
 			get { return m_fPower; }
@@ -93,7 +94,7 @@ namespace HadoukInput
 			UpdateSingleThumbstick(rInputState, i, ref m_LeftThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left, true);
 			UpdateSingleThumbstick(rInputState, i, ref m_RightThumbstickDirection, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
 		}
-		
+
 		/// <summary>
 		/// Update one single thumbsticks.
 		/// </summary>
@@ -118,7 +119,7 @@ namespace HadoukInput
 					//check up... 
 					bThumbstickDirection = false;
 #if OUYA
-					//godammit, y axis is backwards on the dpad but not the thumbstick
+	//godammit, y axis is backwards on the dpad but not the thumbstick
 					myThumbstick.Y = -1.0f;
 #else
 					myThumbstick.Y = 1.0f;
@@ -129,7 +130,7 @@ namespace HadoukInput
 					//check down... 
 					bThumbstickDirection = false;
 #if OUYA
-					//godammit, y axis is backwards on the dpad but not the thumbstick
+	//godammit, y axis is backwards on the dpad but not the thumbstick
 					myThumbstick.Y = 1.0f;
 #else
 					myThumbstick.Y = -1.0f;
@@ -180,7 +181,7 @@ namespace HadoukInput
 			myThumbstick.Y *= -1.0f;
 #else
 #endif
-			
+
 			//do we need to apply dead zone scrubbing?
 			if (bThumbstickDirection)
 			{
@@ -192,11 +193,11 @@ namespace HadoukInput
 						//This will give us a really sticky controller that square gates all the time
 
 						//First set the sticks to ignore the dead zone
-						if(Math.Abs(myThumbstick.X) < rInputState.DeadZone)
+						if (Math.Abs(myThumbstick.X) < rInputState.DeadZone)
 						{
 							myThumbstick.X = 0.0f;
 						}
-						if(Math.Abs(myThumbstick.Y) < rInputState.DeadZone)
+						if (Math.Abs(myThumbstick.Y) < rInputState.DeadZone)
 						{
 							myThumbstick.Y = 0.0f;
 						}
@@ -207,7 +208,7 @@ namespace HadoukInput
 							myThumbstick.Normalize();
 						}
 					}
-					break;
+						break;
 
 					case DeadZoneType.Radial:
 					{
@@ -222,7 +223,7 @@ namespace HadoukInput
 							myThumbstick = Vector2.Zero;
 						}
 					}
-					break;
+						break;
 
 					case DeadZoneType.ScaledRadial:
 					{
@@ -239,7 +240,7 @@ namespace HadoukInput
 							myThumbstick = Vector2.Zero;
 						}
 					}
-					break;
+						break;
 
 					case DeadZoneType.PowerCurve:
 					{
@@ -257,7 +258,7 @@ namespace HadoukInput
 							myThumbstick = Vector2.Zero;
 						}
 					}
-					break;
+						break;
 				}
 			}
 
@@ -281,12 +282,12 @@ namespace HadoukInput
 		#endregion //Methods
 
 		#region Networking
-		
+
 #if NETWORKING
 		
-		/// <summary>
-		/// Read this object from a network packet reader.
-		/// </summary>
+	/// <summary>
+	/// Read this object from a network packet reader.
+	/// </summary>
 		public void ReadFromNetwork(PacketReader packetReader)
 		{
 			m_LeftThumbstickDirection = packetReader.ReadVector2();
@@ -303,7 +304,7 @@ namespace HadoukInput
 		}
 		
 #endif
-		
+
 		#endregion //Networking
 	}
 }

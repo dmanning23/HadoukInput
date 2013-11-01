@@ -1,5 +1,4 @@
-﻿
-namespace HadoukInput
+﻿namespace HadoukInput
 {
 	/// <summary>
 	/// These are the keystrokes (and combinations of keystrokes) that controller actions map to
@@ -36,42 +35,34 @@ namespace HadoukInput
 		RTriggerRelease,
 
 		//keystrokes + directions
-
 		AUp,
 		ADown,
 		AForward,
 		ABack,
-
 		BUp,
 		BDown,
 		BForward,
 		BBack,
-
 		XUp,
 		XDown,
 		XForward,
 		XBack,
-
 		YUp,
 		YDown,
 		YForward,
 		YBack,
-
 		LShoulderUp,
 		LShoulderDown,
 		LShoulderForward,
 		LShoulderBack,
-
 		RShoulderUp,
 		RShoulderDown,
 		RShoulderForward,
 		RShoulderBack,
-
 		LTriggerUp,
 		LTriggerDown,
 		LTriggerForward,
 		LTriggerBack,
-
 		RTriggerUp,
 		RTriggerDown,
 		RTriggerForward,

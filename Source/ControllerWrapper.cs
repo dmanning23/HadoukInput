@@ -1,6 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System.Diagnostics;
+
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
 #endif
@@ -96,19 +97,19 @@ namespace HadoukInput
 		///flags for which actions are pressed
 		///one flag for each controller action
 		///</summary>
-		private bool[] m_bControllerActionPress;
+		private readonly bool[] m_bControllerActionPress;
 
 		/// <summary>
 		/// list of the directions and if they are being held down
 		/// only 4 flags, for each direction
 		/// </summary>
-		private bool[] m_bControllerActionHeld;
+		private readonly bool[] m_bControllerActionHeld;
 
 		/// <summary>
 		/// list of flags for which actions have been released
 		/// only 4 flags, for each direction
 		/// </summary>
-		private bool[] m_bControllerActionRelease;
+		private readonly bool[] m_bControllerActionRelease;
 
 		/// <summary>
 		/// Gets the controller sticks.
@@ -120,11 +121,7 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard
-		{ 
-			get;
-			set;
-		}
+		public bool UseKeyboard { get; set; }
 
 		#endregion
 
@@ -167,7 +164,6 @@ namespace HadoukInput
 #if !XNA
 			GamePadThumbSticks.Gate = GamePadThumbSticks.GateType.None;
 #endif
-
 		}
 
 		/// <summary>
@@ -224,7 +220,7 @@ namespace HadoukInput
 		/// <param name="bFlip">true if the character this thing controls is facing left</param>
 		public void Update(InputState rInputState)
 		{
-			int i = (int)GamePadIndex;
+			var i = (int)GamePadIndex;
 
 			//update the thumbstick
 			Thumbsticks.UpdateThumbsticks(rInputState, i);
@@ -448,7 +444,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Down:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Down))
@@ -456,7 +452,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Left:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Left))
@@ -464,7 +460,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Right:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Right))
@@ -472,11 +468,11 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					default:
 					{
 						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 						switch (mappedButton)
 						{
 							case Buttons.A:
@@ -486,7 +482,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.B:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.X))
@@ -494,7 +490,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.X:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.A))
@@ -502,7 +498,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.Y:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.S))
@@ -510,7 +506,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftShoulder:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.D))
@@ -518,7 +514,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightShoulder:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.F))
@@ -526,7 +522,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftTrigger:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.C))
@@ -534,7 +530,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightTrigger:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.V))
@@ -542,7 +538,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							default:
 							{
 								//wtf did u do
@@ -551,7 +547,7 @@ namespace HadoukInput
 							}
 						}
 					}
-					break;
+						break;
 				}
 			}
 
@@ -562,34 +558,34 @@ namespace HadoukInput
 				{
 					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
 					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
-						(rInputState.ButtonDown(i, Buttons.DPadUp) &&
-						!rInputState.PrevButtonDown(i, Buttons.DPadUp)));
+					        (rInputState.ButtonDown(i, Buttons.DPadUp) &&
+					         !rInputState.PrevButtonDown(i, Buttons.DPadUp)));
 				}
 				case EControllerAction.Down:
 				{
 					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
 					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
-						(rInputState.ButtonDown(i, Buttons.DPadDown) &&
-						!rInputState.PrevButtonDown(i, Buttons.DPadDown)));
+					        (rInputState.ButtonDown(i, Buttons.DPadDown) &&
+					         !rInputState.PrevButtonDown(i, Buttons.DPadDown)));
 				}
 				case EControllerAction.Left:
 				{
 					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
 					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
-						(rInputState.ButtonDown(i, Buttons.DPadLeft) &&
-						!rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
+					        (rInputState.ButtonDown(i, Buttons.DPadLeft) &&
+					         !rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
 				}
 				case EControllerAction.Right:
 				{
 					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
 					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
-						(rInputState.ButtonDown(i, Buttons.DPadRight) &&
-						!rInputState.PrevButtonDown(i, Buttons.DPadRight)));
+					        (rInputState.ButtonDown(i, Buttons.DPadRight) &&
+					         !rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 					return (rInputState.ButtonDown(i, mappedButton) && !rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
@@ -615,7 +611,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Down:
 					{
 						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
@@ -623,7 +619,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Left:
 					{
 						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
@@ -631,7 +627,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Right:
 					{
 						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
@@ -639,11 +635,11 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					default:
 					{
 						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 						switch (mappedButton)
 						{
 							case Buttons.A:
@@ -653,7 +649,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.B:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.X))
@@ -661,7 +657,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.X:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.A))
@@ -669,7 +665,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.Y:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.S))
@@ -677,7 +673,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftShoulder:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.D))
@@ -685,7 +681,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightShoulder:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.F))
@@ -693,7 +689,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftTrigger:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.C))
@@ -701,7 +697,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightTrigger:
 							{
 								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.V))
@@ -709,7 +705,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							default:
 							{
 								//wtf did u do
@@ -718,7 +714,7 @@ namespace HadoukInput
 							}
 						}
 					}
-					break;
+						break;
 				}
 			}
 
@@ -728,27 +724,27 @@ namespace HadoukInput
 				case EControllerAction.Up:
 				{
 					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) ||
-						rInputState.ButtonDown(i, Buttons.DPadUp));
+					        rInputState.ButtonDown(i, Buttons.DPadUp));
 				}
 				case EControllerAction.Down:
 				{
 					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) ||
-						rInputState.ButtonDown(i, Buttons.DPadDown));
+					        rInputState.ButtonDown(i, Buttons.DPadDown));
 				}
 				case EControllerAction.Left:
 				{
 					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) ||
-						rInputState.ButtonDown(i, Buttons.DPadLeft));
+					        rInputState.ButtonDown(i, Buttons.DPadLeft));
 				}
 				case EControllerAction.Right:
 				{
 					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) ||
-						rInputState.ButtonDown(i, Buttons.DPadRight));
+					        rInputState.ButtonDown(i, Buttons.DPadRight));
 				}
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 					return rInputState.ButtonDown(i, mappedButton);
 				}
 			}
@@ -777,7 +773,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Down:
 					{
 						if (CheckKeyUp(rInputState, i, Keys.Down))
@@ -785,7 +781,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Left:
 					{
 						if (CheckKeyUp(rInputState, i, Keys.Left))
@@ -793,7 +789,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					case EControllerAction.Right:
 					{
 						if (CheckKeyUp(rInputState, i, Keys.Right))
@@ -801,11 +797,11 @@ namespace HadoukInput
 							return true;
 						}
 					}
-					break;
+						break;
 					default:
 					{
 						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 						switch (mappedButton)
 						{
 							case Buttons.A:
@@ -815,7 +811,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.B:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.X))
@@ -823,7 +819,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.X:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.A))
@@ -831,7 +827,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.Y:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.S))
@@ -839,7 +835,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftShoulder:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.D))
@@ -847,7 +843,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightShoulder:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.F))
@@ -855,7 +851,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.LeftTrigger:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.C))
@@ -863,7 +859,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							case Buttons.RightTrigger:
 							{
 								if (CheckKeyUp(rInputState, i, Keys.V))
@@ -871,7 +867,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-							break;
+								break;
 							default:
 							{
 								//wtf did u do
@@ -880,7 +876,7 @@ namespace HadoukInput
 							}
 						}
 					}
-					break;
+						break;
 				}
 			}
 
@@ -891,34 +887,34 @@ namespace HadoukInput
 				{
 					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
 					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
-						(!rInputState.ButtonDown(i, Buttons.DPadUp) &&
-						rInputState.PrevButtonDown(i, Buttons.DPadUp)));
+					        (!rInputState.ButtonDown(i, Buttons.DPadUp) &&
+					         rInputState.PrevButtonDown(i, Buttons.DPadUp)));
 				}
 				case EControllerAction.Down:
 				{
 					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
 					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
-						(!rInputState.ButtonDown(i, Buttons.DPadDown) &&
-						rInputState.PrevButtonDown(i, Buttons.DPadDown)));
+					        (!rInputState.ButtonDown(i, Buttons.DPadDown) &&
+					         rInputState.PrevButtonDown(i, Buttons.DPadDown)));
 				}
 				case EControllerAction.Left:
 				{
 					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
 					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
-						(!rInputState.ButtonDown(i, Buttons.DPadLeft) &&
-						rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
+					        (!rInputState.ButtonDown(i, Buttons.DPadLeft) &&
+					         rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
 				}
 				case EControllerAction.Right:
 				{
 					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
 					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
-						(!rInputState.ButtonDown(i, Buttons.DPadRight) &&
-						rInputState.PrevButtonDown(i, Buttons.DPadRight)));
+					        (!rInputState.ButtonDown(i, Buttons.DPadRight) &&
+					         rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (int)(iAction - EControllerAction.A)];
+					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
 					return (!rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
@@ -968,7 +964,7 @@ namespace HadoukInput
 
 		#region Networking
 
-		#if NETWORKING
+#if NETWORKING
 		
 		/// <summary>
 		/// Read this object from a network packet reader.

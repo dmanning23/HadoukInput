@@ -1,12 +1,12 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Input;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
 
 namespace HadoukInput
 {
@@ -32,41 +32,6 @@ namespace HadoukInput
 		#region Members
 
 		/// <summary>
-		/// state machine for combining the keystrokes of input items
-		/// This is an 2d array that takes 2 keystrokes and returns the keystroke that results from combining them
-		/// </summary>
-		private static EKeystroke[,] g_InputTransitions;
-
-		/// <summary>
-		/// This is the buffer for input before it is put in the listInput
-		/// this allows for simultaneous button presses
-		/// Input is held in here for a split second, condensed into keystrokes as they come in, then put in the queue.
-		/// </summary>
-		private List<InputItem> m_listBufferedInput;
-
-		/// <summary>
-		/// list of queued input
-		/// This is used to look for patterns as loaded from the move list.
-		/// Input is held in here for a little bit while it parses for moves.
-		/// </summary>
-		private List<InputItem> m_listQueuedInput;
-
-		/// <summary>
-		/// The move tree, which acutally holds the wholle move list
-		/// </summary>
-		private MoveNode [] m_MoveTree;
-
-		/// <summary>
-		/// The controller this dude will use
-		/// </summary>
-		private ControllerWrapper m_Controller;
-
-		/// <summary>
-		/// Callback to a method to get the current time, used to time the input
-		/// </summary>
-		private CurrentTime GetCurrentTime;
-
-		/// <summary>
 		/// Length of time input items are held in the buffer before being put in the queue
 		/// </summary>
 		private const float m_fBufferedInputExpire = 0.1f;
@@ -75,6 +40,41 @@ namespace HadoukInput
 		/// Length of time input items are held in the queue before they are discarded.
 		/// </summary>
 		private const float m_fQueuedInputExpire = 0.55f;
+
+		/// <summary>
+		/// state machine for combining the keystrokes of input items
+		/// This is an 2d array that takes 2 keystrokes and returns the keystroke that results from combining them
+		/// </summary>
+		private static readonly EKeystroke[,] g_InputTransitions;
+
+		/// <summary>
+		/// Callback to a method to get the current time, used to time the input
+		/// </summary>
+		private readonly CurrentTime GetCurrentTime;
+
+		/// <summary>
+		/// The controller this dude will use
+		/// </summary>
+		private readonly ControllerWrapper m_Controller;
+
+		/// <summary>
+		/// The move tree, which acutally holds the wholle move list
+		/// </summary>
+		private readonly MoveNode[] m_MoveTree;
+
+		/// <summary>
+		/// This is the buffer for input before it is put in the listInput
+		/// this allows for simultaneous button presses
+		/// Input is held in here for a split second, condensed into keystrokes as they come in, then put in the queue.
+		/// </summary>
+		private readonly List<InputItem> m_listBufferedInput;
+
+		/// <summary>
+		/// list of queued input
+		/// This is used to look for patterns as loaded from the move list.
+		/// Input is held in here for a little bit while it parses for moves.
+		/// </summary>
+		private readonly List<InputItem> m_listQueuedInput;
 
 		#endregion //Members
 
@@ -95,15 +95,15 @@ namespace HadoukInput
 		static InputWrapper()
 		{
 			//setup the state machine for doing input transitions
-			g_InputTransitions = new EKeystroke[(int)EKeystroke.NumKeystrokes, (int)EKeystroke.NumKeystrokes];
+			g_InputTransitions = new EKeystroke[(int)EKeystroke.NumKeystrokes,(int)EKeystroke.NumKeystrokes];
 
 			//set all the keystrokes to default to the row item
-			int NumKeystrokes = (int)EKeystroke.NumKeystrokes;
+			var NumKeystrokes = (int)EKeystroke.NumKeystrokes;
 			for (int i = 0; i < NumKeystrokes; i++)
 			{
 				for (int j = 0; j < NumKeystrokes; j++)
 				{
-					g_InputTransitions[i,j] = (EKeystroke)i;
+					g_InputTransitions[i, j] = (EKeystroke)i;
 				}
 			}
 
@@ -267,11 +267,11 @@ namespace HadoukInput
 				if (m_Controller.CheckKeystroke(i, bFlipped))
 				{
 					//add to the buffered input for checking later
-					InputItem rItem = new InputItem(fCurrentTime, i);
+					var rItem = new InputItem(fCurrentTime, i);
 					m_listBufferedInput.Add(rItem);
 				}
 			}
-	
+
 			//okay, check all the buffered input for simultaneous keys
 			int iCur = 0;
 			while (iCur < (m_listBufferedInput.Count - 1))
@@ -287,7 +287,7 @@ namespace HadoukInput
 					Debug.Assert(eNextKey < EKeystroke.NumKeystrokes);
 
 					//see if the two keystrokes can be combined
-					EKeystroke eCombined = (EKeystroke)g_InputTransitions[(int)eCurKey, (int)eNextKey];
+					EKeystroke eCombined = g_InputTransitions[(int)eCurKey, (int)eNextKey];
 					if ((eCurKey != eCombined) || (eCurKey == eNextKey))
 					{
 						//if found one, change this to the new keystroke
@@ -335,7 +335,7 @@ namespace HadoukInput
 			{
 				//get the branch of the Move tree for the current keystroke
 				Debug.Assert(EKeystroke.NumKeystrokes != m_listQueuedInput[i].Keystroke);
-				int iKeystrokeIndex = (int)m_listQueuedInput[i].Keystroke;
+				var iKeystrokeIndex = (int)m_listQueuedInput[i].Keystroke;
 				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
 				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
 				int iMove = m_MoveTree[iKeystrokeIndex].ParseInput(m_listQueuedInput, i);
@@ -351,7 +351,7 @@ namespace HadoukInput
 
 		public override string ToString()
 		{
-			StringBuilder myText = new StringBuilder();
+			var myText = new StringBuilder();
 			for (int i = 0; i < m_listQueuedInput.Count; i++)
 			{
 				myText.AppendFormat("{0}, ", m_listQueuedInput[i].Keystroke.ToString());
@@ -366,7 +366,7 @@ namespace HadoukInput
 		/// <returns></returns>
 		public string GetBufferedInput()
 		{
-			StringBuilder myText = new StringBuilder();
+			var myText = new StringBuilder();
 			for (int i = 0; i < m_listBufferedInput.Count; i++)
 			{
 				myText.AppendFormat("{0}, ", m_listBufferedInput[i].Keystroke.ToString());
@@ -382,7 +382,7 @@ namespace HadoukInput
 		public static int NumGamepads()
 		{
 			int iTotal = 0;
-			for (PlayerIndex i = PlayerIndex.One; i <= PlayerIndex.Four; i++)
+			for (var i = PlayerIndex.One; i <= PlayerIndex.Four; i++)
 			{
 				if (GamePad.GetState(i).IsConnected)
 				{
@@ -409,7 +409,7 @@ namespace HadoukInput
 
 			//Open the file.
 			FileStream stream = File.Open(strResource, FileMode.Open, FileAccess.Read);
-			XmlDocument xmlDoc = new XmlDocument();
+			var xmlDoc = new XmlDocument();
 			xmlDoc.Load(stream);
 			XmlNode rootNode = xmlDoc.DocumentElement;
 
@@ -448,8 +448,8 @@ namespace HadoukInput
 			//Read in all the moves
 			XmlNode movesNode = AssetNode.FirstChild;
 			for (XmlNode moveNode = movesNode.FirstChild;
-				null != moveNode;
-				moveNode = moveNode.NextSibling)
+			     null != moveNode;
+			     moveNode = moveNode.NextSibling)
 			{
 				//if it isnt an element node, continue
 				if (moveNode.NodeType != XmlNodeType.Element)
@@ -466,14 +466,14 @@ namespace HadoukInput
 				XmlNode keystrokesNode = childNode.NextSibling;
 
 				//put the input into a proper list
-				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
+				var listKeystrokes = new List<EKeystroke>();
 				try
 				{
 					for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
-						null != keystrokeNode;
-						keystrokeNode = keystrokeNode.NextSibling)
+					     null != keystrokeNode;
+					     keystrokeNode = keystrokeNode.NextSibling)
 					{
-						EKeystroke myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
+						var myKeystroke = (EKeystroke)Enum.Parse(typeof (EKeystroke), keystrokeNode.InnerXml);
 						listKeystrokes.Add(myKeystroke);
 					}
 				}
@@ -485,7 +485,7 @@ namespace HadoukInput
 
 				//add the move to the Move tree
 				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
-				int iKeystrokeIndex = (int)listKeystrokes[0];
+				var iKeystrokeIndex = (int)listKeystrokes[0];
 				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
 				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
 				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
@@ -507,7 +507,7 @@ namespace HadoukInput
 			Debug.Assert(null != m_MoveTree);
 
 			//read in serialized xna input list
-			MoveListXML myXML = rXmlContent.Load<MoveListXML>(strResource);
+			var myXML = rXmlContent.Load<MoveListXML>(strResource);
 
 			//read in the state names
 			for (int i = 0; i < myXML.moves.Count; i++)
@@ -518,12 +518,12 @@ namespace HadoukInput
 				Debug.Assert(iMessage >= 0);
 
 				//put the input into a proper list
-				List<EKeystroke> listKeystrokes = new List<EKeystroke>();
+				var listKeystrokes = new List<EKeystroke>();
 				try
 				{
 					for (int j = 0; j < myXML.moves[i].keystrokes.Count; j++)
 					{
-						EKeystroke myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), myXML.moves[i].keystrokes[j]);
+						var myKeystroke = (EKeystroke)Enum.Parse(typeof (EKeystroke), myXML.moves[i].keystrokes[j]);
 						listKeystrokes.Add(myKeystroke);
 					}
 				}
@@ -535,7 +535,7 @@ namespace HadoukInput
 
 				//add the move to the Move tree
 				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
-				int iKeystrokeIndex = (int)listKeystrokes[0];
+				var iKeystrokeIndex = (int)listKeystrokes[0];
 				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
 				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
 				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);

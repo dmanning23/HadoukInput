@@ -15,15 +15,16 @@ namespace HadoukInput
 
 		private const int MaxInputs = 4;
 
-		public readonly GamePadState[] m_CurrentGamePadStates;
-		public readonly GamePadState[] m_LastGamePadStates;
-
-		public readonly bool[] m_bGamePadWasConnected;
-
 		/// <summary>
 		/// The trigger dead zone.
 		/// </summary>
 		private const float TriggerDeadZone = 0.25f;
+
+		public readonly GamePadState[] m_CurrentGamePadStates;
+
+		public readonly GamePadState[] m_LastGamePadStates;
+
+		public readonly bool[] m_bGamePadWasConnected;
 
 		/// <summary>
 		/// the radius of the controller thumbstick dead zone
@@ -50,10 +51,7 @@ namespace HadoukInput
 		/// <value>The size of the dead zone.</value>
 		public float DeadZone
 		{
-			get
-			{
-				return _deadZone;
-			}
+			get { return _deadZone; }
 			set
 			{
 				_deadZone = value;
@@ -67,10 +65,7 @@ namespace HadoukInput
 		/// <value>The dead zone squared.</value>
 		public float DeadZoneSquared
 		{
-			get 
-			{
-				return _deadZoneSquared;
-			}
+			get { return _deadZoneSquared; }
 		}
 
 		#endregion //Properties
@@ -131,18 +126,18 @@ namespace HadoukInput
 				// Read input from the specified player.
 				playerIndex = controllingPlayer.Value;
 
-				int i = (int)playerIndex;
+				var i = (int)playerIndex;
 
 				return (CurrentKeyboardState.IsKeyDown(key) &&
-						LastKeyboardState.IsKeyUp(key));
+				        LastKeyboardState.IsKeyUp(key));
 			}
 			else
 			{
 				// Accept input from any player.
 				return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
-						IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
-						IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
-						IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
+				        IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
+				        IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
+				        IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
 			}
 		}
 
@@ -159,112 +154,17 @@ namespace HadoukInput
 				// Read input from the specified player.
 				playerIndex = controllingPlayer.Value;
 				return (ButtonDown(playerIndex, button) &&
-					!PrevButtonDown(playerIndex, button));
+				        !PrevButtonDown(playerIndex, button));
 			}
 			else
 			{
 				// Accept input from any player.
 				return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
+				        IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
+				        IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
+				        IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
 			}
 		}
-
-		#region Menu Methods
-
-		/// <summary>
-		/// Checks for a "menu select" input action.
-		/// The controllingPlayer parameter specifies which player to read input for.
-		/// If this is null, it will accept input from any player. When the action
-		/// is detected, the output playerIndex reports which player pressed it.
-		/// </summary>
-		public bool IsMenuSelect(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
-		{
-			return 
-				IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.Z, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
-		}
-
-		/// <summary>
-		/// Checks for a "menu cancel" input action.
-		/// The controllingPlayer parameter specifies which player to read input for.
-		/// If this is null, it will accept input from any player. When the action
-		/// is detected, the output playerIndex reports which player pressed it.
-		/// </summary>
-		public bool IsMenuCancel(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
-		{
-			return 
-				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.X, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
-		}
-
-		/// <summary>
-		/// Checks for a "menu up" input action.
-		/// The controllingPlayer parameter specifies which player to read
-		/// input for. If this is null, it will accept input from any player.
-		/// </summary>
-		public bool IsMenuUp(PlayerIndex? controllingPlayer)
-		{
-			PlayerIndex playerIndex;
-
-			return 
-				IsNewKeyPress(Keys.Up, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
-		}
-
-		/// <summary>
-		/// Checks for a "menu down" input action.
-		/// The controllingPlayer parameter specifies which player to read
-		/// input for. If this is null, it will accept input from any player.
-		/// </summary>
-		public bool IsMenuDown(PlayerIndex? controllingPlayer)
-		{
-			PlayerIndex playerIndex;
-
-			return 
-				IsNewKeyPress(Keys.Down, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
-		}
-
-		/// <summary>
-		/// Checks for a "menu left" input action.
-		/// The controllingPlayer parameter specifies which player to read
-		/// input for. If this is null, it will accept input from any player.
-		/// </summary>
-		public bool IsMenuLeft(PlayerIndex? controllingPlayer)
-		{
-			PlayerIndex playerIndex;
-
-			return 
-				IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
-		}
-
-		/// <summary>
-		/// Checks for a "menu Right" input action.
-		/// The controllingPlayer parameter specifies which player to read
-		/// input for. If this is null, it will accept input from any player.
-		/// </summary>
-		public bool IsMenuRight(PlayerIndex? controllingPlayer)
-		{
-			PlayerIndex playerIndex;
-
-			return 
-				IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
-		}
-
-		#endregion //Menu Methods
 
 		/// <summary>
 		/// Checks for a "pause the game" input action.
@@ -276,7 +176,7 @@ namespace HadoukInput
 			//blah throwaway variable
 			PlayerIndex playerIndex;
 
-			return 
+			return
 				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
@@ -305,7 +205,6 @@ namespace HadoukInput
 		{
 			//Get the game pad state
 			return PrevButtonDown((int)myPlayer, button);
-
 		}
 
 		/// <summary>
@@ -350,20 +249,20 @@ namespace HadoukInput
 				{
 					//don't do down if a horizontal direction is held
 					return (!CheckButton(myGamePad, Buttons.DPadLeft) &&
-							!CheckButton(myGamePad, Buttons.DPadRight) &&
-						(ButtonState.Pressed == myGamePad.DPad.Down));
+					        !CheckButton(myGamePad, Buttons.DPadRight) &&
+					        (ButtonState.Pressed == myGamePad.DPad.Down));
 				}
 				case Buttons.DPadLeft:
 				{
 					//don't do horizontal if up direction is held
 					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
-						(ButtonState.Pressed == myGamePad.DPad.Left));
+					        (ButtonState.Pressed == myGamePad.DPad.Left));
 				}
 				case Buttons.DPadRight:
 				{
 					//don't do horizontal if up direction is held
 					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
-						(ButtonState.Pressed == myGamePad.DPad.Right));
+					        (ButtonState.Pressed == myGamePad.DPad.Right));
 				}
 				case Buttons.Start:
 				{
@@ -456,6 +355,101 @@ namespace HadoukInput
 		}
 
 		#endregion //Button Press Methods
+
+		#region Menu Methods
+
+		/// <summary>
+		/// Checks for a "menu select" input action.
+		/// The controllingPlayer parameter specifies which player to read input for.
+		/// If this is null, it will accept input from any player. When the action
+		/// is detected, the output playerIndex reports which player pressed it.
+		/// </summary>
+		public bool IsMenuSelect(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		{
+			return
+				IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Z, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
+		}
+
+		/// <summary>
+		/// Checks for a "menu cancel" input action.
+		/// The controllingPlayer parameter specifies which player to read input for.
+		/// If this is null, it will accept input from any player. When the action
+		/// is detected, the output playerIndex reports which player pressed it.
+		/// </summary>
+		public bool IsMenuCancel(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		{
+			return
+				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.X, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
+		}
+
+		/// <summary>
+		/// Checks for a "menu up" input action.
+		/// The controllingPlayer parameter specifies which player to read
+		/// input for. If this is null, it will accept input from any player.
+		/// </summary>
+		public bool IsMenuUp(PlayerIndex? controllingPlayer)
+		{
+			PlayerIndex playerIndex;
+
+			return
+				IsNewKeyPress(Keys.Up, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
+		}
+
+		/// <summary>
+		/// Checks for a "menu down" input action.
+		/// The controllingPlayer parameter specifies which player to read
+		/// input for. If this is null, it will accept input from any player.
+		/// </summary>
+		public bool IsMenuDown(PlayerIndex? controllingPlayer)
+		{
+			PlayerIndex playerIndex;
+
+			return
+				IsNewKeyPress(Keys.Down, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
+		}
+
+		/// <summary>
+		/// Checks for a "menu left" input action.
+		/// The controllingPlayer parameter specifies which player to read
+		/// input for. If this is null, it will accept input from any player.
+		/// </summary>
+		public bool IsMenuLeft(PlayerIndex? controllingPlayer)
+		{
+			PlayerIndex playerIndex;
+
+			return
+				IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
+		}
+
+		/// <summary>
+		/// Checks for a "menu Right" input action.
+		/// The controllingPlayer parameter specifies which player to read
+		/// input for. If this is null, it will accept input from any player.
+		/// </summary>
+		public bool IsMenuRight(PlayerIndex? controllingPlayer)
+		{
+			PlayerIndex playerIndex;
+
+			return
+				IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
+		}
+
+		#endregion //Menu Methods
 
 		#endregion //Public Methods
 	}

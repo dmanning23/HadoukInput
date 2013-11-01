@@ -13,17 +13,17 @@ namespace HadoukInput
 		///	<summary>
 		///	child nodes
 		///	</summary>
-		private List<MoveNode> m_listChildren;
-
-		///	<summary>
-		///	the	controller keystroke this node represents
-		///	</summary>
-		public EKeystroke Keystroke { get; set; }
+		private readonly List<MoveNode> m_listChildren;
 
 		///	<summary>
 		///	if this	is a leaf node,	this is	the	message	id to send for this	Move
 		///	</summary>
 		private int m_iMessageID;
+
+		///	<summary>
+		///	the	controller keystroke this node represents
+		///	</summary>
+		public EKeystroke Keystroke { get; set; }
 
 		///	<summary>
 		///	if this	is a leaf node,	the	name of	the	Move
@@ -153,7 +153,7 @@ namespace HadoukInput
 			}
 
 			//if not, create the node and set it
-			MoveNode rNode = new MoveNode(eKeystroke);
+			var rNode = new MoveNode(eKeystroke);
 
 			//add the node to the list
 			m_listChildren.Add(rNode);

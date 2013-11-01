@@ -15,7 +15,8 @@ namespace HadoukInput
 	/// </summary>
 	public class MoveXML
 	{
-		public string name = "";
 		public List<string> keystrokes = new List<string>();
+
+		public string name = "";
 	}
 }
