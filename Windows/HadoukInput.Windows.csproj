@@ -85,9 +85,16 @@
     <Compile Include="..\Source\ThumbsticksWrapper.cs">
       <Link>ThumbsticksWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\Source\ThumbstickWrapper.cs">
+      <Link>ThumbstickWrapper.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\MatrixExtensions\Windows\MatrixExtensions.Windows.csproj">
+      <Project>{E2C50D0B-A1C1-4F67-92CB-BE0E587A3CE6}</Project>
+      <Name>MatrixExtensions.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MonoGame\ThirdParty\Lidgren.Network\Lidgren.Network.Windows.csproj">
       <Project>{AE483C29-042E-4226-BA52-D247CE7676DA}</Project>
       <Name>Lidgren.Network.Windows</Name>

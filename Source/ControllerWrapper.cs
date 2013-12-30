@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using MatrixExtensions;
 
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
@@ -121,7 +122,19 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard { get; set; }
+		public bool UseKeyboard
+		{
+			get
+			{
+				return Thumbsticks.LeftThumbstick.UseKeyboard;
+			}
+			set
+			{
+				Thumbsticks.LeftThumbstick.UseKeyboard = value;
+			}
+		}
+
+		public bool ControllerPluggedIn { get; set; }
 
 		#endregion
 
@@ -221,6 +234,9 @@ namespace HadoukInput
 		public void Update(InputState rInputState)
 		{
 			var i = (int)GamePadIndex;
+
+			//check if the controller is plugged in
+			ControllerPluggedIn = rInputState.m_CurrentGamePadStates[i].IsConnected;
 
 			//update the thumbstick
 			Thumbsticks.UpdateThumbsticks(rInputState, i);
@@ -415,6 +431,106 @@ namespace HadoukInput
 					//you passed in one of the direction+button keystrokes?
 					Debug.Assert(false);
 					return false;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Check for a specific keystroke, but with a rotated direction.
+		/// </summary>
+		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
+		/// <param name="fRotation">The direction to rotate the keystroke check</param>
+		/// <returns>bool: the keystroke is being held</returns>
+		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped, Vector2 direction)
+		{
+			//Get the 'up' vector...
+			Vector2 upVect;
+			
+			if (bFlipped)
+			{
+				//If it is flipped, the up vector is the direction rotated 90 degrees
+				Matrix rotate = MatrixExt.Orientation(1.57079633f);
+				upVect = MatrixExt.Multiply(rotate, direction);
+			}
+			else
+			{
+				//If it is not flipped, the up vector is the direction rotated -90 degrees
+				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
+				upVect = MatrixExt.Multiply(rotate, direction);
+			}
+
+			switch (eKeystroke)
+			{
+				//CHECK THE DIRECTIONS
+
+				case EKeystroke.Up:
+				{
+					//get the direction to check for 'up'
+					return CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true);
+				}
+				case EKeystroke.Down:
+				{
+					//Don't send down if left or right are held... it pops really bad
+					if (CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, true) ||
+						CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, false))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'down'
+					return CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, false);
+				}
+				case EKeystroke.Forward:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'forward'
+					return CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, true);
+				}
+				case EKeystroke.Back:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'Back'
+					return CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, false);
+				}
+
+				//CHECK DIRECTIONS RELEASED
+
+				case EKeystroke.UpRelease:
+				{
+					//get the direction to check for 'up'
+					return CheckDirectionRelease(upVect, Thumbsticks.LeftThumbstick, true);
+				}
+				case EKeystroke.DownRelease:
+				{
+					//get the direction to check for 'down'
+					return CheckDirectionRelease(upVect, Thumbsticks.LeftThumbstick, false);
+				}
+				case EKeystroke.ForwardRelease:
+				{
+					//get the direction to check for 'forward'
+					return CheckDirectionRelease(direction, Thumbsticks.LeftThumbstick, true);
+				}
+				case EKeystroke.BackRelease:
+				{
+					//get the direction to check for 'back'
+					return CheckDirectionRelease(direction, Thumbsticks.LeftThumbstick, false);
+				}
+
+				//For everything else, send to the other method
+				default:
+				{
+					return CheckKeystroke(eKeystroke, bFlipped);
 				}
 			}
 		}
@@ -958,9 +1074,51 @@ namespace HadoukInput
 			}
 		}
 
-		#endregion
+		/// <summary>
+		/// Check if two vectors are pointint in the same direction
+		/// </summary>
+		/// <param name="direction">the direction to check</param>
+		/// <param name="controllerDirection">the direction the controller is pointed</param>
+		/// <param name="SameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
+		/// <returns></returns>
+		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
+		{
+			//get the dot product of the directions
+			float dot = Vector2.Dot(direction, controllerDirection);
 
-		#endregion
+			//check the correct direction
+			if (bSameDirection)
+			{
+				return (0.0f < dot);
+			}
+			else
+			{
+				return (0.0f > dot);
+			}
+		}
+
+		/// <summary>
+		/// Check if a direction was just released
+		/// </summary>
+		/// <param name="direction"></param>
+		/// <param name="thumbstick"></param>
+		/// <param name="bSameDirection"></param>
+		/// <returns></returns>
+		private bool CheckDirectionRelease(Vector2 direction, ThumbstickWrapper thumbstick, bool bSameDirection)
+		{
+			//was the direction held last time we checked?
+			if (!CheckDirectionHeld(direction, thumbstick.PrevDirection, bSameDirection))
+			{
+				return false;
+			}
+
+			//It was held last time, if it isn't held now then it was a button release 
+			return !CheckDirectionHeld(direction, thumbstick.Direction, bSameDirection);
+		}
+
+		#endregion //Private Methods
+
+		#endregion //Methods
 
 		#region Networking
 
@@ -1019,7 +1177,7 @@ namespace HadoukInput
 		}
 
 
-		#endif
+#endif
 
 		#endregion
 	}
