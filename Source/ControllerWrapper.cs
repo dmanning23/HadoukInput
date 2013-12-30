@@ -136,6 +136,8 @@ namespace HadoukInput
 
 		public bool ControllerPluggedIn { get; set; }
 
+		private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
+
 		#endregion
 
 		#region Properties
@@ -165,6 +167,8 @@ namespace HadoukInput
 		}
 
 		#endregion
+
+		#region Methods
 
 		#region Initialization / Cleanup
 
@@ -221,9 +225,7 @@ namespace HadoukInput
 			}
 		}
 
-		#endregion
-
-		#region Methods
+		#endregion //Initialization / Cleanup
 
 		/// <summary>
 		/// update the current state of this controller interface
@@ -440,7 +442,7 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="eKeystroke">the keystroke to check for</param>
 		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
-		/// <param name="fRotation">The direction to rotate the keystroke check</param>
+		/// <param name="direction">The NORMALIZED direction to check against</param>
 		/// <returns>bool: the keystroke is being held</returns>
 		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped, Vector2 direction)
 		{
@@ -1089,11 +1091,12 @@ namespace HadoukInput
 			//check the correct direction
 			if (bSameDirection)
 			{
-				return (0.0f < dot);
+				//this magic number is squareroot2 / 2
+				return (SquareRoot2DividedBy2 < dot);
 			}
 			else
 			{
-				return (0.0f > dot);
+				return (-SquareRoot2DividedBy2 > dot);
 			}
 		}
 
