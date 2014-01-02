@@ -115,7 +115,7 @@ namespace HadoukInput
 	//godammit, y axis is backwards on the dpad but not the thumbstick
 					m_Direction.Y = -1.0f;
 #else
-					m_Direction.Y = 1.0f;
+					m_Direction.Y += 1.0f;
 #endif
 				}
 				else if (rInputState.ButtonDown(i, Buttons.DPadDown))
@@ -126,20 +126,21 @@ namespace HadoukInput
 	//godammit, y axis is backwards on the dpad but not the thumbstick
 					m_Direction.Y = 1.0f;
 #else
-					m_Direction.Y = -1.0f;
+					m_Direction.Y -= 1.0f;
 #endif
 				}
-				else if (rInputState.ButtonDown(i, Buttons.DPadLeft))
+				
+				if (rInputState.ButtonDown(i, Buttons.DPadLeft))
 				{
 					//check left
 					bThumbstickDirection = false;
-					m_Direction.X = -1.0f;
+					m_Direction.X -= 1.0f;
 				}
 				else if (rInputState.ButtonDown(i, Buttons.DPadRight))
 				{
 					//check right
 					bThumbstickDirection = false;
-					m_Direction.X = 1.0f;
+					m_Direction.X += 1.0f;
 				}
 
 				if (UseKeyboard)
@@ -149,25 +150,26 @@ namespace HadoukInput
 					{
 						//check up... 
 						bThumbstickDirection = false;
-						m_Direction.Y = 1.0f;
+						m_Direction.Y += 1.0f;
 					}
 					else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
 					{
 						//check down... 
 						bThumbstickDirection = false;
-						m_Direction.Y = -1.0f;
+						m_Direction.Y -= 1.0f;
 					}
-					else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
+				
+					if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
 					{
 						//check left
 						bThumbstickDirection = false;
-						m_Direction.X = -1.0f;
+						m_Direction.X -= 1.0f;
 					}
 					else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
 					{
 						//check right
 						bThumbstickDirection = false;
-						m_Direction.X = 1.0f;
+						m_Direction.X += 1.0f;
 					}
 				}
 			}
