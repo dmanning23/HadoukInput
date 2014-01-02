@@ -99,7 +99,7 @@ namespace HadoukInput
 			m_PrevDirection = m_Direction;
 
 			//first set the thumbstick to 0.  it will be set to the real value below
-			m_Direction = controllerThumbstick;
+			m_Direction = Vector2.Zero;
 
 			//flag used to tell if direction is from thumbstick or not.  if this flag is true, apply the deadzone logic
 			bool bThumbstickDirection = true;
@@ -107,43 +107,45 @@ namespace HadoukInput
 			//Check dpad if this is the left thumbstick
 			if (bLeft)
 			{
-				if (rInputState.ButtonDown(i, Buttons.DPadUp))
+				//Check keyboard so we can test this stuff on computer
+				if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Up)
 				{
 					//check up... 
 					bThumbstickDirection = false;
-#if OUYA
-	//godammit, y axis is backwards on the dpad but not the thumbstick
+					#if OUYA
+					//godammit, y axis is backwards on the dpad but not the thumbstick
 					m_Direction.Y = -1.0f;
-#else
+					#else
 					m_Direction.Y += 1.0f;
-#endif
+					#endif
 				}
-				else if (rInputState.ButtonDown(i, Buttons.DPadDown))
+				else if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Down)
 				{
 					//check down... 
 					bThumbstickDirection = false;
-#if OUYA
-	//godammit, y axis is backwards on the dpad but not the thumbstick
+					#if OUYA
+					//godammit, y axis is backwards on the dpad but not the thumbstick
 					m_Direction.Y = 1.0f;
-#else
+					#else
 					m_Direction.Y -= 1.0f;
-#endif
+					#endif
 				}
-				
-				if (rInputState.ButtonDown(i, Buttons.DPadLeft))
+
+				if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Left)
 				{
 					//check left
 					bThumbstickDirection = false;
 					m_Direction.X -= 1.0f;
 				}
-				else if (rInputState.ButtonDown(i, Buttons.DPadRight))
+				else if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Right)
 				{
 					//check right
 					bThumbstickDirection = false;
 					m_Direction.X += 1.0f;
 				}
 
-				if (UseKeyboard)
+				//if we didnt find a direction and using the keyboard, check it now
+				if (UseKeyboard && bThumbstickDirection)
 				{
 					//Check keyboard so we can test this stuff on computer
 					if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Up))
@@ -174,14 +176,12 @@ namespace HadoukInput
 				}
 			}
 
-#if WINDOWS
-			//thumbstick needs to be flipped on Y to match screen coords
-			m_Direction.Y *= -1.0f;
-#endif
-
 			//do we need to apply dead zone scrubbing?
 			if (bThumbstickDirection)
 			{
+				//set the thumbstick to the real value
+				m_Direction = controllerThumbstick;
+
 				//are we doing scurbbing, or powercurving?
 				switch (ThumbstickScrubbing)
 				{
@@ -258,6 +258,11 @@ namespace HadoukInput
 						break;
 				}
 			}
+
+			#if WINDOWS
+			//thumbstick needs to be flipped on Y to match screen coords
+			m_Direction.Y *= -1.0f;
+			#endif
 
 			//constrain the thumbstick to length of one
 			if (m_Direction.LengthSquared() > 1.0f)
