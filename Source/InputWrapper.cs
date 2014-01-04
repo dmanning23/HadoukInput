@@ -1,13 +1,13 @@
-﻿using System;
+﻿using FilenameBuddy;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Input;
-using FilenameBuddy;
 
 namespace HadoukInput
 {
@@ -221,6 +221,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Parse the move lists and queues.  This method is called every frame, unless the game is paused.
 		/// This update function will read input from the controller and then parse the move lists and queues.
+		/// Use this update if the character is your game only faces left or right.
 		/// </summary>
 		/// <param name="rInputState">the current input state of the game.
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
@@ -228,20 +229,45 @@ namespace HadoukInput
 		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		public void Update(InputState rInputState, bool bFlipped)
 		{
+			UpdateController(rInputState);
+			
+			//create a fake direction for left or right
+			UpdateMoveQueue(bFlipped, (bFlipped ? new Vector2(-1.0f, 0.0f) : new Vector2(1.0f, 0.0f)));
+		}
+
+		/// <summary>
+		/// Parse the move lists and queues.  This method is called every frame, unless the game is paused.
+		/// This update function will read input from the controller and then parse the move lists and queues.
+		/// </summary>
+		/// <param name="rInputState">the current input state of the game.
+		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
+		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
+		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="direction">the direction the character is facing</param>
+		public void Update(InputState rInputState, bool bFlipped, Vector2 direction)
+		{
+			UpdateController(rInputState);
+			UpdateMoveQueue(bFlipped, direction);
+		}
+
+		/// <summary>
+		/// update the controller
+		/// </summary>
+		/// <param name="rInputState"></param>
+		private void UpdateController(InputState rInputState)
+		{
 			//first update the controller if an input state was passed in.
 			if ((null != rInputState) && (null != m_Controller))
 			{
 				m_Controller.Update(rInputState);
 			}
-
-			UpdateMoveQueue(bFlipped);
 		}
 
 		/// <summary>
 		/// update all the queues that hold the move data
 		/// </summary>
 		/// <param name="rPlayer">the object that uses this input queue</param>
-		protected void UpdateMoveQueue(bool bFlipped)
+		protected void UpdateMoveQueue(bool bFlipped, Vector2 direction)
 		{
 			//first, remove any old input from the system
 			float fCurrentTime = GetCurrentTime();
@@ -265,7 +291,7 @@ namespace HadoukInput
 				for (EKeystroke i = 0; i <= EKeystroke.RTriggerRelease; i++)
 				{
 					//get the result of checking that input button
-					if (m_Controller.CheckKeystroke(i, bFlipped))
+					if (m_Controller.CheckKeystroke(i, bFlipped, direction))
 					{
 						//add to the buffered input for checking later
 						var rItem = new InputItem(fCurrentTime, i);
