@@ -7,6 +7,7 @@ using System.Xml;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
+using FilenameBuddy;
 
 namespace HadoukInput
 {
@@ -191,13 +192,13 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="iPlayerIndex">index of the controller this player will use</param>
 		/// <param name="rClock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
-		public InputWrapper(PlayerIndex iPlayerIndex, CurrentTime rClock)
+		public InputWrapper(ControllerWrapper controller, CurrentTime rClock)
 		{
 			Debug.Assert(null != rClock);
 
 			m_listBufferedInput = new List<InputItem>();
 			m_listQueuedInput = new List<InputItem>();
-			m_Controller = new ControllerWrapper(iPlayerIndex);
+			m_Controller = controller;
 			GetCurrentTime = rClock;
 
 			//set up the Movee tree
@@ -403,12 +404,12 @@ namespace HadoukInput
 		/// <param name="rContent">xna content manager</param>
 		/// <param name="strResource">name of the resource to load</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadXmlFile(string strResource, MessageNameToID rStates)
+		public bool ReadXmlFile(Filename strResource, MessageNameToID rStates)
 		{
 			Debug.Assert(null != m_MoveTree);
 
 			//Open the file.
-			FileStream stream = File.Open(strResource, FileMode.Open, FileAccess.Read);
+			FileStream stream = File.Open(strResource.File, FileMode.Open, FileAccess.Read);
 			var xmlDoc = new XmlDocument();
 			xmlDoc.Load(stream);
 			XmlNode rootNode = xmlDoc.DocumentElement;
@@ -502,12 +503,12 @@ namespace HadoukInput
 		/// <param name="rContent">xna content manager</param>
 		/// <param name="strResource">name of the resource to load</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadSerializedFile(ContentManager rXmlContent, string strResource, MessageNameToID rStates)
+		public bool ReadSerializedFile(ContentManager rXmlContent, Filename strResource, MessageNameToID rStates)
 		{
 			Debug.Assert(null != m_MoveTree);
 
 			//read in serialized xna input list
-			var myXML = rXmlContent.Load<MoveListXML>(strResource);
+			var myXML = rXmlContent.Load<MoveListXML>(strResource.GetRelPathFileNoExt());
 
 			//read in the state names
 			for (int i = 0; i < myXML.moves.Count; i++)
