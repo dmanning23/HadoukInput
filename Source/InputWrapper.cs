@@ -228,10 +228,8 @@ namespace HadoukInput
 		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		public void Update(InputState rInputState, bool bFlipped)
 		{
-			Debug.Assert(null != m_Controller);
-
 			//first update the controller if an input state was passed in.
-			if (null != rInputState)
+			if ((null != rInputState) && (null != m_Controller))
 			{
 				m_Controller.Update(rInputState);
 			}
@@ -262,14 +260,17 @@ namespace HadoukInput
 			}
 
 			//loop through and check directions and single actions
-			for (EKeystroke i = 0; i <= EKeystroke.RTriggerRelease; i++)
+			if (null != m_Controller)
 			{
-				//get the result of checking that input button
-				if (m_Controller.CheckKeystroke(i, bFlipped))
+				for (EKeystroke i = 0; i <= EKeystroke.RTriggerRelease; i++)
 				{
-					//add to the buffered input for checking later
-					var rItem = new InputItem(fCurrentTime, i);
-					m_listBufferedInput.Add(rItem);
+					//get the result of checking that input button
+					if (m_Controller.CheckKeystroke(i, bFlipped))
+					{
+						//add to the buffered input for checking later
+						var rItem = new InputItem(fCurrentTime, i);
+						m_listBufferedInput.Add(rItem);
+					}
 				}
 			}
 
