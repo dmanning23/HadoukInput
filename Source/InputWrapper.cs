@@ -35,7 +35,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Length of time input items are held in the buffer before being put in the queue
 		/// </summary>
-		private const float m_fBufferedInputExpire = 0.1f;
+		private const float m_fBufferedInputExpire = 0.05f;
 
 		/// <summary>
 		/// Length of time input items are held in the queue before they are discarded.
