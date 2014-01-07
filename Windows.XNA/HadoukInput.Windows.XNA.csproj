@@ -125,6 +125,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Filename\Windows\Filename.Windows.csproj">
+      <Project>{2A84DFE8-75E0-4774-BAAF-00629ED44405}</Project>
+      <Name>Filename.Windows</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\MatrixExtensions\Windows.XNA\MatrixExtensions.Windows.XNA.csproj">
       <Project>{0385A3F2-14F7-4D60-A988-1E32686BE221}</Project>
       <Name>MatrixExtensions.Windows.XNA</Name>
