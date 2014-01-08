@@ -185,6 +185,15 @@ namespace HadoukInput
 			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Down] = EKeystroke.RTriggerDown;
 			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Forward] = EKeystroke.RTriggerForward;
 			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Back] = EKeystroke.RTriggerBack;
+
+			g_InputTransitions[(int)EKeystroke.UpR, (int)EKeystroke.ForwardR] = EKeystroke.UpForwardR;
+			g_InputTransitions[(int)EKeystroke.UpR, (int)EKeystroke.BackR] = EKeystroke.UpBackR;
+			g_InputTransitions[(int)EKeystroke.DownR, (int)EKeystroke.ForwardR] = EKeystroke.DownForwardR;
+			g_InputTransitions[(int)EKeystroke.DownR, (int)EKeystroke.BackR] = EKeystroke.DownBackR;
+			g_InputTransitions[(int)EKeystroke.ForwardR, (int)EKeystroke.UpR] = EKeystroke.UpForwardR;
+			g_InputTransitions[(int)EKeystroke.ForwardR, (int)EKeystroke.DownR] = EKeystroke.DownForwardR;
+			g_InputTransitions[(int)EKeystroke.BackR, (int)EKeystroke.UpR] = EKeystroke.UpBackR;
+			g_InputTransitions[(int)EKeystroke.BackR, (int)EKeystroke.DownR] = EKeystroke.DownBackR;
 		}
 
 		/// <summary>

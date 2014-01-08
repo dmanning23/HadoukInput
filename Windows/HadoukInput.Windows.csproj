@@ -58,6 +58,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="..\Source\ControllerAction.cs">
+      <Link>ControllerAction.cs</Link>
+    </Compile>
     <Compile Include="..\Source\ControllerWrapper.cs">
       <Link>ControllerWrapper.cs</Link>
     </Compile>

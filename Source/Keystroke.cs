@@ -37,10 +37,7 @@
 		RShoulderRelease,
 		LTriggerRelease,
 		RTriggerRelease,
-		UpReleaseR,
-		DownReleaseR,
-		ForwardReleaseR,
-		BackReleaseR,
+		NeutralR,
 
 		//keystrokes + directions
 		AUp,
@@ -75,6 +72,12 @@
 		RTriggerDown,
 		RTriggerForward,
 		RTriggerBack,
+
+		//diagonals on right thumbstick
+		UpForwardR,
+		DownForwardR,
+		UpBackR,
+		DownBackR,
 
 		NumKeystrokes
 	}

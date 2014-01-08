@@ -17,30 +17,6 @@ namespace HadoukInput
 		#region Mapped Keys
 
 		/// <summary>
-		/// this is an intermediate step between buttons/directions and keystrokes
-		/// </summary>
-		private enum EControllerAction
-		{
-			Up,
-			Down,
-			Right,
-			Left,
-			A,
-			B,
-			X,
-			Y,
-			LShoulder,
-			RShoulder,
-			LTrigger,
-			RTrigger,
-			UpR,
-			DownR,
-			RightR,
-			LeftR,
-			NumControllerActions
-		}
-
-		/// <summary>
 		/// key mappings for all 4 controllers
 		/// These can be changed to do button remapping...
 		/// TODO: add a function to do button remapping:  should take an action & button, reset the actions mapped to that same button
@@ -439,23 +415,11 @@ namespace HadoukInput
 				}
 				case EKeystroke.DownR:
 				{
-					//Don't send down if left or right are held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.LeftR] || m_bControllerActionHeld[(int)EControllerAction.RightR])
-					{
-						return false;
-					}
-
 					//get the direction to check for 'down'
 					return m_bControllerActionHeld[(int)EControllerAction.DownR];
 				}
 				case EKeystroke.ForwardR:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.UpR])
-					{
-						return false;
-					}
-
 					//get the direction to check for 'forward'
 					if (bFlipped)
 					{
@@ -468,12 +432,6 @@ namespace HadoukInput
 				}
 				case EKeystroke.BackR:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.UpR])
-					{
-						return false;
-					}
-
 					//get the direction to check for 'Back'
 					if (bFlipped)
 					{
@@ -485,40 +443,24 @@ namespace HadoukInput
 					}
 				}
 
-				//TODO: Check the right thumnbsticks released
-
-				case EKeystroke.UpReleaseR:
+				//Check the right thumnbsticks released
+				case EKeystroke.NeutralR:
 				{
-					//get the direction to check for 'up'
-					return m_bControllerActionRelease[(int)EControllerAction.UpR];
-				}
-				case EKeystroke.DownReleaseR:
-				{
-					//get the direction to check for 'down'
-					return m_bControllerActionRelease[(int)EControllerAction.DownR];
-				}
-				case EKeystroke.ForwardReleaseR:
-				{
-					//get the direction to check for 'forward'
-					if (bFlipped)
+					//are any keys being held?
+					if (!m_bControllerActionHeld[(int)EControllerAction.UpR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.DownR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.RightR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.LeftR])
 					{
-						return m_bControllerActionRelease[(int)EControllerAction.LeftR];
+						//did a "key up" action occur?
+						return (m_bControllerActionRelease[(int)EControllerAction.UpR] ||
+							m_bControllerActionRelease[(int)EControllerAction.DownR] ||
+							m_bControllerActionRelease[(int)EControllerAction.RightR] ||
+							m_bControllerActionRelease[(int)EControllerAction.LeftR]);
 					}
 					else
 					{
-						return m_bControllerActionRelease[(int)EControllerAction.RightR];
-					}
-				}
-				case EKeystroke.BackReleaseR:
-				{
-					//get the direction to check for 'back'
-					if (bFlipped)
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.RightR];
-					}
-					else
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.LeftR];
+						return false;
 					}
 				}
 
@@ -626,25 +568,11 @@ namespace HadoukInput
 					//get the direction to check for 'Back'
 					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Back, direction, upVect);
 				}
-				case EKeystroke.UpReleaseR:
+
+				case EKeystroke.NeutralR:
 				{
-					//get the direction to check for 'up'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.UpRelease, direction, upVect);
-				}
-				case EKeystroke.DownReleaseR:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.DownRelease, direction, upVect);
-				}
-				case EKeystroke.ForwardReleaseR:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.ForwardRelease, direction, upVect);
-				}
-				case EKeystroke.BackReleaseR:
-				{
-					//get the direction to check for 'back'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.BackRelease, direction, upVect);
+					//for the "neutral right stick" keystroke, use the other method
+					return CheckKeystroke(eKeystroke, bFlipped);
 				}
 
 				//For everything else, send to the other method
@@ -1148,7 +1076,7 @@ namespace HadoukInput
 							}
 						}
 					}
-						break;
+					break;
 				}
 			}
 
