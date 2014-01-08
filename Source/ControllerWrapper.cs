@@ -430,9 +430,97 @@ namespace HadoukInput
 					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
 				}
 
-				//TODO: Check the right thumbsticks
+				//Check the right thumbsticks
+
+				case EKeystroke.UpR:
+				{
+					//get the direction to check for 'up'
+					return m_bControllerActionHeld[(int)EControllerAction.UpR];
+				}
+				case EKeystroke.DownR:
+				{
+					//Don't send down if left or right are held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.LeftR] || m_bControllerActionHeld[(int)EControllerAction.RightR])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'down'
+					return m_bControllerActionHeld[(int)EControllerAction.DownR];
+				}
+				case EKeystroke.ForwardR:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.UpR])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'forward'
+					if (bFlipped)
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.LeftR];
+					}
+					else
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.RightR];
+					}
+				}
+				case EKeystroke.BackR:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (m_bControllerActionHeld[(int)EControllerAction.UpR])
+					{
+						return false;
+					}
+
+					//get the direction to check for 'Back'
+					if (bFlipped)
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.RightR];
+					}
+					else
+					{
+						return m_bControllerActionHeld[(int)EControllerAction.LeftR];
+					}
+				}
 
 				//TODO: Check the right thumnbsticks released
+
+				case EKeystroke.UpReleaseR:
+				{
+					//get the direction to check for 'up'
+					return m_bControllerActionRelease[(int)EControllerAction.UpR];
+				}
+				case EKeystroke.DownReleaseR:
+				{
+					//get the direction to check for 'down'
+					return m_bControllerActionRelease[(int)EControllerAction.DownR];
+				}
+				case EKeystroke.ForwardReleaseR:
+				{
+					//get the direction to check for 'forward'
+					if (bFlipped)
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.LeftR];
+					}
+					else
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.RightR];
+					}
+				}
+				case EKeystroke.BackReleaseR:
+				{
+					//get the direction to check for 'back'
+					if (bFlipped)
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.RightR];
+					}
+					else
+					{
+						return m_bControllerActionRelease[(int)EControllerAction.LeftR];
+					}
+				}
 
 				default:
 				{
