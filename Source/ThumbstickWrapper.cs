@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace HadoukInput
 {
@@ -37,6 +38,8 @@ namespace HadoukInput
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
 		public bool UseKeyboard { get; set; }
+
+		private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
 
 		#endregion //Members
 
@@ -282,6 +285,134 @@ namespace HadoukInput
 		}
 
 		#endregion //Methods
+
+		/// <summary>
+		/// Check for a specific keystroke, but with a rotated direction.
+		/// </summary>
+		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
+		/// <param name="direction">The NORMALIZED direction to check against</param>
+		/// <returns>bool: the keystroke is being held</returns>
+		public bool CheckKeystroke(EKeystroke eKeystroke, Vector2 direction, Vector2 upVect)
+		{
+			switch (eKeystroke)
+			{
+				//CHECK THE DIRECTIONS
+
+				case EKeystroke.Up:
+				{
+					//get the direction to check for 'up'
+					return CheckDirectionHeld(upVect, Direction, true);
+				}
+				case EKeystroke.Down:
+				{
+					//Don't send down if left or right are held... it pops really bad
+					if (CheckDirectionHeld(direction, Direction, true) ||
+						CheckDirectionHeld(direction, Direction, false))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'down'
+					return CheckDirectionHeld(upVect, Direction, false);
+				}
+				case EKeystroke.Forward:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (CheckDirectionHeld(upVect, Direction, true))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'forward'
+					return CheckDirectionHeld(direction, Direction, true);
+				}
+				case EKeystroke.Back:
+				{
+					//Don't send left/right if up is held... it pops really bad
+					if (CheckDirectionHeld(upVect, Direction, true))
+					{
+						return false;
+					}
+
+					//get the direction to check for 'Back'
+					return CheckDirectionHeld(direction, Direction, false);
+				}
+
+				//CHECK DIRECTIONS RELEASED
+
+				case EKeystroke.UpRelease:
+				{
+					//get the direction to check for 'up'
+					return CheckDirectionRelease(upVect, true);
+				}
+				case EKeystroke.DownRelease:
+				{
+					//get the direction to check for 'down'
+					return CheckDirectionRelease(upVect, false);
+				}
+				case EKeystroke.ForwardRelease:
+				{
+					//get the direction to check for 'forward'
+					return CheckDirectionRelease(direction, true);
+				}
+				case EKeystroke.BackRelease:
+				{
+					//get the direction to check for 'back'
+					return CheckDirectionRelease(direction, false);
+				}
+
+				//For everything else, send to the other method
+				default:
+				{
+					Debug.Assert(false);
+					return false;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Check if two vectors are pointint in the same direction
+		/// </summary>
+		/// <param name="direction">the direction to check</param>
+		/// <param name="controllerDirection">the direction the controller is pointed</param>
+		/// <param name="SameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
+		/// <returns></returns>
+		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
+		{
+			//get the dot product of the directions
+			float dot = Vector2.Dot(direction, controllerDirection);
+
+			//check the correct direction
+			if (bSameDirection)
+			{
+				//this magic number is squareroot2 / 2
+				return (SquareRoot2DividedBy2 < dot);
+			}
+			else
+			{
+				return (-SquareRoot2DividedBy2 > dot);
+			}
+		}
+
+		/// <summary>
+		/// Check if a direction was just released
+		/// </summary>
+		/// <param name="direction"></param>
+		/// <param name="thumbstick"></param>
+		/// <param name="bSameDirection"></param>
+		/// <returns></returns>
+		private bool CheckDirectionRelease(Vector2 direction, bool bSameDirection)
+		{
+			//was the direction held last time we checked?
+			if (!CheckDirectionHeld(direction, PrevDirection, bSameDirection))
+			{
+				return false;
+			}
+
+			//It was held last time, if it isn't held now then it was a button release 
+			return !CheckDirectionHeld(direction, Direction, bSameDirection);
+		}
 
 		#region Networking
 

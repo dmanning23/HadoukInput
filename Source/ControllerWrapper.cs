@@ -33,6 +33,10 @@ namespace HadoukInput
 			RShoulder,
 			LTrigger,
 			RTrigger,
+			UpR,
+			DownR,
+			RightR,
+			LeftR,
 			NumControllerActions
 		}
 
@@ -135,8 +139,6 @@ namespace HadoukInput
 		}
 
 		public bool ControllerPluggedIn { get; set; }
-
-		private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
 
 		#endregion
 
@@ -428,6 +430,11 @@ namespace HadoukInput
 					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
 				}
 
+				//Check the right thumbsticks
+
+				//Check the right thumnbsticks released
+
+
 				default:
 				{
 					//you passed in one of the direction+button keystrokes?
@@ -469,41 +476,22 @@ namespace HadoukInput
 				case EKeystroke.Up:
 				{
 					//get the direction to check for 'up'
-					return CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Down:
 				{
-					//Don't send down if left or right are held... it pops really bad
-					if (CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, true) ||
-						CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, false))
-					{
-						return false;
-					}
-
 					//get the direction to check for 'down'
-					return CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, false);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Forward:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true))
-					{
-						return false;
-					}
-
 					//get the direction to check for 'forward'
-					return CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, true);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Back:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (CheckDirectionHeld(upVect, Thumbsticks.LeftThumbstick.Direction, true))
-					{
-						return false;
-					}
-
 					//get the direction to check for 'Back'
-					return CheckDirectionHeld(direction, Thumbsticks.LeftThumbstick.Direction, false);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 
 				//CHECK DIRECTIONS RELEASED
@@ -511,22 +499,65 @@ namespace HadoukInput
 				case EKeystroke.UpRelease:
 				{
 					//get the direction to check for 'up'
-					return CheckDirectionRelease(upVect, Thumbsticks.LeftThumbstick, true);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.DownRelease:
 				{
 					//get the direction to check for 'down'
-					return CheckDirectionRelease(upVect, Thumbsticks.LeftThumbstick, false);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.ForwardRelease:
 				{
 					//get the direction to check for 'forward'
-					return CheckDirectionRelease(direction, Thumbsticks.LeftThumbstick, true);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.BackRelease:
 				{
 					//get the direction to check for 'back'
-					return CheckDirectionRelease(direction, Thumbsticks.LeftThumbstick, false);
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
+				}
+
+				//CHECK RIGHT THUMBSTICK STUFF
+
+				case EKeystroke.UpR:
+				{
+					//get the direction to check for 'up'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Up, direction, upVect);
+				}
+				case EKeystroke.DownR:
+				{
+					//get the direction to check for 'down'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Down, direction, upVect);
+				}
+				case EKeystroke.ForwardR:
+				{
+					//get the direction to check for 'forward'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Forward, direction, upVect);
+				}
+				case EKeystroke.BackR:
+				{
+					//get the direction to check for 'Back'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Back, direction, upVect);
+				}
+				case EKeystroke.UpReleaseR:
+				{
+					//get the direction to check for 'up'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.UpRelease, direction, upVect);
+				}
+				case EKeystroke.DownReleaseR:
+				{
+					//get the direction to check for 'down'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.DownRelease, direction, upVect);
+				}
+				case EKeystroke.ForwardReleaseR:
+				{
+					//get the direction to check for 'forward'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.ForwardRelease, direction, upVect);
+				}
+				case EKeystroke.BackReleaseR:
+				{
+					//get the direction to check for 'back'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.BackRelease, direction, upVect);
 				}
 
 				//For everything else, send to the other method
@@ -549,7 +580,7 @@ namespace HadoukInput
 		{
 			Debug.Assert(iAction < EControllerAction.NumControllerActions);
 
-			if (UseKeyboard)
+			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
 				//first do the keyboard check
 				//First check if it is a direction
@@ -562,7 +593,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-						break;
+					break;
 					case EControllerAction.Down:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Down))
@@ -570,7 +601,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-						break;
+					break;
 					case EControllerAction.Left:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Left))
@@ -578,7 +609,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-						break;
+					break;
 					case EControllerAction.Right:
 					{
 						if (CheckKeyDown(rInputState, i, Keys.Right))
@@ -586,7 +617,7 @@ namespace HadoukInput
 							return true;
 						}
 					}
-						break;
+					break;
 					default:
 					{
 						//get the attack button to check
@@ -600,7 +631,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.B:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.X))
@@ -608,7 +639,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.X:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.A))
@@ -616,7 +647,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.Y:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.S))
@@ -624,7 +655,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.LeftShoulder:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.D))
@@ -632,7 +663,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.RightShoulder:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.F))
@@ -640,7 +671,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.LeftTrigger:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.C))
@@ -648,7 +679,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							case Buttons.RightTrigger:
 							{
 								if (CheckKeyDown(rInputState, i, Keys.V))
@@ -656,7 +687,7 @@ namespace HadoukInput
 									return true;
 								}
 							}
-								break;
+							break;
 							default:
 							{
 								//wtf did u do
@@ -665,7 +696,7 @@ namespace HadoukInput
 							}
 						}
 					}
-						break;
+					break;
 				}
 			}
 
@@ -700,6 +731,26 @@ namespace HadoukInput
 					        (rInputState.ButtonDown(i, Buttons.DPadRight) &&
 					         !rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
+				case EControllerAction.UpR:
+				{
+					return (rInputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
+							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
+				}
+				case EControllerAction.DownR:
+				{
+					return (rInputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
+							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
+				}
+				case EControllerAction.LeftR:
+				{
+					return (rInputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
+							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
+				}
+				case EControllerAction.RightR:
+				{
+					return (rInputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
+							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
+				}
 				default:
 				{
 					//get the attack button to check
@@ -717,7 +768,7 @@ namespace HadoukInput
 		/// <returns>bool: whether or not that button is held this frame</returns>
 		private bool CheckControllerActionHeld(InputState rInputState, int i, EControllerAction iAction)
 		{
-			if (UseKeyboard)
+			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
 				//First check if it is a direction
 				switch (iAction)
@@ -832,7 +883,7 @@ namespace HadoukInput
 							}
 						}
 					}
-						break;
+					break;
 				}
 			}
 
@@ -859,6 +910,22 @@ namespace HadoukInput
 					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) ||
 					        rInputState.ButtonDown(i, Buttons.DPadRight));
 				}
+				case EControllerAction.UpR:
+				{
+					return rInputState.ButtonDown(i, Buttons.RightThumbstickUp);
+				}
+				case EControllerAction.DownR:
+				{
+					return rInputState.ButtonDown(i, Buttons.RightThumbstickDown);
+				}
+				case EControllerAction.LeftR:
+				{
+					return rInputState.ButtonDown(i, Buttons.RightThumbstickLeft);
+				}
+				case EControllerAction.RightR:
+				{
+					return rInputState.ButtonDown(i, Buttons.RightThumbstickRight);
+				}
 				default:
 				{
 					//get the attack button to check
@@ -878,7 +945,7 @@ namespace HadoukInput
 		{
 			Debug.Assert(iAction < EControllerAction.NumControllerActions);
 
-			if (UseKeyboard)
+			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
 				//first do the keyboard check
 				//First check if it is a direction
@@ -1029,6 +1096,26 @@ namespace HadoukInput
 					        (!rInputState.ButtonDown(i, Buttons.DPadRight) &&
 					         rInputState.PrevButtonDown(i, Buttons.DPadRight)));
 				}
+				case EControllerAction.UpR:
+				{
+					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
+							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
+				}
+				case EControllerAction.DownR:
+				{
+					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
+							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
+				}
+				case EControllerAction.LeftR:
+				{
+					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
+							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
+				}
+				case EControllerAction.RightR:
+				{
+					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
+							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
+				}
 				default:
 				{
 					//get the attack button to check
@@ -1074,49 +1161,6 @@ namespace HadoukInput
 			{
 				return false;
 			}
-		}
-
-		/// <summary>
-		/// Check if two vectors are pointint in the same direction
-		/// </summary>
-		/// <param name="direction">the direction to check</param>
-		/// <param name="controllerDirection">the direction the controller is pointed</param>
-		/// <param name="SameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
-		/// <returns></returns>
-		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
-		{
-			//get the dot product of the directions
-			float dot = Vector2.Dot(direction, controllerDirection);
-
-			//check the correct direction
-			if (bSameDirection)
-			{
-				//this magic number is squareroot2 / 2
-				return (SquareRoot2DividedBy2 < dot);
-			}
-			else
-			{
-				return (-SquareRoot2DividedBy2 > dot);
-			}
-		}
-
-		/// <summary>
-		/// Check if a direction was just released
-		/// </summary>
-		/// <param name="direction"></param>
-		/// <param name="thumbstick"></param>
-		/// <param name="bSameDirection"></param>
-		/// <returns></returns>
-		private bool CheckDirectionRelease(Vector2 direction, ThumbstickWrapper thumbstick, bool bSameDirection)
-		{
-			//was the direction held last time we checked?
-			if (!CheckDirectionHeld(direction, thumbstick.PrevDirection, bSameDirection))
-			{
-				return false;
-			}
-
-			//It was held last time, if it isn't held now then it was a button release 
-			return !CheckDirectionHeld(direction, thumbstick.Direction, bSameDirection);
 		}
 
 		#endregion //Private Methods

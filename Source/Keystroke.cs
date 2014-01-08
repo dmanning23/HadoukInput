@@ -19,6 +19,10 @@
 		RShoulder,
 		LTrigger,
 		RTrigger,
+		UpR,
+		DownR,
+		ForwardR,
+		BackR,
 
 		//key-up keystrokes
 		UpRelease,
@@ -33,6 +37,10 @@
 		RShoulderRelease,
 		LTriggerRelease,
 		RTriggerRelease,
+		UpReleaseR,
+		DownReleaseR,
+		ForwardReleaseR,
+		BackReleaseR,
 
 		//keystrokes + directions
 		AUp,
