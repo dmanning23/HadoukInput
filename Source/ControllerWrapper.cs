@@ -430,10 +430,9 @@ namespace HadoukInput
 					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
 				}
 
-				//Check the right thumbsticks
+				//TODO: Check the right thumbsticks
 
-				//Check the right thumnbsticks released
-
+				//TODO: Check the right thumnbsticks released
 
 				default:
 				{
