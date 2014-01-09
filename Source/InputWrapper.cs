@@ -77,6 +77,10 @@ namespace HadoukInput
 		/// </summary>
 		private readonly List<InputItem> m_listQueuedInput;
 
+		private const int TransitionsFirstColumnSize = (int)EKeystroke.DownR + 1;
+
+		private const int TransitionsSecondColumnSize = (int)EKeystroke.DownBackR + 1;
+
 		#endregion //Members
 
 		#region Properties
@@ -96,13 +100,14 @@ namespace HadoukInput
 		static InputWrapper()
 		{
 			//setup the state machine for doing input transitions
-			g_InputTransitions = new EKeystroke[(int)EKeystroke.NumKeystrokes,(int)EKeystroke.NumKeystrokes];
+
+			//Only do transitions for the directions
+			g_InputTransitions = new EKeystroke[TransitionsFirstColumnSize, TransitionsSecondColumnSize];
 
 			//set all the keystrokes to default to the row item
-			var NumKeystrokes = (int)EKeystroke.NumKeystrokes;
-			for (int i = 0; i < NumKeystrokes; i++)
+			for (int i = 0; i < TransitionsFirstColumnSize; i++)
 			{
-				for (int j = 0; j < NumKeystrokes; j++)
+				for (int j = 0; j < TransitionsSecondColumnSize; j++)
 				{
 					g_InputTransitions[i, j] = (EKeystroke)i;
 				}
@@ -145,61 +150,66 @@ namespace HadoukInput
 			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.LTrigger] = EKeystroke.LTriggerBack;
 			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.RTrigger] = EKeystroke.RTriggerBack;
 
-			//set the button + direction transitions
-			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Up] = EKeystroke.AUp;
-			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Down] = EKeystroke.ADown;
-			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Forward] = EKeystroke.AForward;
-			g_InputTransitions[(int)EKeystroke.A, (int)EKeystroke.Back] = EKeystroke.ABack;
-
-			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Up] = EKeystroke.BUp;
-			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Down] = EKeystroke.BDown;
-			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Forward] = EKeystroke.BForward;
-			g_InputTransitions[(int)EKeystroke.B, (int)EKeystroke.Back] = EKeystroke.BBack;
-
-			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Up] = EKeystroke.XUp;
-			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Down] = EKeystroke.XDown;
-			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Forward] = EKeystroke.XForward;
-			g_InputTransitions[(int)EKeystroke.X, (int)EKeystroke.Back] = EKeystroke.XBack;
-
-			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Up] = EKeystroke.YUp;
-			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Down] = EKeystroke.YDown;
-			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Forward] = EKeystroke.YForward;
-			g_InputTransitions[(int)EKeystroke.Y, (int)EKeystroke.Back] = EKeystroke.YBack;
-
-			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Up] = EKeystroke.LShoulderUp;
-			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Down] = EKeystroke.LShoulderDown;
-			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Forward] = EKeystroke.LShoulderForward;
-			g_InputTransitions[(int)EKeystroke.LShoulder, (int)EKeystroke.Back] = EKeystroke.LShoulderBack;
-
-			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Up] = EKeystroke.RShoulderUp;
-			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Down] = EKeystroke.RShoulderDown;
-			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Forward] = EKeystroke.RShoulderForward;
-			g_InputTransitions[(int)EKeystroke.RShoulder, (int)EKeystroke.Back] = EKeystroke.RShoulderBack;
-
-			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Up] = EKeystroke.LTriggerUp;
-			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Down] = EKeystroke.LTriggerDown;
-			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Forward] = EKeystroke.LTriggerForward;
-			g_InputTransitions[(int)EKeystroke.LTrigger, (int)EKeystroke.Back] = EKeystroke.LTriggerBack;
-
-			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Up] = EKeystroke.RTriggerUp;
-			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Down] = EKeystroke.RTriggerDown;
-			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Forward] = EKeystroke.RTriggerForward;
-			g_InputTransitions[(int)EKeystroke.RTrigger, (int)EKeystroke.Back] = EKeystroke.RTriggerBack;
-
 			g_InputTransitions[(int)EKeystroke.UpR, (int)EKeystroke.ForwardR] = EKeystroke.UpForwardR;
 			g_InputTransitions[(int)EKeystroke.UpR, (int)EKeystroke.BackR] = EKeystroke.UpBackR;
 			g_InputTransitions[(int)EKeystroke.DownR, (int)EKeystroke.ForwardR] = EKeystroke.DownForwardR;
 			g_InputTransitions[(int)EKeystroke.DownR, (int)EKeystroke.BackR] = EKeystroke.DownBackR;
-			g_InputTransitions[(int)EKeystroke.ForwardR, (int)EKeystroke.UpR] = EKeystroke.UpForwardR;
-			g_InputTransitions[(int)EKeystroke.ForwardR, (int)EKeystroke.DownR] = EKeystroke.DownForwardR;
-			g_InputTransitions[(int)EKeystroke.BackR, (int)EKeystroke.UpR] = EKeystroke.UpBackR;
-			g_InputTransitions[(int)EKeystroke.BackR, (int)EKeystroke.DownR] = EKeystroke.DownBackR;
+
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.UpR] = EKeystroke.UpUp;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.UpForwardR] = EKeystroke.UpUpForward;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.ForwardR] = EKeystroke.UpForward;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.DownForwardR] = EKeystroke.UpDownForward;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.DownR] = EKeystroke.UpDown;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.DownBackR] = EKeystroke.UpDownBack;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.BackR] = EKeystroke.UpBack;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.UpBackR] = EKeystroke.UpUpBack;
+			g_InputTransitions[(int)EKeystroke.Up, (int)EKeystroke.NeutralR] = EKeystroke.UpNeutral;
+
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.UpR] = EKeystroke.DownUp;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.UpForwardR] = EKeystroke.DownUpForward;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.ForwardR] = EKeystroke.DownForward;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.DownForwardR] = EKeystroke.DownDownForward;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.DownR] = EKeystroke.DownDown;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.DownBackR] = EKeystroke.DownDownBack;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.BackR] = EKeystroke.DownBack;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.UpBackR] = EKeystroke.DownUpBack;
+			g_InputTransitions[(int)EKeystroke.Down, (int)EKeystroke.NeutralR] = EKeystroke.DownNeutral;
+
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.UpR] = EKeystroke.ForwardUp;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.UpForwardR] = EKeystroke.ForwardUpForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.ForwardR] = EKeystroke.ForwardForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.DownForwardR] = EKeystroke.ForwardDownForward;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.DownR] = EKeystroke.ForwardDown;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.DownBackR] = EKeystroke.ForwardDownBack;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.BackR] = EKeystroke.ForwardBack;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.UpBackR] = EKeystroke.ForwardUpBack;
+			g_InputTransitions[(int)EKeystroke.Forward, (int)EKeystroke.NeutralR] = EKeystroke.ForwardNeutral;
+
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.UpR] = EKeystroke.BackUp;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.UpForwardR] = EKeystroke.BackUpForward;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.ForwardR] = EKeystroke.BackForward;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.DownForwardR] = EKeystroke.BackDownForward;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.DownR] = EKeystroke.BackDown;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.DownBackR] = EKeystroke.BackDownBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.BackR] = EKeystroke.BackBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.UpBackR] = EKeystroke.BackUpBack;
+			g_InputTransitions[(int)EKeystroke.Back, (int)EKeystroke.NeutralR] = EKeystroke.BackNeutral;
+
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.UpR] = EKeystroke.NeutralUp;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.UpForwardR] = EKeystroke.NeutralUpForward;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.ForwardR] = EKeystroke.NeutralForward;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.DownForwardR] = EKeystroke.NeutralDownForward;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.DownR] = EKeystroke.NeutralDown;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.DownBackR] = EKeystroke.NeutralDownBack;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.BackR] = EKeystroke.NeutralBack;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.UpBackR] = EKeystroke.NeutralUpBack;
+			g_InputTransitions[(int)EKeystroke.Neutral, (int)EKeystroke.NeutralR] = EKeystroke.NeutralNeutral;
 		}
 
 		/// <summary>
 		/// contructor
 		/// </summary>
-		/// <param name="iPlayerIndex">index of the controller this player will use</param>
+		/// <param name="controller">index of the controller this player will use</param>
 		/// <param name="rClock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
 		public InputWrapper(ControllerWrapper controller, CurrentTime rClock)
 		{
@@ -235,7 +245,7 @@ namespace HadoukInput
 		/// <param name="rInputState">the current input state of the game.
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
-		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		public void Update(InputState rInputState, bool bFlipped)
 		{
 			UpdateController(rInputState);
@@ -251,7 +261,7 @@ namespace HadoukInput
 		/// <param name="rInputState">the current input state of the game.
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
-		/// <param name="rPlayer">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		/// <param name="direction">the direction the character is facing</param>
 		public void Update(InputState rInputState, bool bFlipped, Vector2 direction)
 		{
@@ -275,7 +285,8 @@ namespace HadoukInput
 		/// <summary>
 		/// update all the queues that hold the move data
 		/// </summary>
-		/// <param name="rPlayer">the object that uses this input queue</param>
+		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="direction">the direction the character is facing</param>
 		protected void UpdateMoveQueue(bool bFlipped, Vector2 direction)
 		{
 			//first, remove any old input from the system
@@ -324,19 +335,25 @@ namespace HadoukInput
 					Debug.Assert(eNextKey < EKeystroke.NumKeystrokes);
 
 					//see if the two keystrokes can be combined
-					EKeystroke eCombined = g_InputTransitions[(int)eCurKey, (int)eNextKey];
-					if ((eCurKey != eCombined) || (eCurKey == eNextKey))
-					{
-						//if found one, change this to the new keystroke
-						m_listBufferedInput[iCur].Keystroke = eCombined;
+					int iFirstIndex = ((eCurKey < eNextKey) ? (int)eCurKey : (int)eNextKey);
+					int iSecondIndex = ((eCurKey >= eNextKey) ? (int)eNextKey : (int)eCurKey);
+					Debug.Assert(iFirstIndex <= iSecondIndex); //always check the smalelr number as the first index
 
-						//remove the next item from the buffered input
-						m_listBufferedInput.RemoveAt(iNext);
-					}
-					else
+					//If this is a keystroke that can be combined...
+					if ((iFirstIndex < TransitionsFirstColumnSize) && (iSecondIndex < TransitionsSecondColumnSize))
 					{
-						iNext++;
+						EKeystroke eCombined = g_InputTransitions[iFirstIndex, iSecondIndex];
+						if ((eCurKey != eCombined) || (eCurKey == eNextKey))
+						{
+							//if found one, change this to the new keystroke
+							m_listBufferedInput[iCur].Keystroke = eCombined;
+
+							//remove the next item from the buffered input
+							m_listBufferedInput.RemoveAt(iNext);
+							continue;
+						}
 					}
+					iNext++;
 				}
 
 				iCur++;
@@ -437,8 +454,8 @@ namespace HadoukInput
 		/// <summary>
 		/// read input from a xna resource
 		/// </summary>
-		/// <param name="rContent">xna content manager</param>
 		/// <param name="strResource">name of the resource to load</param>
+		/// <para name="rStates">delegate method for resolving message names</para>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
 		public bool ReadXmlFile(Filename strResource, MessageNameToID rStates)
 		{
@@ -538,13 +555,14 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="rContent">xna content manager</param>
 		/// <param name="strResource">name of the resource to load</param>
+		/// <para name="rStates">delegate method for resolving message names</para>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadSerializedFile(ContentManager rXmlContent, Filename strResource, MessageNameToID rStates)
+		public bool ReadSerializedFile(ContentManager rContent, Filename strResource, MessageNameToID rStates)
 		{
 			Debug.Assert(null != m_MoveTree);
 
 			//read in serialized xna input list
-			var myXML = rXmlContent.Load<MoveListXML>(strResource.GetRelPathFileNoExt());
+			var myXML = rContent.Load<MoveListXML>(strResource.GetRelPathFileNoExt());
 
 			//read in the state names
 			for (int i = 0; i < myXML.moves.Count; i++)

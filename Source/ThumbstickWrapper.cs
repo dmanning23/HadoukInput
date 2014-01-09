@@ -339,29 +339,6 @@ namespace HadoukInput
 					return CheckDirectionHeld(direction, Direction, false);
 				}
 
-				//CHECK DIRECTIONS RELEASED
-
-				case EKeystroke.UpRelease:
-				{
-					//get the direction to check for 'up'
-					return CheckDirectionRelease(upVect, true);
-				}
-				case EKeystroke.DownRelease:
-				{
-					//get the direction to check for 'down'
-					return CheckDirectionRelease(upVect, false);
-				}
-				case EKeystroke.ForwardRelease:
-				{
-					//get the direction to check for 'forward'
-					return CheckDirectionRelease(direction, true);
-				}
-				case EKeystroke.BackRelease:
-				{
-					//get the direction to check for 'back'
-					return CheckDirectionRelease(direction, false);
-				}
-
 				//For everything else, send to the other method
 				default:
 				{

@@ -235,13 +235,33 @@ namespace HadoukInput
 		}
 
 		/// <summary>
-		/// Check for a specific keystroke.
+		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
 		/// <param name="eKeystroke">the keystroke to check for</param>
 		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
+		/// <param name="direction">The NORMALIZED direction to check against</param>
 		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped)
+		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped, Vector2 direction)
 		{
+			//This method should only be used for the really basic keystrokes...
+			Debug.Assert(EKeystroke.RTriggerRelease >= eKeystroke);
+
+			//Get the 'up' vector...
+			Vector2 upVect;
+			
+			if (bFlipped)
+			{
+				//If it is flipped, the up vector is the direction rotated 90 degrees
+				Matrix rotate = MatrixExt.Orientation(1.57079633f);
+				upVect = MatrixExt.Multiply(rotate, direction);
+			}
+			else
+			{
+				//If it is not flipped, the up vector is the direction rotated -90 degrees
+				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
+				upVect = MatrixExt.Multiply(rotate, direction);
+			}
+
 			switch (eKeystroke)
 			{
 				//CHECK THE DIRECTIONS
@@ -249,90 +269,86 @@ namespace HadoukInput
 				case EKeystroke.Up:
 				{
 					//get the direction to check for 'up'
-					return m_bControllerActionHeld[(int)EControllerAction.Up];
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Down:
 				{
-					//Don't send down if left or right are held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Left] || m_bControllerActionHeld[(int)EControllerAction.Right])
-					{
-						return false;
-					}
-
 					//get the direction to check for 'down'
-					return m_bControllerActionHeld[(int)EControllerAction.Down];
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Forward:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Up])
-					{
-						return false;
-					}
-
 					//get the direction to check for 'forward'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Left];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Right];
-					}
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.Back:
 				{
-					//Don't send left/right if up is held... it pops really bad
-					if (m_bControllerActionHeld[(int)EControllerAction.Up])
+					//get the direction to check for 'Back'
+					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
+				}
+
+				//Check the left thumnbsticks released
+				case EKeystroke.Neutral:
+				{
+					//are any keys being held?
+					if (!m_bControllerActionHeld[(int)EControllerAction.Up] &&
+						!m_bControllerActionHeld[(int)EControllerAction.Down] &&
+						!m_bControllerActionHeld[(int)EControllerAction.Right] &&
+						!m_bControllerActionHeld[(int)EControllerAction.Left])
+					{
+						//did a "key up" action occur?
+						return (m_bControllerActionRelease[(int)EControllerAction.Up] ||
+							m_bControllerActionRelease[(int)EControllerAction.Down] ||
+							m_bControllerActionRelease[(int)EControllerAction.Right] ||
+							m_bControllerActionRelease[(int)EControllerAction.Left]);
+					}
+					else
 					{
 						return false;
 					}
-
-					//get the direction to check for 'Back'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Right];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.Left];
-					}
 				}
 
-				//CHECK DIRECTIONS RELEASED
+				//CHECK RIGHT THUMBSTICK STUFF
 
-				case EKeystroke.UpRelease:
+				case EKeystroke.UpR:
 				{
 					//get the direction to check for 'up'
-					return m_bControllerActionRelease[(int)EControllerAction.Up];
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Up, direction, upVect);
 				}
-				case EKeystroke.DownRelease:
+				case EKeystroke.DownR:
 				{
 					//get the direction to check for 'down'
-					return m_bControllerActionRelease[(int)EControllerAction.Down];
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Down, direction, upVect);
 				}
-				case EKeystroke.ForwardRelease:
+				case EKeystroke.ForwardR:
 				{
 					//get the direction to check for 'forward'
-					if (bFlipped)
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Left];
-					}
-					else
-					{
-						return m_bControllerActionRelease[(int)EControllerAction.Right];
-					}
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Forward, direction, upVect);
 				}
-				case EKeystroke.BackRelease:
+				case EKeystroke.BackR:
 				{
-					//get the direction to check for 'back'
-					if (bFlipped)
+					//get the direction to check for 'Back'
+					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Back, direction, upVect);
+				}
+
+				//Check the right thumnbsticks released
+				case EKeystroke.NeutralR:
+				{
+					//are any keys being held?
+					if (!m_bControllerActionHeld[(int)EControllerAction.UpR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.DownR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.RightR] &&
+						!m_bControllerActionHeld[(int)EControllerAction.LeftR])
 					{
-						return m_bControllerActionRelease[(int)EControllerAction.Right];
+						//did a "key up" action occur?
+						return (m_bControllerActionRelease[(int)EControllerAction.UpR] ||
+							m_bControllerActionRelease[(int)EControllerAction.DownR] ||
+							m_bControllerActionRelease[(int)EControllerAction.RightR] ||
+							m_bControllerActionRelease[(int)EControllerAction.LeftR]);
 					}
 					else
 					{
-						return m_bControllerActionRelease[(int)EControllerAction.Left];
+						return false;
 					}
 				}
 
@@ -406,179 +422,11 @@ namespace HadoukInput
 					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
 				}
 
-				//Check the right thumbsticks
-
-				case EKeystroke.UpR:
-				{
-					//get the direction to check for 'up'
-					return m_bControllerActionHeld[(int)EControllerAction.UpR];
-				}
-				case EKeystroke.DownR:
-				{
-					//get the direction to check for 'down'
-					return m_bControllerActionHeld[(int)EControllerAction.DownR];
-				}
-				case EKeystroke.ForwardR:
-				{
-					//get the direction to check for 'forward'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.LeftR];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.RightR];
-					}
-				}
-				case EKeystroke.BackR:
-				{
-					//get the direction to check for 'Back'
-					if (bFlipped)
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.RightR];
-					}
-					else
-					{
-						return m_bControllerActionHeld[(int)EControllerAction.LeftR];
-					}
-				}
-
-				//Check the right thumnbsticks released
-				case EKeystroke.NeutralR:
-				{
-					//are any keys being held?
-					if (!m_bControllerActionHeld[(int)EControllerAction.UpR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.DownR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.RightR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.LeftR])
-					{
-						//did a "key up" action occur?
-						return (m_bControllerActionRelease[(int)EControllerAction.UpR] ||
-							m_bControllerActionRelease[(int)EControllerAction.DownR] ||
-							m_bControllerActionRelease[(int)EControllerAction.RightR] ||
-							m_bControllerActionRelease[(int)EControllerAction.LeftR]);
-					}
-					else
-					{
-						return false;
-					}
-				}
-
 				default:
 				{
 					//you passed in one of the direction+button keystrokes?
 					Debug.Assert(false);
 					return false;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Check for a specific keystroke, but with a rotated direction.
-		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
-		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
-		/// <param name="direction">The NORMALIZED direction to check against</param>
-		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped, Vector2 direction)
-		{
-			//Get the 'up' vector...
-			Vector2 upVect;
-			
-			if (bFlipped)
-			{
-				//If it is flipped, the up vector is the direction rotated 90 degrees
-				Matrix rotate = MatrixExt.Orientation(1.57079633f);
-				upVect = MatrixExt.Multiply(rotate, direction);
-			}
-			else
-			{
-				//If it is not flipped, the up vector is the direction rotated -90 degrees
-				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
-				upVect = MatrixExt.Multiply(rotate, direction);
-			}
-
-			switch (eKeystroke)
-			{
-				//CHECK THE DIRECTIONS
-
-				case EKeystroke.Up:
-				{
-					//get the direction to check for 'up'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.Down:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.Forward:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.Back:
-				{
-					//get the direction to check for 'Back'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-
-				//CHECK DIRECTIONS RELEASED
-
-				case EKeystroke.UpRelease:
-				{
-					//get the direction to check for 'up'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.DownRelease:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.ForwardRelease:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-				case EKeystroke.BackRelease:
-				{
-					//get the direction to check for 'back'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
-
-				//CHECK RIGHT THUMBSTICK STUFF
-
-				case EKeystroke.UpR:
-				{
-					//get the direction to check for 'up'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Up, direction, upVect);
-				}
-				case EKeystroke.DownR:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Down, direction, upVect);
-				}
-				case EKeystroke.ForwardR:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Forward, direction, upVect);
-				}
-				case EKeystroke.BackR:
-				{
-					//get the direction to check for 'Back'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Back, direction, upVect);
-				}
-
-				case EKeystroke.NeutralR:
-				{
-					//for the "neutral right stick" keystroke, use the other method
-					return CheckKeystroke(eKeystroke, bFlipped);
-				}
-
-				//For everything else, send to the other method
-				default:
-				{
-					return CheckKeystroke(eKeystroke, bFlipped);
 				}
 			}
 		}

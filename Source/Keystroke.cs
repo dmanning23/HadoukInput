@@ -7,10 +7,22 @@
 	public enum EKeystroke
 	{
 		//All the basic keystrokes
+
+		// keyboard\dpad\left-thumbstick directions
 		Up,
 		Down,
 		Forward,
 		Back,
+		Neutral,
+
+		// right-thumbstick directions
+		UpR,
+		DownR,
+		ForwardR,
+		BackR,
+		NeutralR,
+
+		//button-down keystrokes
 		A,
 		B,
 		X,
@@ -19,16 +31,8 @@
 		RShoulder,
 		LTrigger,
 		RTrigger,
-		UpR,
-		DownR,
-		ForwardR,
-		BackR,
 
-		//key-up keystrokes
-		UpRelease,
-		DownRelease,
-		ForwardRelease,
-		BackRelease,
+		//button-up keystrokes
 		ARelease,
 		BRelease,
 		XRelease,
@@ -37,7 +41,12 @@
 		RShoulderRelease,
 		LTriggerRelease,
 		RTriggerRelease,
-		NeutralR,
+
+		//diagonals on right thumbstick
+		UpForwardR,
+		DownForwardR,
+		UpBackR,
+		DownBackR,
 
 		//keystrokes + directions
 		AUp,
@@ -73,11 +82,56 @@
 		RTriggerForward,
 		RTriggerBack,
 
-		//diagonals on right thumbstick
-		UpForwardR,
-		DownForwardR,
-		UpBackR,
-		DownBackR,
+		//left_right thumbstick combination directions
+		UpUp,
+		UpUpForward,
+		UpForward,
+		UpDownForward,
+		UpDown,
+		UpDownBack,
+		UpBack,
+		UpUpBack,
+		UpNeutral,
+
+		ForwardUp,
+		ForwardUpForward,
+		ForwardForward,
+		ForwardDownForward,
+		ForwardDown,
+		ForwardDownBack,
+		ForwardBack,
+		ForwardUpBack,
+		ForwardNeutral,
+
+		DownUp,
+		DownUpForward,
+		DownForward,
+		DownDownForward,
+		DownDown,
+		DownDownBack,
+		DownBack,
+		DownUpBack,
+		DownNeutral,
+
+		BackUp,
+		BackUpForward,
+		BackForward,
+		BackDownForward,
+		BackDown,
+		BackDownBack,
+		BackBack,
+		BackUpBack,
+		BackNeutral,
+
+		NeutralUp,
+		NeutralUpForward,
+		NeutralForward,
+		NeutralDownForward,
+		NeutralDown,
+		NeutralDownBack,
+		NeutralBack,
+		NeutralUpBack,
+		NeutralNeutral,
 
 		NumKeystrokes
 	}
