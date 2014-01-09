@@ -290,8 +290,8 @@ namespace HadoukInput
 		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
 		/// <param name="eKeystroke">the keystroke to check for</param>
-		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
 		/// <param name="direction">The NORMALIZED direction to check against</param>
+		/// <param name="upVect">The NORMALIZED up vector from the direciont</param>
 		/// <returns>bool: the keystroke is being held</returns>
 		public bool CheckKeystroke(EKeystroke eKeystroke, Vector2 direction, Vector2 upVect)
 		{
@@ -353,9 +353,9 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="direction">the direction to check</param>
 		/// <param name="controllerDirection">the direction the controller is pointed</param>
-		/// <param name="SameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
+		/// <param name="bSameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
 		/// <returns></returns>
-		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
+		private static bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
 		{
 			//get the dot product of the directions
 			float dot = Vector2.Dot(direction, controllerDirection);
@@ -364,31 +364,12 @@ namespace HadoukInput
 			if (bSameDirection)
 			{
 				//this magic number is squareroot2 / 2
-				return (SquareRoot2DividedBy2 < dot);
+				return (SquareRoot2DividedBy2 <= dot);
 			}
 			else
 			{
-				return (-SquareRoot2DividedBy2 > dot);
+				return (-SquareRoot2DividedBy2 >= dot);
 			}
-		}
-
-		/// <summary>
-		/// Check if a direction was just released
-		/// </summary>
-		/// <param name="direction"></param>
-		/// <param name="thumbstick"></param>
-		/// <param name="bSameDirection"></param>
-		/// <returns></returns>
-		private bool CheckDirectionRelease(Vector2 direction, bool bSameDirection)
-		{
-			//was the direction held last time we checked?
-			if (!CheckDirectionHeld(direction, PrevDirection, bSameDirection))
-			{
-				return false;
-			}
-
-			//It was held last time, if it isn't held now then it was a button release 
-			return !CheckDirectionHeld(direction, Direction, bSameDirection);
 		}
 
 		#region Networking
