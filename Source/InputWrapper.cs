@@ -449,7 +449,8 @@ namespace HadoukInput
 			//loop through and check directions and single actions
 			if (null != m_Controller)
 			{
-				for (EKeystroke i = 0; i <= EKeystroke.RTriggerRelease; i++)
+				//start at the top so they get combined in the correct order
+				for (EKeystroke i = EKeystroke.RTriggerRelease; i >= 0; i--)
 				{
 					//get the result of checking that input button
 					if (m_Controller.CheckKeystroke(i, bFlipped, direction))
@@ -519,7 +520,12 @@ namespace HadoukInput
 				if (CombineKeystrokes(m_listBufferedInput[i].Keystroke, foundKey, ref combined))
 				{
 					//Ok, these two keystrokes can be combined... 
-					m_listBufferedInput[i].Keystroke = combined;
+					
+					//remove the old keystroke
+					m_listBufferedInput.RemoveAt(i);
+
+					//buffer the new keystroke
+					BufferKeyStroke(combined, fCurrentTime);
 					bNeedIt = false;
 					break;
 				}
