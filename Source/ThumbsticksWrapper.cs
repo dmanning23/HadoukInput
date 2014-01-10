@@ -65,8 +65,8 @@ namespace HadoukInput
 		/// </summary>
 		public ThumbsticksWrapper()
 		{
-			LeftThumbstick = new ThumbstickWrapper();
-			RightThumbstick = new ThumbstickWrapper();
+			LeftThumbstick = new ThumbstickWrapper(true);
+			RightThumbstick = new ThumbstickWrapper(false);
 		}
 
 		/// <summary>

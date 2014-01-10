@@ -313,22 +313,22 @@ namespace HadoukInput
 				case EKeystroke.UpR:
 				{
 					//get the direction to check for 'up'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Up, direction, upVect);
+					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.DownR:
 				{
 					//get the direction to check for 'down'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Down, direction, upVect);
+					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.ForwardR:
 				{
 					//get the direction to check for 'forward'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Forward, direction, upVect);
+					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 				case EKeystroke.BackR:
 				{
 					//get the direction to check for 'Back'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(EKeystroke.Back, direction, upVect);
+					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
 				}
 
 				//Check the right thumnbsticks released

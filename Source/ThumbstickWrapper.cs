@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Diagnostics;
+using MatrixExtensions;
 
 namespace HadoukInput
 {
@@ -39,7 +40,21 @@ namespace HadoukInput
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
 		public bool UseKeyboard { get; set; }
 
-		private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
+		/// <summary>
+		/// the dot product of the forward vector and a direction has to be greater than this number to count as "forward"
+		/// </summary>
+		private float ForwardThreshold;
+
+		/// <summary>
+		/// This is the dot product of a forward vector and 45 degree angle, so this is for square gated directions.
+		/// square root of 2 divided by 2
+		/// </summary>
+		//private const float SquareGate = 0.70710678118654752440084436210485f;
+
+		/// <summary>
+		/// This is the dot product of a forward vector and 67 degree angle, so this is for octogon gated directions.
+		/// </summary>
+		//private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
 
 		#endregion //Members
 
@@ -74,8 +89,20 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbstickWrapper()
+		public ThumbstickWrapper(bool bSquareGate)
 		{
+			//set up the forward threshold
+
+			//get the forward vector
+			Vector2 forwardVect = new Vector2(1.0f, 0.0f);
+			
+			//rotate the vector and get the min threshhold that counts as "forward"
+			Matrix rot = (bSquareGate ? 
+				MatrixExt.Orientation(MathHelper.ToRadians(45.0f)) : 
+				MatrixExt.Orientation(MathHelper.ToRadians(67.0f)));
+			Vector2 threshholdVect = MatrixExt.Multiply(rot, forwardVect);
+			ForwardThreshold = Vector2.Dot(forwardVect, threshholdVect);
+
 			ThumbstickScrubbing = DeadZoneType.Radial;
 			Reset();
 		}
@@ -339,6 +366,27 @@ namespace HadoukInput
 					return CheckDirectionHeld(direction, Direction, false);
 				}
 
+				case EKeystroke.UpR:
+				{
+					//get the direction to check for 'up'
+					return CheckDirectionHeld(upVect, Direction, true);
+				}
+				case EKeystroke.DownR:
+				{
+					//get the direction to check for 'down'
+					return CheckDirectionHeld(upVect, Direction, false);
+				}
+				case EKeystroke.ForwardR:
+				{
+					//get the direction to check for 'forward'
+					return CheckDirectionHeld(direction, Direction, true);
+				}
+				case EKeystroke.BackR:
+				{
+					//get the direction to check for 'Back'
+					return CheckDirectionHeld(direction, Direction, false);
+				}
+
 				//For everything else, send to the other method
 				default:
 				{
@@ -355,7 +403,7 @@ namespace HadoukInput
 		/// <param name="controllerDirection">the direction the controller is pointed</param>
 		/// <param name="bSameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
 		/// <returns></returns>
-		private static bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
+		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
 		{
 			//get the dot product of the directions
 			float dot = Vector2.Dot(direction, controllerDirection);
@@ -364,11 +412,11 @@ namespace HadoukInput
 			if (bSameDirection)
 			{
 				//this magic number is squareroot2 / 2
-				return (SquareRoot2DividedBy2 <= dot);
+				return (ForwardThreshold <= dot);
 			}
 			else
 			{
-				return (-SquareRoot2DividedBy2 >= dot);
+				return (-ForwardThreshold >= dot);
 			}
 		}
 
