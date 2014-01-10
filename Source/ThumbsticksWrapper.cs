@@ -12,12 +12,22 @@ namespace HadoukInput
 		#region Members
 
 		/// <summary>
+		/// the type of dead zone to use for thumbsticks
+		/// </summary>
+		private DeadZoneType _thumbstickScrubbing = DeadZoneType.Radial;
+
+		/// <summary>
 		/// how do we want to clean up thumbsticks?
 		/// </summary>
 		public DeadZoneType ThumbstickScrubbing
 		{
+			get
+			{
+				return _thumbstickScrubbing;
+			}
 			set
 			{
+				_thumbstickScrubbing = value;
 				LeftThumbstick.ThumbstickScrubbing = value;
 				RightThumbstick.ThumbstickScrubbing = value;
 			}
