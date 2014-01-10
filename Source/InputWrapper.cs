@@ -40,13 +40,23 @@ namespace HadoukInput
 		/// <summary>
 		/// Length of time input items are held in the queue before they are discarded.
 		/// </summary>
-		private const float m_fQueuedInputExpire = 0.55f;
+		private const float m_fQueuedInputExpire = 0.5f;
 
 		/// <summary>
 		/// state machine for combining the keystrokes of input items
 		/// This is an 2d array that takes 2 keystrokes and returns the keystroke that results from combining them
 		/// </summary>
 		private static readonly EKeystroke[,] g_InputTransitions;
+
+		/// <summary>
+		/// Number of rows in the input transitions table
+		/// </summary>
+		private const int TransitionsRowSize = (int)EKeystroke.DownR + 1;
+
+		/// <summary>
+		/// number of columns in the intpu transistions table
+		/// </summary>
+		private const int TransitionsColumnSize = (int)EKeystroke.DownBackR + 1;
 
 		/// <summary>
 		/// Callback to a method to get the current time, used to time the input
@@ -77,9 +87,12 @@ namespace HadoukInput
 		/// </summary>
 		private readonly List<InputItem> m_listQueuedInput;
 
-		private const int TransitionsFirstColumnSize = (int)EKeystroke.DownR + 1;
-
-		private const int TransitionsSecondColumnSize = (int)EKeystroke.DownBackR + 1;
+		/// <summary>
+		/// A dictionary of all the keystroke combinations
+		/// One row for every keystroks
+		/// The columns are all the keys that are part of that keystroke
+		/// </summary>
+		private static readonly EKeystroke[][] g_KeystrokeCombinations;
 
 		#endregion //Members
 
@@ -94,20 +107,32 @@ namespace HadoukInput
 
 		#region Methods
 
+		#region Initialization 
+
 		/// <summary>
 		/// Setup the state machine for combining input
 		/// </summary>
 		static InputWrapper()
 		{
-			//setup the state machine for doing input transitions
-
 			//Only do transitions for the directions
-			g_InputTransitions = new EKeystroke[TransitionsFirstColumnSize, TransitionsSecondColumnSize];
+			g_InputTransitions = new EKeystroke[TransitionsRowSize, TransitionsColumnSize];
 
+			//create the table
+			g_KeystrokeCombinations = new EKeystroke[(int)EKeystroke.NumKeystrokes][];
+
+			SetupTransitionTable();
+			SetupKeystrokeCombinationTable();
+		}
+
+		/// <summary>
+		/// setup the state machine for doing input transitions
+		/// </summary>
+		private static void SetupTransitionTable()
+		{
 			//set all the keystrokes to default to the row item
-			for (int i = 0; i < TransitionsFirstColumnSize; i++)
+			for (int i = 0; i < TransitionsRowSize; i++)
 			{
-				for (int j = 0; j < TransitionsSecondColumnSize; j++)
+				for (int j = 0; j < TransitionsColumnSize; j++)
 				{
 					g_InputTransitions[i, j] = (EKeystroke)i;
 				}
@@ -207,6 +232,120 @@ namespace HadoukInput
 		}
 
 		/// <summary>
+		/// Setup the table with all the keystroke combinations in it
+		/// </summary>
+		private static void SetupKeystrokeCombinationTable()
+		{
+			g_KeystrokeCombinations[(int)EKeystroke.Up] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.Down] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.Forward] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.Back] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.Neutral] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.UpR] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.DownR] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardR] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.BackR] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralR] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.A] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.B] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.X] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.Y] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulder] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulder] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.LTrigger] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.RTrigger] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.ARelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.BRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.XRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.YRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulderRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulderRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.LTriggerRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.RTriggerRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.UpForwardR] = new EKeystroke[] { EKeystroke.UpR, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownForwardR] = new EKeystroke[] { EKeystroke.DownR, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpBackR] = new EKeystroke[] { EKeystroke.UpR, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownBackR] = new EKeystroke[] { EKeystroke.DownR, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.AUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.A };
+			g_KeystrokeCombinations[(int)EKeystroke.ADown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.A };
+			g_KeystrokeCombinations[(int)EKeystroke.AForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.A };
+			g_KeystrokeCombinations[(int)EKeystroke.ABack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.A };
+			g_KeystrokeCombinations[(int)EKeystroke.BUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.B };
+			g_KeystrokeCombinations[(int)EKeystroke.BDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.B };
+			g_KeystrokeCombinations[(int)EKeystroke.BForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.B };
+			g_KeystrokeCombinations[(int)EKeystroke.BBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.B };
+			g_KeystrokeCombinations[(int)EKeystroke.XUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.X };
+			g_KeystrokeCombinations[(int)EKeystroke.XDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.X };
+			g_KeystrokeCombinations[(int)EKeystroke.XForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.X };
+			g_KeystrokeCombinations[(int)EKeystroke.XBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.X };
+			g_KeystrokeCombinations[(int)EKeystroke.YUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.Y };
+			g_KeystrokeCombinations[(int)EKeystroke.YDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.Y };
+			g_KeystrokeCombinations[(int)EKeystroke.YForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.Y };
+			g_KeystrokeCombinations[(int)EKeystroke.YBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.Y };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulderUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.LShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulderDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.LShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulderForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.LShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.LShoulderBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.LShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulderUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.RShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulderDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.RShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulderForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.RShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.RShoulderBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.RShoulder };
+			g_KeystrokeCombinations[(int)EKeystroke.LTriggerUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.LTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.LTriggerDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.LTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.LTriggerForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.LTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.LTriggerBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.LTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.RTriggerUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.RTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.RTriggerDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.RTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.RTriggerForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.RTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.RTriggerBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.RTrigger };
+			g_KeystrokeCombinations[(int)EKeystroke.UpUp] = new EKeystroke[] { EKeystroke.Up, EKeystroke.UpR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpUpForward] = new EKeystroke[] { EKeystroke.Up, EKeystroke.UpR, EKeystroke.ForwardR, EKeystroke.UpForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpForward] = new EKeystroke[] { EKeystroke.Up, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpDownForward] = new EKeystroke[] { EKeystroke.Up, EKeystroke.DownR, EKeystroke.ForwardR, EKeystroke.DownForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpDown] = new EKeystroke[] { EKeystroke.Up, EKeystroke.DownR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpDownBack] = new EKeystroke[] { EKeystroke.Up, EKeystroke.DownR, EKeystroke.BackR, EKeystroke.DownBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpBack] = new EKeystroke[] { EKeystroke.Up, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpUpBack] = new EKeystroke[] { EKeystroke.Up, EKeystroke.UpR, EKeystroke.BackR, EKeystroke.UpBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.UpNeutral] = new EKeystroke[] { EKeystroke.Up, EKeystroke.NeutralR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardUp] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.UpR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardUpForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.UpR, EKeystroke.ForwardR, EKeystroke.UpForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardDownForward] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.DownR, EKeystroke.ForwardR, EKeystroke.DownForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardDown] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.DownR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardDownBack] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.DownR, EKeystroke.BackR, EKeystroke.DownBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardBack] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardUpBack] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.UpR, EKeystroke.BackR, EKeystroke.UpBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardNeutral] = new EKeystroke[] { EKeystroke.Forward, EKeystroke.NeutralR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownUp] = new EKeystroke[] { EKeystroke.Down, EKeystroke.UpR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownUpForward] = new EKeystroke[] { EKeystroke.Down, EKeystroke.UpR, EKeystroke.ForwardR, EKeystroke.UpForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownForward] = new EKeystroke[] { EKeystroke.Down, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownDownForward] = new EKeystroke[] { EKeystroke.Down, EKeystroke.DownR, EKeystroke.ForwardR, EKeystroke.DownForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownDown] = new EKeystroke[] { EKeystroke.Down, EKeystroke.DownR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownDownBack] = new EKeystroke[] { EKeystroke.Down, EKeystroke.DownR, EKeystroke.BackR, EKeystroke.DownBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownBack] = new EKeystroke[] { EKeystroke.Down, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownUpBack] = new EKeystroke[] { EKeystroke.Down, EKeystroke.UpR, EKeystroke.BackR, EKeystroke.UpBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.DownNeutral] = new EKeystroke[] { EKeystroke.Down, EKeystroke.NeutralR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackUp] = new EKeystroke[] { EKeystroke.Back, EKeystroke.UpR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackUpForward] = new EKeystroke[] { EKeystroke.Back, EKeystroke.UpR, EKeystroke.ForwardR, EKeystroke.UpForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackForward] = new EKeystroke[] { EKeystroke.Back, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackDownForward] = new EKeystroke[] { EKeystroke.Back, EKeystroke.DownR, EKeystroke.ForwardR, EKeystroke.DownForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackDown] = new EKeystroke[] { EKeystroke.Back, EKeystroke.DownR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackDownBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.DownR, EKeystroke.BackR, EKeystroke.DownBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackUpBack] = new EKeystroke[] { EKeystroke.Back, EKeystroke.UpR, EKeystroke.BackR, EKeystroke.UpBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.BackNeutral] = new EKeystroke[] { EKeystroke.Back, EKeystroke.NeutralR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralUp] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.UpR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralUpForward] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.UpR, EKeystroke.ForwardR, EKeystroke.UpForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralForward] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.ForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralDownForward] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.DownR, EKeystroke.ForwardR, EKeystroke.DownForwardR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralDown] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.DownR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralDownBack] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.DownR, EKeystroke.BackR, EKeystroke.DownBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralBack] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.BackR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralUpBack] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.UpR, EKeystroke.BackR, EKeystroke.UpBackR };
+			g_KeystrokeCombinations[(int)EKeystroke.NeutralNeutral] = new EKeystroke[] { EKeystroke.Neutral, EKeystroke.NeutralR };
+		}
+
+		/// <summary>
 		/// contructor
 		/// </summary>
 		/// <param name="controller">index of the controller this player will use</param>
@@ -227,6 +366,8 @@ namespace HadoukInput
 				m_MoveTree[(int)i] = new MoveNode(i);
 			}
 		}
+
+		#endregion //Initialization 
 
 		/// <summary>
 		/// clear out all the stored input
@@ -313,50 +454,9 @@ namespace HadoukInput
 					//get the result of checking that input button
 					if (m_Controller.CheckKeystroke(i, bFlipped, direction))
 					{
-						//add to the buffered input for checking later
-						var rItem = new InputItem(fCurrentTime, i);
-						m_listBufferedInput.Add(rItem);
+						BufferKeyStroke(i, fCurrentTime);
 					}
 				}
-			}
-
-			//okay, check all the buffered input for simultaneous keys
-			int iCur = 0;
-			while (iCur < (m_listBufferedInput.Count - 1))
-			{
-				//check this item with the next one in the list
-				int iNext = iCur + 1;
-				while (iNext < m_listBufferedInput.Count)
-				{
-					//get the two keystrokes
-					EKeystroke eCurKey = m_listBufferedInput[iCur].Keystroke;
-					EKeystroke eNextKey = m_listBufferedInput[iNext].Keystroke;
-					Debug.Assert(eCurKey < EKeystroke.NumKeystrokes);
-					Debug.Assert(eNextKey < EKeystroke.NumKeystrokes);
-
-					//see if the two keystrokes can be combined
-					int iFirstIndex = ((eCurKey < eNextKey) ? (int)eCurKey : (int)eNextKey);
-					int iSecondIndex = ((eCurKey >= eNextKey) ? (int)eNextKey : (int)eCurKey);
-					Debug.Assert(iFirstIndex <= iSecondIndex); //always check the smalelr number as the first index
-
-					//If this is a keystroke that can be combined...
-					if ((iFirstIndex < TransitionsFirstColumnSize) && (iSecondIndex < TransitionsSecondColumnSize))
-					{
-						EKeystroke eCombined = g_InputTransitions[iFirstIndex, iSecondIndex];
-						if ((eCurKey != eCombined) || (eCurKey == eNextKey))
-						{
-							//if found one, change this to the new keystroke
-							m_listBufferedInput[iCur].Keystroke = eCombined;
-
-							//remove the next item from the buffered input
-							m_listBufferedInput.RemoveAt(iNext);
-							continue;
-						}
-					}
-					iNext++;
-				}
-
-				iCur++;
 			}
 
 			//check if any buffered input keys are expired
@@ -365,8 +465,24 @@ namespace HadoukInput
 			{
 				if (m_listBufferedInput[0].Time <= fMinInputItemTime)
 				{
-					//if so, add the input message to the input list and remove from this one
-					m_listQueuedInput.Add(m_listBufferedInput[0]);
+					//Check if this message is already queued
+					bool bFound = false;
+					for (int i = 0; i < m_listQueuedInput.Count; i++)
+					{
+						if (m_listQueuedInput[i] == m_listBufferedInput[0])
+						{
+							bFound = true;
+							break;
+						}
+					}
+
+					//if message not already queued, add the input message to the input list
+					if (!bFound)
+					{
+						m_listQueuedInput.Add(m_listBufferedInput[0]);
+					}
+
+					//remove the message from the buffered input
 					m_listBufferedInput.RemoveAt(0);
 				}
 				else
@@ -375,6 +491,95 @@ namespace HadoukInput
 					break;
 				}
 			}
+		}
+
+		private void BufferKeyStroke(EKeystroke foundKey, float fCurrentTime)
+		{
+			//ok, found a keystroke... check if we even need it
+			bool bNeedIt = true;
+			for (int i = 0; i < m_listBufferedInput.Count; i++)
+			{
+				//is it a dupe keystroke?
+				if (m_listBufferedInput[i].Keystroke == foundKey)
+				{
+					//yeah we got plenty of that shit already
+					bNeedIt = false;
+					break;
+				}
+
+				//Is this new keystroke part of a combination that is already buffered?
+				if (RedundantKeystroke(m_listBufferedInput[i].Keystroke, foundKey))
+				{
+					bNeedIt = false;
+					break;
+				}
+
+				//Can we combine these keystrokes?
+				EKeystroke combined = m_listBufferedInput[i].Keystroke;
+				if (CombineKeystrokes(m_listBufferedInput[i].Keystroke, foundKey, ref combined))
+				{
+					//Ok, these two keystrokes can be combined... 
+					m_listBufferedInput[i].Keystroke = combined;
+					bNeedIt = false;
+					break;
+				}
+			}
+
+			if (bNeedIt)
+			{
+				//add to the buffered input for checking later
+				m_listBufferedInput.Add(new InputItem(fCurrentTime, foundKey));
+			}
+		}
+
+		/// <summary>
+		/// given two keys, check if the second key is part of the first one
+		/// </summary>
+		/// <param name="eCurKey"></param>
+		/// <param name="eNextKey"></param>
+		/// <returns></returns>
+		private bool RedundantKeystroke(EKeystroke eCurKey, EKeystroke eNextKey)
+		{
+			//iterate through the components of that higher keystroke and see if the lower is part of it
+			for (int i = 0; i < g_KeystrokeCombinations[(int)eCurKey].Length; i++)
+			{
+				if (eNextKey == g_KeystrokeCombinations[(int)eCurKey][i])
+				{
+					//this new keystroke is part of an existing one
+					return true;
+				}
+			}
+
+			//we can use this keystroke
+			return false;
+		}
+
+		/// <summary>
+		/// Given two keystrokes, check if they can be combined into a third
+		/// </summary>
+		/// <param name="eCurKey">the current key to check</param>
+		/// <param name="eNextKey">the new key to check</param>
+		/// <param name="eCombined">If the keystrokes can be combined, this will hold the result.</param>
+		/// <returns>true if the keystrokes were successfully combined.</returns>
+		private bool CombineKeystrokes(EKeystroke eCurKey, EKeystroke eNextKey, ref EKeystroke eCombined)
+		{
+			//see if the two keystrokes can be combined
+			int iFirstIndex = ((eCurKey < eNextKey) ? (int)eCurKey : (int)eNextKey);
+			int iSecondIndex = ((eCurKey <= eNextKey) ? (int)eNextKey : (int)eCurKey);
+			Debug.Assert(iFirstIndex <= iSecondIndex); //always check the smalelr number as the first index
+
+			//If this is a keystroke that can be combined...
+			if ((iFirstIndex < TransitionsRowSize) && (iSecondIndex < TransitionsColumnSize))
+			{
+				eCombined = g_InputTransitions[iFirstIndex, iSecondIndex];
+				if (eCurKey != eCombined)
+				{
+					//They can be combined
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		/// <summary>
