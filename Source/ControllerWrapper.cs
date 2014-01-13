@@ -74,24 +74,6 @@ namespace HadoukInput
 		/// </summary>
 		public PlayerIndex GamePadIndex { get; set; }
 
-		///<summary>
-		///flags for which actions are pressed
-		///one flag for each controller action
-		///</summary>
-		private readonly bool[] m_bControllerActionPress;
-
-		/// <summary>
-		/// list of the directions and if they are being held down
-		/// only 4 flags, for each direction
-		/// </summary>
-		private readonly bool[] m_bControllerActionHeld;
-
-		/// <summary>
-		/// list of flags for which actions have been released
-		/// only 4 flags, for each direction
-		/// </summary>
-		private readonly bool[] m_bControllerActionRelease;
-
 		/// <summary>
 		/// Gets the controller sticks.
 		/// </summary>
@@ -120,29 +102,23 @@ namespace HadoukInput
 
 		#region Properties
 
-		/// <summary>
-		/// Get access to check if a specific keystroke was pressed this frame
-		/// </summary>
-		public bool[] KeystrokePress
-		{
-			get { return m_bControllerActionPress; }
-		}
+		///<summary>
+		///flags for which actions are pressed
+		///one flag for each controller action
+		///</summary>
+		private bool[] ControllerActionPress { get; set; }
 
 		/// <summary>
-		/// Get access to check if a specific keystroke is held this frame
+		/// list of the directions and if they are being held down
+		/// only 4 flags, for each direction
 		/// </summary>
-		public bool[] KeystrokeHeld
-		{
-			get { return m_bControllerActionHeld; }
-		}
+		private bool[] ControllerActionHeld { get; set; }
 
 		/// <summary>
-		/// Get access to check if a specific keystroke was released this frame
+		/// list of flags for which actions have been released
+		/// only 4 flags, for each direction
 		/// </summary>
-		public bool[] KeystrokeRelease
-		{
-			get { return m_bControllerActionRelease; }
-		}
+		private bool[] ControllerActionRelease { get; set; }
 
 		#endregion
 
@@ -181,9 +157,9 @@ namespace HadoukInput
 				GamePadIndex = eGamePadIndex.Value;
 			}
 
-			m_bControllerActionPress = new bool[(int)EControllerAction.NumControllerActions];
-			m_bControllerActionHeld = new bool[(int)EControllerAction.NumControllerActions];
-			m_bControllerActionRelease = new bool[(int)EControllerAction.NumControllerActions];
+			ControllerActionPress = new bool[(int)EControllerAction.NumControllerActions];
+			ControllerActionHeld = new bool[(int)EControllerAction.NumControllerActions];
+			ControllerActionRelease = new bool[(int)EControllerAction.NumControllerActions];
 
 			//initialize input states
 			ResetController();
@@ -197,9 +173,9 @@ namespace HadoukInput
 			Thumbsticks.Reset();
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
 			{
-				m_bControllerActionPress[i] = false;
-				m_bControllerActionHeld[i] = false;
-				m_bControllerActionRelease[i] = false;
+				ControllerActionPress[i] = false;
+				ControllerActionHeld[i] = false;
+				ControllerActionRelease[i] = false;
 			}
 		}
 
@@ -224,13 +200,118 @@ namespace HadoukInput
 			for (EControllerAction j = 0; j < EControllerAction.NumControllerActions; j++)
 			{
 				//update which buttons were presses this frame
-				m_bControllerActionPress[(int)j] = CheckControllerActionPress(rInputState, i, j);
+				ControllerActionPress[(int)j] = CheckControllerActionPress(rInputState, i, j);
 
 				//update which directions are held this frame
-				m_bControllerActionHeld[(int)j] = CheckControllerActionHeld(rInputState, i, j);
+				ControllerActionHeld[(int)j] = CheckControllerActionHeld(rInputState, i, j);
 
 				//update which dircetions are released this frame
-				m_bControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
+				ControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
+			}
+		}
+
+		/// <summary>
+		/// Check for a specific keystroke
+		/// only used for button press keystrokes
+		/// </summary>
+		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <returns>bool: the keystroke is being held</returns>
+		public bool CheckKeystroke(EKeystroke eKeystroke)
+		{
+			switch (eKeystroke)
+			{
+				case EKeystroke.Up:
+				{
+					return ControllerActionPress[(int)EControllerAction.Up];
+				}
+				case EKeystroke.Down:
+				{
+					return ControllerActionPress[(int)EControllerAction.Down];
+				}
+				case EKeystroke.Back:
+				{
+					return ControllerActionPress[(int)EControllerAction.Left];
+				}
+				case EKeystroke.Forward:
+				{
+					return ControllerActionPress[(int)EControllerAction.Right];
+				}
+
+				case EKeystroke.A:
+				{
+					return ControllerActionPress[(int)EControllerAction.A];
+				}
+				case EKeystroke.B:
+				{
+					return ControllerActionPress[(int)EControllerAction.B];
+				}
+				case EKeystroke.X:
+				{
+					return ControllerActionPress[(int)EControllerAction.X];
+				}
+				case EKeystroke.Y:
+				{
+					return ControllerActionPress[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulder:
+				{
+					return ControllerActionPress[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulder:
+				{
+					return ControllerActionPress[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTrigger:
+				{
+					return ControllerActionPress[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTrigger:
+				{
+					return ControllerActionPress[(int)EControllerAction.RTrigger];
+				}
+
+			//CHECK BUTTONS RELEASED
+
+				case EKeystroke.ARelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.A];
+				}
+				case EKeystroke.BRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.B];
+				}
+				case EKeystroke.XRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.X];
+				}
+				case EKeystroke.YRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulderRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulderRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTriggerRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTriggerRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.RTrigger];
+				}
+
+				default:
+				{
+					//you used the wrong CheckKeystroke method?
+					//you passed in one of the direction+button keystrokes?
+					Debug.Assert(false);
+					return false;
+				}
 			}
 		}
 
@@ -291,16 +372,16 @@ namespace HadoukInput
 				case EKeystroke.Neutral:
 				{
 					//are any keys being held?
-					if (!m_bControllerActionHeld[(int)EControllerAction.Up] &&
-						!m_bControllerActionHeld[(int)EControllerAction.Down] &&
-						!m_bControllerActionHeld[(int)EControllerAction.Right] &&
-						!m_bControllerActionHeld[(int)EControllerAction.Left])
+					if (!ControllerActionHeld[(int)EControllerAction.Up] &&
+						!ControllerActionHeld[(int)EControllerAction.Down] &&
+						!ControllerActionHeld[(int)EControllerAction.Right] &&
+						!ControllerActionHeld[(int)EControllerAction.Left])
 					{
 						//did a "key up" action occur?
-						return (m_bControllerActionRelease[(int)EControllerAction.Up] ||
-							m_bControllerActionRelease[(int)EControllerAction.Down] ||
-							m_bControllerActionRelease[(int)EControllerAction.Right] ||
-							m_bControllerActionRelease[(int)EControllerAction.Left]);
+						return (ControllerActionRelease[(int)EControllerAction.Up] ||
+							ControllerActionRelease[(int)EControllerAction.Down] ||
+							ControllerActionRelease[(int)EControllerAction.Right] ||
+							ControllerActionRelease[(int)EControllerAction.Left]);
 					}
 					else
 					{
@@ -335,16 +416,16 @@ namespace HadoukInput
 				case EKeystroke.NeutralR:
 				{
 					//are any keys being held?
-					if (!m_bControllerActionHeld[(int)EControllerAction.UpR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.DownR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.RightR] &&
-						!m_bControllerActionHeld[(int)EControllerAction.LeftR])
+					if (!ControllerActionHeld[(int)EControllerAction.UpR] &&
+						!ControllerActionHeld[(int)EControllerAction.DownR] &&
+						!ControllerActionHeld[(int)EControllerAction.RightR] &&
+						!ControllerActionHeld[(int)EControllerAction.LeftR])
 					{
 						//did a "key up" action occur?
-						return (m_bControllerActionRelease[(int)EControllerAction.UpR] ||
-							m_bControllerActionRelease[(int)EControllerAction.DownR] ||
-							m_bControllerActionRelease[(int)EControllerAction.RightR] ||
-							m_bControllerActionRelease[(int)EControllerAction.LeftR]);
+						return (ControllerActionRelease[(int)EControllerAction.UpR] ||
+							ControllerActionRelease[(int)EControllerAction.DownR] ||
+							ControllerActionRelease[(int)EControllerAction.RightR] ||
+							ControllerActionRelease[(int)EControllerAction.LeftR]);
 					}
 					else
 					{
@@ -354,79 +435,9 @@ namespace HadoukInput
 
 				//CHECK BUTTONS
 
-				case EKeystroke.A:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.A];
-				}
-				case EKeystroke.B:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.B];
-				}
-				case EKeystroke.X:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.X];
-				}
-				case EKeystroke.Y:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.Y];
-				}
-				case EKeystroke.LShoulder:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.LShoulder];
-				}
-				case EKeystroke.RShoulder:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.RShoulder];
-				}
-				case EKeystroke.LTrigger:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.LTrigger];
-				}
-				case EKeystroke.RTrigger:
-				{
-					return m_bControllerActionPress[(int)EControllerAction.RTrigger];
-				}
-
-				//CHECK BUTTONS RELEASED
-
-				case EKeystroke.ARelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.A];
-				}
-				case EKeystroke.BRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.B];
-				}
-				case EKeystroke.XRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.X];
-				}
-				case EKeystroke.YRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.Y];
-				}
-				case EKeystroke.LShoulderRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.LShoulder];
-				}
-				case EKeystroke.RShoulderRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.RShoulder];
-				}
-				case EKeystroke.LTriggerRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.LTrigger];
-				}
-				case EKeystroke.RTriggerRelease:
-				{
-					return m_bControllerActionRelease[(int)EControllerAction.RTrigger];
-				}
-
 				default:
 				{
-					//you passed in one of the direction+button keystrokes?
-					Debug.Assert(false);
-					return false;
+					return CheckKeystroke(eKeystroke);
 				}
 			}
 		}
@@ -1044,19 +1055,19 @@ namespace HadoukInput
 			//read in buttons
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
 			{
-				m_bControllerActionPress[i] = packetReader.ReadBoolean();
+				ControllerActionPress[i] = packetReader.ReadBoolean();
 			}
 
 			//read in directions
 			for (int i = 0; i < (int)EControllerAction.X; i++)
 			{
-				m_bControllerActionHeld[i] = packetReader.ReadBoolean();
+				ControllerActionHeld[i] = packetReader.ReadBoolean();
 			}
 
 			//read in released
 			for (int i = 0; i < (int)EControllerAction.X; i++)
 			{
-				m_bControllerActionRelease[i] = packetReader.ReadBoolean();
+				ControllerActionRelease[i] = packetReader.ReadBoolean();
 			}
 		}
 
@@ -1070,19 +1081,19 @@ namespace HadoukInput
 			//write out buttons
 			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
 			{
-				packetWriter.Write(m_bControllerActionPress[i]);
+				packetWriter.Write(ControllerActionPress[i]);
 			}
 
 			//write out directions
 			for (int i = 0; i < (int)EControllerAction.X; i++)
 			{
-				packetWriter.Write(m_bControllerActionHeld[i]);
+				packetWriter.Write(ControllerActionHeld[i]);
 			}
 
 			//write out released
 			for (int i = 0; i < (int)EControllerAction.X; i++)
 			{
-				packetWriter.Write(m_bControllerActionRelease[i]);
+				packetWriter.Write(ControllerActionRelease[i]);
 			}
 		}
 
