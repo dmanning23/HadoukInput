@@ -315,6 +315,22 @@ namespace HadoukInput
 			}
 		}
 
+		public static Vector2 UpVect(bool bFlipped, Vector2 direction)
+		{
+			if (bFlipped)
+			{
+				//If it is flipped, the up vector is the direction rotated 90 degrees
+				Matrix rotate = MatrixExt.Orientation(1.57079633f);
+				return MatrixExt.Multiply(rotate, direction);
+			}
+			else
+			{
+				//If it is not flipped, the up vector is the direction rotated -90 degrees
+				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
+				return MatrixExt.Multiply(rotate, direction);
+			}
+		}
+
 		/// <summary>
 		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
@@ -328,20 +344,7 @@ namespace HadoukInput
 			Debug.Assert(EKeystroke.RTriggerRelease >= eKeystroke);
 
 			//Get the 'up' vector...
-			Vector2 upVect;
-			
-			if (bFlipped)
-			{
-				//If it is flipped, the up vector is the direction rotated 90 degrees
-				Matrix rotate = MatrixExt.Orientation(1.57079633f);
-				upVect = MatrixExt.Multiply(rotate, direction);
-			}
-			else
-			{
-				//If it is not flipped, the up vector is the direction rotated -90 degrees
-				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
-				upVect = MatrixExt.Multiply(rotate, direction);
-			}
+			Vector2 upVect = UpVect(bFlipped, direction);
 
 			switch (eKeystroke)
 			{
