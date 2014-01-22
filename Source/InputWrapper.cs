@@ -33,16 +33,6 @@ namespace HadoukInput
 		#region Members
 
 		/// <summary>
-		/// Length of time input items are held in the buffer before being put in the queue
-		/// </summary>
-		private const float m_fBufferedInputExpire = 0.05f;
-
-		/// <summary>
-		/// Length of time input items are held in the queue before they are discarded.
-		/// </summary>
-		private const float m_fQueuedInputExpire = 0.5f;
-
-		/// <summary>
 		/// state machine for combining the keystrokes of input items
 		/// This is an 2d array that takes 2 keystrokes and returns the keystroke that results from combining them
 		/// </summary>
@@ -102,6 +92,16 @@ namespace HadoukInput
 		{
 			get { return m_Controller; }
 		}
+
+		/// <summary>
+		/// Length of time input items are held in the buffer before being put in the queue
+		/// </summary>
+		public float BufferedInputExpire { get; set; }
+
+		/// <summary>
+		/// Length of time input items are held in the queue before they are discarded.
+		/// </summary>
+		public float QueuedInputExpire { get; set; }
 
 		#endregion //Properties
 
@@ -354,6 +354,8 @@ namespace HadoukInput
 		{
 			Debug.Assert(null != rClock);
 
+			BufferedInputExpire = 0.05f;
+			QueuedInputExpire = 0.5f;
 			m_listBufferedInput = new List<InputItem>();
 			m_listQueuedInput = new List<InputItem>();
 			m_Controller = controller;
@@ -432,7 +434,7 @@ namespace HadoukInput
 		{
 			//first, remove any old input from the system
 			float fCurrentTime = GetCurrentTime();
-			float fMinInputItemTime = fCurrentTime - m_fQueuedInputExpire;
+			float fMinInputItemTime = fCurrentTime - QueuedInputExpire;
 			while (m_listQueuedInput.Count > 0)
 			{
 				if (m_listQueuedInput[0].Time <= fMinInputItemTime)
@@ -461,7 +463,7 @@ namespace HadoukInput
 			}
 
 			//check if any buffered input keys are expired
-			fMinInputItemTime = fCurrentTime - m_fBufferedInputExpire;
+			fMinInputItemTime = fCurrentTime - BufferedInputExpire;
 			while (m_listBufferedInput.Count > 0)
 			{
 				if (m_listBufferedInput[0].Time <= fMinInputItemTime)
