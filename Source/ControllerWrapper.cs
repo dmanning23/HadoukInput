@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MatrixExtensions;
+using System.Collections.Generic;
 
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
@@ -17,11 +18,12 @@ namespace HadoukInput
 		#region Mapped Keys
 
 		/// <summary>
-		/// key mappings for all 4 controllers
+		/// button mappings for all 4 controllers
+		/// These map a controller action to a button on a controller.
 		/// These can be changed to do button remapping...
 		/// TODO: add a function to do button remapping:  should take an action & button, reset the actions mapped to that same button
 		/// </summary>
-		static public Buttons[,] g_KeyMap =
+		static public Buttons[,] g_ButtonMap =
 		{
 			{
 				Buttons.A,
@@ -62,6 +64,56 @@ namespace HadoukInput
 				Buttons.RightShoulder,
 				Buttons.LeftTrigger,
 				Buttons.RightTrigger
+			}
+		};
+
+		/// <summary>
+		/// key mappings for all 4 controllers
+		/// These map a controller action to a key on the keyboard.
+		/// These can be changed to do key remapping...
+		/// TODO: add a function to do button remapping:  should take an action & button, reset the actions mapped to that same button
+		/// </summary>
+		static public Keys[,] g_KeyMap =
+		{
+			{
+				Keys.Z, //Buttons.A,
+				Keys.X, //Buttons.B,
+				Keys.A, //Buttons.X,
+				Keys.S, //Buttons.Y,
+				Keys.D, //Buttons.LeftShoulder,
+				Keys.F, //Buttons.RightShoulder,
+				Keys.C, //Buttons.LeftTrigger,
+				Keys.V  //Buttons.RightTrigger
+			},
+			{
+				Keys.Z,
+				Keys.X,
+				Keys.A,
+				Keys.S,
+				Keys.D,
+				Keys.F,
+				Keys.C,
+				Keys.V
+			},
+			{
+				Keys.Z,
+				Keys.X,
+				Keys.A,
+				Keys.S,
+				Keys.D,
+				Keys.F,
+				Keys.C,
+				Keys.V
+			},
+			{
+				Keys.Z,
+				Keys.X,
+				Keys.A,
+				Keys.S,
+				Keys.D,
+				Keys.F,
+				Keys.C,
+				Keys.V
 			}
 		};
 
@@ -176,6 +228,23 @@ namespace HadoukInput
 				ControllerActionPress[i] = false;
 				ControllerActionHeld[i] = false;
 				ControllerActionRelease[i] = false;
+			}
+		}
+
+		/// <summary>
+		/// Map a players controller actions to a set of keys
+		/// </summary>
+		/// <param name="eIndex">player index to remap</param>
+		/// <param name="mappedKeys">keys to use for that player</param>
+		static public void MapKeys(PlayerIndex eIndex, Keys[] mappedKeys)
+		{
+			//make sure there are the correct num of keys
+			Debug.Assert(mappedKeys.Length == 8);
+
+			//replace them all!
+			for (int i = 0; i < mappedKeys.Length; i++)
+			{
+				g_KeyMap[(int)eIndex, i] = mappedKeys[i];
 			}
 		}
 
@@ -497,80 +566,11 @@ namespace HadoukInput
 					break;
 					default:
 					{
-						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
-						switch (mappedButton)
+						//get the attack key to check
+						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
+						if (CheckKeyDown(rInputState, i, mappedKey))
 						{
-							case Buttons.A:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.Z))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.B:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.X))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.X:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.A))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.Y:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.S))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.LeftShoulder:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.D))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.RightShoulder:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.F))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.LeftTrigger:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.C))
-								{
-									return true;
-								}
-							}
-							break;
-							case Buttons.RightTrigger:
-							{
-								if (CheckKeyDown(rInputState, i, Keys.V))
-								{
-									return true;
-								}
-							}
-							break;
-							default:
-							{
-								//wtf did u do
-								Debug.Assert(false);
-								return false;
-							}
+							return true;
 						}
 					}
 					break;
@@ -631,7 +631,7 @@ namespace HadoukInput
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
+					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
 					return (rInputState.ButtonDown(i, mappedButton) && !rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
@@ -684,80 +684,11 @@ namespace HadoukInput
 						break;
 					default:
 					{
-						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
-						switch (mappedButton)
+						//get the attack key to check
+						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
+						if (rInputState.CurrentKeyboardState.IsKeyDown(mappedKey))
 						{
-							case Buttons.A:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Z))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.B:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.X))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.X:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.A))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.Y:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.S))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.LeftShoulder:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.D))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.RightShoulder:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.F))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.LeftTrigger:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.C))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.RightTrigger:
-							{
-								if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.V))
-								{
-									return true;
-								}
-							}
-								break;
-							default:
-							{
-								//wtf did u do
-								Debug.Assert(false);
-								return false;
-							}
+							return true;
 						}
 					}
 					break;
@@ -806,7 +737,7 @@ namespace HadoukInput
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
+					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
 					return rInputState.ButtonDown(i, mappedButton);
 				}
 			}
@@ -862,80 +793,10 @@ namespace HadoukInput
 						break;
 					default:
 					{
-						//get the attack button to check
-						Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
-						switch (mappedButton)
+						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
+						if (CheckKeyUp(rInputState, i, mappedKey))
 						{
-							case Buttons.A:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.Z))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.B:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.X))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.X:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.A))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.Y:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.S))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.LeftShoulder:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.D))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.RightShoulder:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.F))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.LeftTrigger:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.C))
-								{
-									return true;
-								}
-							}
-								break;
-							case Buttons.RightTrigger:
-							{
-								if (CheckKeyUp(rInputState, i, Keys.V))
-								{
-									return true;
-								}
-							}
-								break;
-							default:
-							{
-								//wtf did u do
-								Debug.Assert(false);
-								return false;
-							}
+							return true;
 						}
 					}
 					break;
@@ -996,7 +857,7 @@ namespace HadoukInput
 				default:
 				{
 					//get the attack button to check
-					Buttons mappedButton = g_KeyMap[i, (iAction - EControllerAction.A)];
+					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
 					return (!rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
 				}
 			}
