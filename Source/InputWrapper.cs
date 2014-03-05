@@ -670,7 +670,7 @@ namespace HadoukInput
 		/// <param name="strResource">name of the resource to load</param>
 		/// <para name="rStates">delegate method for resolving message names</para>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadXmlFile(Filename strResource, MessageNameToID rStates)
+		public bool ReadXmlFile(FilenameBuddy.Filename strResource, MessageNameToID rStates)
 		{
 			Debug.Assert(null != m_MoveTree);
 
@@ -770,7 +770,7 @@ namespace HadoukInput
 		/// <param name="strResource">name of the resource to load</param>
 		/// <para name="rStates">delegate method for resolving message names</para>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadSerializedFile(ContentManager rContent, Filename strResource, MessageNameToID rStates)
+		public bool ReadSerializedFile(ContentManager rContent, FilenameBuddy.Filename strResource, MessageNameToID rStates)
 		{
 			Debug.Assert(null != m_MoveTree);
 
