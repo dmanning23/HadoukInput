@@ -76,6 +76,10 @@ namespace HadoukInput
 		static public Keys[,] g_KeyMap =
 		{
 			{
+				Keys.Up,
+				Keys.Down,
+				Keys.Right,
+				Keys.Left,
 				Keys.Z, //Buttons.A,
 				Keys.X, //Buttons.B,
 				Keys.A, //Buttons.X,
@@ -86,6 +90,10 @@ namespace HadoukInput
 				Keys.V  //Buttons.RightTrigger
 			},
 			{
+				Keys.Up,
+				Keys.Down,
+				Keys.Right,
+				Keys.Left,
 				Keys.Z,
 				Keys.X,
 				Keys.A,
@@ -96,6 +104,10 @@ namespace HadoukInput
 				Keys.V
 			},
 			{
+				Keys.Up,
+				Keys.Down,
+				Keys.Right,
+				Keys.Left,
 				Keys.Z,
 				Keys.X,
 				Keys.A,
@@ -106,6 +118,10 @@ namespace HadoukInput
 				Keys.V
 			},
 			{
+				Keys.Up,
+				Keys.Down,
+				Keys.Right,
+				Keys.Left,
 				Keys.Z,
 				Keys.X,
 				Keys.A,
@@ -136,17 +152,7 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard
-		{
-			get
-			{
-				return Thumbsticks.LeftThumbstick.UseKeyboard;
-			}
-			set
-			{
-				Thumbsticks.LeftThumbstick.UseKeyboard = value;
-			}
-		}
+		public bool UseKeyboard { get; set; }
 
 		public bool ControllerPluggedIn { get; set; }
 
@@ -195,7 +201,7 @@ namespace HadoukInput
 		/// <param name="iGamePadIndex">If this isn't a keyboard, which gamepad index it should use.</param>
 		public ControllerWrapper(PlayerIndex? eGamePadIndex, bool bUseKeyboard = false)
 		{
-			Thumbsticks = new ThumbsticksWrapper();
+			Thumbsticks = new ThumbsticksWrapper(this);
 
 #if OUYA
 			//no keyboard at all on the Ouya
@@ -239,7 +245,7 @@ namespace HadoukInput
 		static public void MapKeys(PlayerIndex eIndex, Keys[] mappedKeys)
 		{
 			//make sure there are the correct num of keys
-			Debug.Assert(mappedKeys.Length == 8);
+			Debug.Assert(mappedKeys.Length == 12);
 
 			//replace them all!
 			for (int i = 0; i < mappedKeys.Length; i++)
@@ -277,6 +283,17 @@ namespace HadoukInput
 				//update which dircetions are released this frame
 				ControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
 			}
+		}
+
+		/// <summary>
+		/// Get the keyboard key that is mapped to an action
+		/// </summary>
+		/// <param name="iGamePadIndex"></param>
+		/// <param name="iAction"></param>
+		/// <returns></returns>
+		internal Keys MappedKey(int iGamePadIndex, EControllerAction iAction)
+		{
+			return g_KeyMap[iGamePadIndex, (int)iAction];
 		}
 
 		/// <summary>
@@ -340,6 +357,111 @@ namespace HadoukInput
 				}
 
 			//CHECK BUTTONS RELEASED
+
+				case EKeystroke.ARelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.A];
+				}
+				case EKeystroke.BRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.B];
+				}
+				case EKeystroke.XRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.X];
+				}
+				case EKeystroke.YRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulderRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulderRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTriggerRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTriggerRelease:
+				{
+					return ControllerActionRelease[(int)EControllerAction.RTrigger];
+				}
+
+				default:
+				{
+					//you used the wrong CheckKeystroke method?
+					//you passed in one of the direction+button keystrokes?
+					Debug.Assert(false);
+					return false;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Check for a specific keystroke
+		/// only used for button press keystrokes
+		/// </summary>
+		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <returns>bool: the keystroke is being held</returns>
+		public bool CheckKeystrokeHeld(EKeystroke eKeystroke)
+		{
+			switch (eKeystroke)
+			{
+				case EKeystroke.Up:
+				{
+					return ControllerActionHeld[(int)EControllerAction.Up];
+				}
+				case EKeystroke.Down:
+				{
+					return ControllerActionHeld[(int)EControllerAction.Down];
+				}
+				case EKeystroke.Back:
+				{
+					return ControllerActionHeld[(int)EControllerAction.Left];
+				}
+				case EKeystroke.Forward:
+				{
+					return ControllerActionHeld[(int)EControllerAction.Right];
+				}
+
+				case EKeystroke.A:
+				{
+					return ControllerActionHeld[(int)EControllerAction.A];
+				}
+				case EKeystroke.B:
+				{
+					return ControllerActionHeld[(int)EControllerAction.B];
+				}
+				case EKeystroke.X:
+				{
+					return ControllerActionHeld[(int)EControllerAction.X];
+				}
+				case EKeystroke.Y:
+				{
+					return ControllerActionHeld[(int)EControllerAction.Y];
+				}
+				case EKeystroke.LShoulder:
+				{
+					return ControllerActionHeld[(int)EControllerAction.LShoulder];
+				}
+				case EKeystroke.RShoulder:
+				{
+					return ControllerActionHeld[(int)EControllerAction.RShoulder];
+				}
+				case EKeystroke.LTrigger:
+				{
+					return ControllerActionHeld[(int)EControllerAction.LTrigger];
+				}
+				case EKeystroke.RTrigger:
+				{
+					return ControllerActionHeld[(int)EControllerAction.RTrigger];
+				}
+
+				//CHECK BUTTONS RELEASED
 
 				case EKeystroke.ARelease:
 				{
@@ -528,52 +650,10 @@ namespace HadoukInput
 
 			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
-				//first do the keyboard check
-				//First check if it is a direction
-				switch (iAction)
+				//get the key to check
+				if (CheckKeyDown(rInputState, i, MappedKey(i, iAction)))
 				{
-					case EControllerAction.Up:
-					{
-						if (CheckKeyDown(rInputState, i, Keys.Up))
-						{
-							return true;
-						}
-					}
-					break;
-					case EControllerAction.Down:
-					{
-						if (CheckKeyDown(rInputState, i, Keys.Down))
-						{
-							return true;
-						}
-					}
-					break;
-					case EControllerAction.Left:
-					{
-						if (CheckKeyDown(rInputState, i, Keys.Left))
-						{
-							return true;
-						}
-					}
-					break;
-					case EControllerAction.Right:
-					{
-						if (CheckKeyDown(rInputState, i, Keys.Right))
-						{
-							return true;
-						}
-					}
-					break;
-					default:
-					{
-						//get the attack key to check
-						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
-						if (CheckKeyDown(rInputState, i, mappedKey))
-						{
-							return true;
-						}
-					}
-					break;
+					return true;
 				}
 			}
 
@@ -647,51 +727,10 @@ namespace HadoukInput
 		{
 			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
-				//First check if it is a direction
-				switch (iAction)
+				//get the key to check
+				if (rInputState.CurrentKeyboardState.IsKeyDown(MappedKey(i, iAction)))
 				{
-					case EControllerAction.Up:
-					{
-						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Up))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Down:
-					{
-						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Left:
-					{
-						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Right:
-					{
-						if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
-						{
-							return true;
-						}
-					}
-						break;
-					default:
-					{
-						//get the attack key to check
-						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
-						if (rInputState.CurrentKeyboardState.IsKeyDown(mappedKey))
-						{
-							return true;
-						}
-					}
-					break;
+					return true;
 				}
 			}
 
@@ -756,50 +795,9 @@ namespace HadoukInput
 			if (UseKeyboard && (iAction < EControllerAction.UpR))
 			{
 				//first do the keyboard check
-				//First check if it is a direction
-				switch (iAction)
+				if (CheckKeyUp(rInputState, i, MappedKey(i, iAction)))
 				{
-					case EControllerAction.Up:
-					{
-						if (CheckKeyUp(rInputState, i, Keys.Up))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Down:
-					{
-						if (CheckKeyUp(rInputState, i, Keys.Down))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Left:
-					{
-						if (CheckKeyUp(rInputState, i, Keys.Left))
-						{
-							return true;
-						}
-					}
-						break;
-					case EControllerAction.Right:
-					{
-						if (CheckKeyUp(rInputState, i, Keys.Right))
-						{
-							return true;
-						}
-					}
-						break;
-					default:
-					{
-						Keys mappedKey = g_KeyMap[i, (iAction - EControllerAction.A)];
-						if (CheckKeyUp(rInputState, i, mappedKey))
-						{
-							return true;
-						}
-					}
-					break;
+					return true;
 				}
 			}
 

@@ -38,7 +38,7 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard { get; set; }
+		public ControllerWrapper Controller { get; set; }
 
 		/// <summary>
 		/// the dot product of the forward vector and a direction has to be greater than this number to count as "forward"
@@ -89,8 +89,11 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbstickWrapper(bool bSquareGate)
+		public ThumbstickWrapper(ControllerWrapper controls, bool bSquareGate)
 		{
+			//grba the controller 
+			Controller = controls;
+
 			//set up the forward threshold
 
 			//get the forward vector
@@ -175,29 +178,29 @@ namespace HadoukInput
 				}
 
 				//if we didnt find a direction and using the keyboard, check it now
-				if (UseKeyboard && bThumbstickDirection)
+				if (Controller.UseKeyboard && bThumbstickDirection)
 				{
 					//Check keyboard so we can test this stuff on computer
-					if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Up))
+					if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Up)))
 					{
 						//check up... 
 						bThumbstickDirection = false;
 						m_Direction.Y += 1.0f;
 					}
-					else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Down))
+					else if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Down)))
 					{
 						//check down... 
 						bThumbstickDirection = false;
 						m_Direction.Y -= 1.0f;
 					}
-				
-					if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Left))
+
+					if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Left)))
 					{
 						//check left
 						bThumbstickDirection = false;
 						m_Direction.X -= 1.0f;
 					}
-					else if (rInputState.CurrentKeyboardState.IsKeyDown(Keys.Right))
+					else if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Right)))
 					{
 						//check right
 						bThumbstickDirection = false;
@@ -311,8 +314,6 @@ namespace HadoukInput
 			return (float)System.Math.Pow(System.Math.Abs(fValue), ThumbstickPower) * System.Math.Sign(fValue);
 		}
 
-		#endregion //Methods
-
 		/// <summary>
 		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
@@ -419,6 +420,8 @@ namespace HadoukInput
 				return (-ForwardThreshold >= dot);
 			}
 		}
+
+		#endregion //Methods
 
 		#region Networking
 

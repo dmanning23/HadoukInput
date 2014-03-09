@@ -63,10 +63,10 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbsticksWrapper()
+		public ThumbsticksWrapper(ControllerWrapper controls)
 		{
-			LeftThumbstick = new ThumbstickWrapper(true);
-			RightThumbstick = new ThumbstickWrapper(false);
+			LeftThumbstick = new ThumbstickWrapper(controls, true);
+			RightThumbstick = new ThumbstickWrapper(controls, false);
 		}
 
 		/// <summary>
