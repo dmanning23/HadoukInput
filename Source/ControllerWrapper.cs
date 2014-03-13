@@ -71,7 +71,6 @@ namespace HadoukInput
 		/// key mappings for all 4 controllers
 		/// These map a controller action to a key on the keyboard.
 		/// These can be changed to do key remapping...
-		/// TODO: add a function to do button remapping:  should take an action & button, reset the actions mapped to that same button
 		/// </summary>
 		static public Keys[,] g_KeyMap =
 		{
