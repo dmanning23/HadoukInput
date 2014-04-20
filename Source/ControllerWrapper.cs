@@ -155,6 +155,18 @@ namespace HadoukInput
 
 		public bool ControllerPluggedIn { get; set; }
 
+		/// <summary>
+		/// Check if any direction is currently held...
+		/// added because the thumbstick direction is just 0.0 if neutral stick
+		/// </summary>
+		public bool AnyDirectionHeld
+		{
+			get
+			{
+				return Thumbsticks.LeftThumbstick.Direction.LengthSquared() != 0.0f;
+			}
+		}
+
 		#endregion
 
 		#region Properties

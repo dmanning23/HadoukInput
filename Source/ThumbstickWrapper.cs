@@ -60,6 +60,9 @@ namespace HadoukInput
 
 		#region Properties
 
+		/// <summary>
+		/// The current direction of the thumbstick, dpad, and keyboard
+		/// </summary>
 		public Vector2 Direction
 		{
 			get { return m_Direction; }
