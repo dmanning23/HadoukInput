@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MatrixExtensions;
-using System.Collections.Generic;
 
 #if NETWORKING
 using Microsoft.Xna.Framework.Net;
