@@ -86,19 +86,19 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\MonoGame\ThirdParty\Lidgren.Network\Lidgren.Network.Android.csproj">
+    <ProjectReference Include="..\externals\MonoGame\ThirdParty\Lidgren.Network\Lidgren.Network.Android.csproj">
       <Project>{565129E0-4EE5-4F6F-B403-C3484C9740BE}</Project>
       <Name>Lidgren.Network.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.Android.csproj">
+    <ProjectReference Include="..\externals\MonoGame\MonoGame.Framework\MonoGame.Framework.Android.csproj">
       <Project>{BA9476CF-99BA-4D03-92F2-73D2C5E58883}</Project>
       <Name>MonoGame.Framework.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Filename\Android\Filename.Android.csproj">
+    <ProjectReference Include="..\externals\Filename\Android\Filename.Android.csproj">
       <Project>{D30C7E1A-CD13-4E46-903E-72FAAD937745}</Project>
       <Name>Filename.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\MatrixExtensions\Android\MatrixExtensions.Android.csproj">
+    <ProjectReference Include="..\externals\MatrixExtensions\Android\MatrixExtensions.Android.csproj">
       <Project>{D9C411D3-6236-45A3-BFCD-21DCA61DE7F4}</Project>
       <Name>MatrixExtensions.Android</Name>
     </ProjectReference>
