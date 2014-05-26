@@ -272,7 +272,7 @@ namespace HadoukInput
 		/// <param name="rInputState">current state of all the input in the system</param>
 		/// <param name="rParameters">current state of all the key mappings and shit</param>
 		/// <param name="bFlip">true if the character this thing controls is facing left</param>
-		public void Update(InputState rInputState)
+		public virtual void Update(InputState rInputState)
 		{
 			var i = (int)GamePadIndex;
 
