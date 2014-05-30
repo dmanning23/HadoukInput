@@ -75,7 +75,11 @@ namespace HadoukInput
 		/// <summary>
 		/// Constructs a new input state.
 		/// </summary>
+		#if ANDROID
+		public InputState(AndroidGameWindow window)
+		#else
 		public InputState()
+		#endif
 		{
 			CurrentKeyboardState = new KeyboardState();
 			LastKeyboardState = new KeyboardState();
