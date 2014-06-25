@@ -3,7 +3,7 @@
 	/// <summary>
 	/// This is a single directional/button press input from the player.
 	/// </summary>
-	internal class InputItem
+	public class InputItem
 	{
 		#region Properties
 
