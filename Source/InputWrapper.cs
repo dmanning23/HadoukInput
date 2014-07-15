@@ -571,15 +571,15 @@ namespace HadoukInput
 		private bool CombineKeystrokes(EKeystroke eCurKey, EKeystroke eNextKey, ref EKeystroke eCombined)
 		{
 			//see if the two keystrokes can be combined
-			int iFirstIndex = ((eCurKey < eNextKey) ? (int)eCurKey : (int)eNextKey);
-			int iSecondIndex = ((eCurKey <= eNextKey) ? (int)eNextKey : (int)eCurKey);
-			Debug.Assert(iFirstIndex <= iSecondIndex); //always check the smalelr number as the first index
+			EKeystroke firstKey = ((eCurKey < eNextKey) ? eCurKey : eNextKey);
+			EKeystroke secondKey = ((eCurKey <= eNextKey) ? eNextKey : eCurKey);
+			Debug.Assert(firstKey <= secondKey); //always check the smalelr number as the first index
 
 			//If this is a keystroke that can be combined...
-			if ((iFirstIndex < TransitionsRowSize) && (iSecondIndex < TransitionsColumnSize))
+			if (((int)firstKey < TransitionsRowSize) && ((int)secondKey < TransitionsColumnSize))
 			{
-				eCombined = g_InputTransitions[iFirstIndex, iSecondIndex];
-				if (eCurKey != eCombined)
+				eCombined = g_InputTransitions[(int)firstKey, (int)secondKey];
+				if (firstKey != eCombined)
 				{
 					//They can be combined
 					return true;
