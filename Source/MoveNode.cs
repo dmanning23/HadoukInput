@@ -6,7 +6,7 @@ namespace HadoukInput
 	/// <summary>
 	/// This is a single node in the move tree, used for input pattern recognition
 	/// </summary>
-	internal class MoveNode
+	public class MoveNode
 	{
 		#region	Members
 

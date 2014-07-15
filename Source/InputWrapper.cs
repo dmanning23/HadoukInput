@@ -60,7 +60,7 @@ namespace HadoukInput
 		/// <summary>
 		/// The move tree, which acutally holds the wholle move list
 		/// </summary>
-		private readonly MoveNode[] m_MoveTree;
+		private readonly MoveList Moves;
 
 		/// <summary>
 		/// This is the buffer for input before it is put in the listInput
@@ -360,12 +360,7 @@ namespace HadoukInput
 			m_Controller = controller;
 			GetCurrentTime = rClock;
 
-			//set up the Movee tree
-			m_MoveTree = new MoveNode[(int)EKeystroke.NumKeystrokes];
-			for (EKeystroke i = 0; i < EKeystroke.NumKeystrokes; i++)
-			{
-				m_MoveTree[(int)i] = new MoveNode(i);
-			}
+			Moves = new MoveList();
 		}
 
 		#endregion //Initialization 
@@ -596,23 +591,7 @@ namespace HadoukInput
 		/// <returns>int: the id of the Move (as message index in statemachine). -1 for no Move</returns>
 		public int GetNextMove()
 		{
-			Debug.Assert(null != m_MoveTree);
-			for (int i = 0; i < m_listQueuedInput.Count; i++)
-			{
-				//get the branch of the Move tree for the current keystroke
-				Debug.Assert(EKeystroke.NumKeystrokes != m_listQueuedInput[i].Keystroke);
-				var iKeystrokeIndex = (int)m_listQueuedInput[i].Keystroke;
-				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
-				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
-				int iMove = m_MoveTree[iKeystrokeIndex].ParseInput(m_listQueuedInput, i);
-				if (-1 != iMove)
-				{
-					return iMove;
-				}
-			}
-
-			//no Moves were found
-			return -1;
+			return Moves.GetNextMove(m_listQueuedInput);
 		}
 
 		public override string ToString()
@@ -671,144 +650,8 @@ namespace HadoukInput
 		/// <returns>bool: whether or not it was able to load the input list</returns>
 		public bool ReadXmlFile(FilenameBuddy.Filename strResource, MessageNameToID rStates)
 		{
-			Debug.Assert(null != m_MoveTree);
-
-			//Open the file.
-			FileStream stream = File.Open(strResource.File, FileMode.Open, FileAccess.Read);
-			var xmlDoc = new XmlDocument();
-			xmlDoc.Load(stream);
-			XmlNode rootNode = xmlDoc.DocumentElement;
-
-			//make sure it is actually an xml node
-			if (rootNode.NodeType != XmlNodeType.Element)
-			{
-				//should be an xml node!!!
-				return false;
-			}
-
-			//eat up the name of that xml node
-			string strElementName = rootNode.Name;
-			if (("XnaContent" != strElementName) || !rootNode.HasChildNodes)
-			{
-				return false;
-			}
-
-			//next node is "<Asset Type="SPFSettings.MoveListXML">"
-			XmlNode AssetNode = rootNode.FirstChild;
-			if (null == AssetNode)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-			if (!AssetNode.HasChildNodes)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-			if ("Asset" != AssetNode.Name)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-
-			//Read in all the moves
-			XmlNode movesNode = AssetNode.FirstChild;
-			for (XmlNode moveNode = movesNode.FirstChild;
-			     null != moveNode;
-			     moveNode = moveNode.NextSibling)
-			{
-				//if it isnt an element node, continue
-				if (moveNode.NodeType != XmlNodeType.Element)
-				{
-					continue;
-				}
-				//Get teh name node
-				XmlNode childNode = moveNode.FirstChild;
-				string strMessageName = childNode.InnerXml;
-				int iMessage = rStates(strMessageName);
-				Debug.Assert(iMessage >= 0);
-
-				//get the keystrokes node
-				XmlNode keystrokesNode = childNode.NextSibling;
-
-				//put the input into a proper list
-				var listKeystrokes = new List<EKeystroke>();
-				try
-				{
-					for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
-					     null != keystrokeNode;
-					     keystrokeNode = keystrokeNode.NextSibling)
-					{
-						var myKeystroke = (EKeystroke)Enum.Parse(typeof (EKeystroke), keystrokeNode.InnerXml);
-						listKeystrokes.Add(myKeystroke);
-					}
-				}
-				catch (Exception)
-				{
-					Debug.Assert(false, "Bad xml in the move list");
-					return false;
-				}
-
-				//add the move to the Move tree
-				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
-				var iKeystrokeIndex = (int)listKeystrokes[0];
-				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
-				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
-				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
-			}
-
-			// Close the file.
-			stream.Close();
-			return true;
-		}
-
-		/// <summary>
-		/// read input from a xna resource
-		/// </summary>
-		/// <param name="rContent">xna content manager</param>
-		/// <param name="strResource">name of the resource to load</param>
-		/// <para name="rStates">delegate method for resolving message names</para>
-		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadSerializedFile(ContentManager rContent, FilenameBuddy.Filename strResource, MessageNameToID rStates)
-		{
-			Debug.Assert(null != m_MoveTree);
-
-			//read in serialized xna input list
-			var myXML = rContent.Load<MoveListXML>(strResource.GetRelPathFileNoExt());
-
-			//read in the state names
-			for (int i = 0; i < myXML.moves.Count; i++)
-			{
-				//get the state machine message
-				string strMessageName = myXML.moves[i].name;
-				int iMessage = rStates(strMessageName);
-				Debug.Assert(iMessage >= 0);
-
-				//put the input into a proper list
-				var listKeystrokes = new List<EKeystroke>();
-				try
-				{
-					for (int j = 0; j < myXML.moves[i].keystrokes.Count; j++)
-					{
-						var myKeystroke = (EKeystroke)Enum.Parse(typeof (EKeystroke), myXML.moves[i].keystrokes[j]);
-						listKeystrokes.Add(myKeystroke);
-					}
-				}
-				catch (Exception)
-				{
-					Debug.Assert(false, "Bad xml in the move list");
-					return false;
-				}
-
-				//add the move to the Move tree
-				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
-				var iKeystrokeIndex = (int)listKeystrokes[0];
-				Debug.Assert(iKeystrokeIndex < m_MoveTree.Length);
-				Debug.Assert(null != m_MoveTree[iKeystrokeIndex]);
-				m_MoveTree[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
-			}
-
-			return true;
+			Debug.Assert(null != Moves);
+			return Moves.ReadXmlFile(strResource, rStates);
 		}
 
 		#endregion //File IO
