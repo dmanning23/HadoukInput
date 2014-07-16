@@ -141,10 +141,9 @@ namespace HadoukInput
 						listKeystrokes.Add(myKeystroke);
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					Debug.Assert(false, "Bad xml in the move list");
-					return false;
+					throw new Exception("Bad xml in the move list", ex);
 				}
 
 				//add the move to the Move tree
