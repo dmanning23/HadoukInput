@@ -29,6 +29,13 @@ namespace HadoukInput
 	/// </summary>
 	public class InputWrapper
 	{
+		#region Fields
+
+		public const float DefaultBufferedInputExpire = 0.05f;
+		public const float DefaultQueuedInputExpire = 0.5f;
+
+		#endregion //Fields
+
 		#region Members
 
 		/// <summary>
@@ -355,8 +362,8 @@ namespace HadoukInput
 		{
 			Debug.Assert(null != rClock);
 
-			BufferedInputExpire = 0.05f;
-			QueuedInputExpire = 0.5f;
+			BufferedInputExpire = DefaultBufferedInputExpire;
+			QueuedInputExpire = DefaultQueuedInputExpire;
 			m_listBufferedInput = new List<InputItem>();
 			m_listQueuedInput = new List<InputItem>();
 			m_Controller = controller;
@@ -390,7 +397,7 @@ namespace HadoukInput
 			UpdateController(rInputState);
 			
 			//create a fake direction for left or right
-			UpdateMoveQueue(bFlipped, (bFlipped ? new Vector2(-1.0f, 0.0f) : new Vector2(1.0f, 0.0f)));
+			UpdateMoveQueue(bFlipped, (bFlipped ? -Vector2.UnitX : Vector2.UnitX));
 		}
 
 		/// <summary>
