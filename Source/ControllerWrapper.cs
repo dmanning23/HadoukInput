@@ -366,7 +366,7 @@ namespace HadoukInput
 					return ControllerActionPress[(int)EControllerAction.RTrigger];
 				}
 
-			//CHECK BUTTONS RELEASED
+				//CHECK BUTTONS RELEASED
 
 				case EKeystroke.ARelease:
 				{
@@ -635,6 +635,18 @@ namespace HadoukInput
 					{
 						return false;
 					}
+				}
+
+				case EKeystroke.ForwardShoulder:
+				{
+					return (bFlipped ? ControllerActionPress[(int)EControllerAction.LShoulder]: 
+						ControllerActionPress[(int)EControllerAction.RShoulder]);
+				}
+
+				case EKeystroke.BackShoulder:
+				{
+					return (!bFlipped ? ControllerActionPress[(int)EControllerAction.LShoulder] :
+						ControllerActionPress[(int)EControllerAction.RShoulder]);
 				}
 
 				//CHECK BUTTONS

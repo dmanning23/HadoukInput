@@ -32,6 +32,10 @@
 		LTrigger,
 		RTrigger,
 
+		//Check some special stuff for the shoulder buttons...
+		ForwardShoulder, //shoulder in the direction the player is facing
+		BackShoulder, //shoulder in the other direction
+
 		//button-up keystrokes
 		ARelease,
 		BRelease,

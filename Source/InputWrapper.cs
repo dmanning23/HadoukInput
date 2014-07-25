@@ -261,6 +261,8 @@ namespace HadoukInput
 			g_KeystrokeCombinations[(int)EKeystroke.RShoulderRelease] = new EKeystroke[] { };
 			g_KeystrokeCombinations[(int)EKeystroke.LTriggerRelease] = new EKeystroke[] { };
 			g_KeystrokeCombinations[(int)EKeystroke.RTriggerRelease] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.ForwardShoulder] = new EKeystroke[] { };
+			g_KeystrokeCombinations[(int)EKeystroke.BackShoulder] = new EKeystroke[] { };
 			g_KeystrokeCombinations[(int)EKeystroke.UpForwardR] = new EKeystroke[] { EKeystroke.UpR, EKeystroke.ForwardR };
 			g_KeystrokeCombinations[(int)EKeystroke.DownForwardR] = new EKeystroke[] { EKeystroke.DownR, EKeystroke.ForwardR };
 			g_KeystrokeCombinations[(int)EKeystroke.UpBackR] = new EKeystroke[] { EKeystroke.UpR, EKeystroke.BackR };
