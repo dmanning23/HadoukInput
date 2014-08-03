@@ -94,9 +94,9 @@
       <Project>{2E31A986-E147-4000-A5E3-28309C9DC601}</Project>
       <Name>MatrixExtensions.Ouya</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Filename\Android\Filename.Android.csproj">
+    <ProjectReference Include="..\..\Filename\Android\FilenameBuddy.Android.csproj">
       <Project>{D30C7E1A-CD13-4E46-903E-72FAAD937745}</Project>
-      <Name>Filename.Android</Name>
+      <Name>FilenameBuddy.Android</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
