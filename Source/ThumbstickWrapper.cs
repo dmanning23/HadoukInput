@@ -295,7 +295,7 @@ namespace HadoukInput
 				}
 			}
 
-			#if WINDOWS
+			#if WINDOWS || ANDROID
 			//thumbstick needs to be flipped on Y to match screen coords
 			m_Direction.Y *= -1.0f;
 			#endif
