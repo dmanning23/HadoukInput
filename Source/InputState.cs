@@ -318,22 +318,14 @@ namespace HadoukInput
 				}
 				case Buttons.LeftThumbstickUp:
 				{
-#if OUYA
-					return myGamePad.ThumbSticks.Left.Y < -DeadZone;
-#else
 					return myGamePad.ThumbSticks.Left.Y > DeadZone;
-#endif
 				}
 				case Buttons.LeftThumbstickDown:
 				{
 					//don't do down if a horizontal direction is held
 					return (!CheckButton(myGamePad, Buttons.LeftThumbstickLeft) &&
 					        !CheckButton(myGamePad, Buttons.LeftThumbstickRight) &&
-#if OUYA
-					        (myGamePad.ThumbSticks.Left.Y > DeadZone));
-#else
 					        (myGamePad.ThumbSticks.Left.Y < -DeadZone));
-#endif
 				}
 				case Buttons.LeftThumbstickLeft:
 				{
@@ -349,22 +341,14 @@ namespace HadoukInput
 				}
 				case Buttons.RightThumbstickUp:
 				{
-#if OUYA
-					return myGamePad.ThumbSticks.Right.Y < -DeadZone;
-#else
 					return myGamePad.ThumbSticks.Right.Y > DeadZone;
-#endif
 				}
 				case Buttons.RightThumbstickDown:
 				{
 					//don't do down if a horizontal direction is held
 					return (!CheckButton(myGamePad, Buttons.RightThumbstickLeft) &&
 							!CheckButton(myGamePad, Buttons.RightThumbstickRight) &&
-#if OUYA
-					        (myGamePad.ThumbSticks.Right.Y > DeadZone));
-#else
- (myGamePad.ThumbSticks.Right.Y < -DeadZone));
-#endif
+							 (myGamePad.ThumbSticks.Right.Y < -DeadZone));
 				}
 				case Buttons.RightThumbstickLeft:
 				{
