@@ -98,5 +98,9 @@
       <Project>{D30C7E1A-CD13-4E46-903E-72FAAD937745}</Project>
       <Name>FilenameBuddy.Android</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ouya-csharp\Ouya.Console.Api\Ouya.Console.Api.csproj">
+      <Project>{493A4B6F-98CE-4000-8A0C-4A4726299061}</Project>
+      <Name>Ouya.Console.Api</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

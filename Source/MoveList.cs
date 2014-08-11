@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
+using Microsoft.Xna.Framework;
+#if OUYA
+using Ouya.Console.Api;
+#endif
 
 namespace HadoukInput
 {
@@ -71,7 +75,11 @@ namespace HadoukInput
 		public bool ReadXmlFile(FilenameBuddy.Filename strResource, MessageNameToID rStates)
 		{
 			//Open the file.
+			#if OUYA
+			Stream stream = Game.Activity.Assets.Open(strResource.File);
+			#else
 			FileStream stream = File.Open(strResource.File, FileMode.Open, FileAccess.Read);
+			#endif
 			var xmlDoc = new XmlDocument();
 			xmlDoc.Load(stream);
 			XmlNode rootNode = xmlDoc.DocumentElement;
