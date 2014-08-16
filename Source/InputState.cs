@@ -90,6 +90,17 @@ namespace HadoukInput
 			}
 		}
 
+		/// <summary>
+		/// Check for left mouse down... only used in certain games
+		/// </summary>
+		public virtual bool LMouseDown
+		{
+			get
+			{
+				return false;
+			}
+		}
+
 		#endregion //Properties
 
 		#region Initialization

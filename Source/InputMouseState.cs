@@ -32,8 +32,18 @@ namespace HadoukInput
 		{
 			get
 			{
-				return ((CurrentMouseState.LeftButton == ButtonState.Pressed) &&
-					(LastMouseState.LeftButton == ButtonState.Released));
+				return (LMouseDown && (LastMouseState.LeftButton == ButtonState.Released));
+			}
+		}
+
+		/// <summary>
+		/// Check for left mouse down... only used in certain games
+		/// </summary>
+		public override bool LMouseDown
+		{
+			get
+			{
+				return (CurrentMouseState.LeftButton == ButtonState.Pressed);
 			}
 		}
 
