@@ -68,6 +68,28 @@ namespace HadoukInput
 			get { return _deadZoneSquared; }
 		}
 
+		/// <summary>
+		/// Get the mouse position... only used in certain games
+		/// </summary>
+		public virtual Vector2 MousePos
+		{
+			get
+			{
+				return Vector2.Zero;
+			}
+		}
+
+		/// <summary>
+		/// Check for left mouse click... only used in certain games
+		/// </summary>
+		public virtual bool LMouseClick
+		{
+			get
+			{
+				return false;
+			}
+		}
+
 		#endregion //Properties
 
 		#region Initialization
@@ -95,7 +117,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Reads the latest state of the keyboard and gamepad.
 		/// </summary>
-		public void Update()
+		public virtual void Update()
 		{
 			LastKeyboardState = CurrentKeyboardState;
 			CurrentKeyboardState = Keyboard.GetState();
@@ -125,9 +147,6 @@ namespace HadoukInput
 			{
 				// Read input from the specified player.
 				playerIndex = controllingPlayer.Value;
-
-				var i = (int)playerIndex;
-
 				return (CurrentKeyboardState.IsKeyDown(key) &&
 				        LastKeyboardState.IsKeyUp(key));
 			}
