@@ -77,6 +77,9 @@
     <Compile Include="..\Source\ThumbstickWrapper.cs">
       <Link>ThumbstickWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\Source\InputMouseState.cs">
+      <Link>InputMouseState.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
