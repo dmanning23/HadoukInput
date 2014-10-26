@@ -3,10 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MatrixExtensions;
 
-#if NETWORKING
-using Microsoft.Xna.Framework.Net;
-#endif
-
 namespace HadoukInput
 {
 	/// <summary>
@@ -924,66 +920,5 @@ namespace HadoukInput
 		#endregion //Private Methods
 
 		#endregion //Methods
-
-		#region Networking
-
-#if NETWORKING
-		
-		/// <summary>
-		/// Read this object from a network packet reader.
-		/// </summary>
-		public void ReadFromNetwork(PacketReader packetReader)
-		{
-			Thumbsticks.ReadFromNetwork(packetReader);
-
-			//read in buttons
-			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
-			{
-				ControllerActionPress[i] = packetReader.ReadBoolean();
-			}
-
-			//read in directions
-			for (int i = 0; i < (int)EControllerAction.X; i++)
-			{
-				ControllerActionHeld[i] = packetReader.ReadBoolean();
-			}
-
-			//read in released
-			for (int i = 0; i < (int)EControllerAction.X; i++)
-			{
-				ControllerActionRelease[i] = packetReader.ReadBoolean();
-			}
-		}
-
-		/// <summary>
-		/// Write this object to a network packet reader.
-		/// </summary>
-		public void WriteToNetwork(PacketWriter packetWriter)
-		{
-			Thumbsticks.WriteToNetwork(packetWriter);
-
-			//write out buttons
-			for (int i = 0; i < (int)EControllerAction.NumControllerActions; i++)
-			{
-				packetWriter.Write(ControllerActionPress[i]);
-			}
-
-			//write out directions
-			for (int i = 0; i < (int)EControllerAction.X; i++)
-			{
-				packetWriter.Write(ControllerActionHeld[i]);
-			}
-
-			//write out released
-			for (int i = 0; i < (int)EControllerAction.X; i++)
-			{
-				packetWriter.Write(ControllerActionRelease[i]);
-			}
-		}
-
-
-#endif
-
-		#endregion
 	}
 }

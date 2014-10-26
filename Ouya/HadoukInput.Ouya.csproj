@@ -77,6 +77,9 @@
     <Compile Include="..\Source\ThumbstickWrapper.cs">
       <Link>ThumbstickWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\Source\InputMouseState.cs">
+      <Link>InputMouseState.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -97,6 +100,10 @@
     <ProjectReference Include="..\..\MonoGame\MonoGame.Framework\MonoGame.Framework.Ouya.csproj">
       <Project>{8BEA875D-66D2-4A5F-B137-83D262A3851D}</Project>
       <Name>MonoGame.Framework.Ouya</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ouya-csharp\Ouya.Console.Api\Ouya.Console.Api.csproj">
+      <Project>{493A4B6F-98CE-4000-8A0C-4A4726299061}</Project>
+      <Name>Ouya.Console.Api</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
