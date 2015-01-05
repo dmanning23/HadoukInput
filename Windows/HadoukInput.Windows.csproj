@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{85D723F7-83EF-4C75-82BA-9385D0AC8448}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>HadoukInput.Windows</RootNamespace>
