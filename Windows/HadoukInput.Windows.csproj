@@ -74,9 +74,6 @@
     <Compile Include="..\Source\InputItem.cs">
       <Link>InputItem.cs</Link>
     </Compile>
-    <Compile Include="..\Source\InputMouseState.cs">
-      <Link>InputMouseState.cs</Link>
-    </Compile>
     <Compile Include="..\Source\InputState.cs">
       <Link>InputState.cs</Link>
     </Compile>
