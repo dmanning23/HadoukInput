@@ -119,23 +119,11 @@ namespace HadoukInput
 		/// If this is null, it will accept input from any player. When a keypress
 		/// is detected, the output playerIndex reports which player pressed it.
 		/// </summary>
-		public bool IsNewKeyPress(Keys key, PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		public bool IsNewKeyPress(Keys key)
 		{
-			if (controllingPlayer.HasValue)
-			{
-				// Read input from the specified player.
-				playerIndex = controllingPlayer.Value;
-				return (CurrentKeyboardState.IsKeyDown(key) &&
-				        LastKeyboardState.IsKeyUp(key));
-			}
-			else
-			{
-				// Accept input from any player.
-				return (IsNewKeyPress(key, PlayerIndex.One, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Two, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Three, out playerIndex) ||
-				        IsNewKeyPress(key, PlayerIndex.Four, out playerIndex));
-			}
+			// Read input from the specified player.
+			return (CurrentKeyboardState.IsKeyDown(key) &&
+					LastKeyboardState.IsKeyUp(key));
 		}
 
 		/// <summary>
@@ -174,7 +162,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return
-				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Escape) ||
 				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
@@ -378,10 +366,13 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuSelect(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
 		{
+			//default to player 1 in case of keyboard
+			playerIndex = PlayerIndex.One;
+
 			return
-				IsNewKeyPress(Keys.Space, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.Enter, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.Z, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Space) ||
+				IsNewKeyPress(Keys.Enter) ||
+				IsNewKeyPress(Keys.Z) ||
 				IsNewButtonPress(Buttons.A, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
@@ -394,9 +385,12 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuCancel(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
 		{
+			//default to player 1 in case of keyboard
+			playerIndex = PlayerIndex.One;
+
 			return
-				IsNewKeyPress(Keys.Escape, controllingPlayer, out playerIndex) ||
-				IsNewKeyPress(Keys.X, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Escape) ||
+				IsNewKeyPress(Keys.X) ||
 				IsNewButtonPress(Buttons.B, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex);
 		}
@@ -411,7 +405,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return
-				IsNewKeyPress(Keys.Up, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Up) ||
 				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
 		}
@@ -426,7 +420,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return
-				IsNewKeyPress(Keys.Down, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Down) ||
 				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
 		}
@@ -441,7 +435,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return
-				IsNewKeyPress(Keys.Left, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Left) ||
 				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
 		}
@@ -456,7 +450,7 @@ namespace HadoukInput
 			PlayerIndex playerIndex;
 
 			return
-				IsNewKeyPress(Keys.Right, controllingPlayer, out playerIndex) ||
+				IsNewKeyPress(Keys.Right) ||
 				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
 		}
