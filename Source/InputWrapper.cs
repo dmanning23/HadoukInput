@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using FilenameBuddy;
 
 namespace HadoukInput
 {
@@ -11,7 +12,7 @@ namespace HadoukInput
 	/// </summary>
 	/// <param name="strMessageName">name of the message to get ID for</param>
 	/// <returns>ID of that message</returns>
-	public delegate int MessageNameToID(string strMessageName);
+	public delegate int MessageNameToId(string strMessageName);
 
 	/// <summary>
 	/// A delegate to get the current time.
@@ -63,7 +64,7 @@ namespace HadoukInput
 		/// <summary>
 		/// The move tree, which acutally holds the wholle move list
 		/// </summary>
-		private readonly MoveList Moves;
+		private MoveList Moves { get; set; }
 
 		/// <summary>
 		/// This is the buffer for input before it is put in the listInput
@@ -364,8 +365,6 @@ namespace HadoukInput
 			m_listQueuedInput = new List<InputItem>();
 			m_Controller = controller;
 			GetCurrentTime = rClock;
-
-			Moves = new MoveList();
 		}
 
 		#endregion //Initialization 
@@ -650,13 +649,13 @@ namespace HadoukInput
 		/// <summary>
 		/// read input from a xna resource
 		/// </summary>
-		/// <param name="strResource">name of the resource to load</param>
-		/// <para name="rStates">delegate method for resolving message names</para>
+		/// <param name="xmlFilename">name of the resource to load</param>
+		/// <param name="messageIds">delegate method for resolving message names</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadXmlFile(FilenameBuddy.Filename strResource, MessageNameToID rStates)
+		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds)
 		{
-			Debug.Assert(null != Moves);
-			return Moves.ReadXmlFile(strResource, rStates);
+			Moves = new MoveList(messageIds, xmlFilename);
+			Moves.ReadXmlFile();
 		}
 
 		#endregion //File IO
