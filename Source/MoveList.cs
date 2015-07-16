@@ -72,9 +72,9 @@ namespace HadoukInput
 
 			switch (name)
 			{
-				case "Move":
+				case "Moves":
 				{
-					ReadMove(node);
+					ReadChildNodes(node, ReadMove);
 				}
 				break;
 				default:
