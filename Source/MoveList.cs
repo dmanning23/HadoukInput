@@ -1,14 +1,13 @@
-﻿using System;
+﻿using FilenameBuddy;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Xml;
-using Microsoft.Xna.Framework;
+using XmlBuddy;
+
 #if OUYA
 using Ouya.Console.Api;
 #endif
-using XmlBuddy;
-using FilenameBuddy;
 
 namespace HadoukInput
 {

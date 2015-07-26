@@ -1,9 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FilenameBuddy;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using FilenameBuddy;
 
 namespace HadoukInput
 {

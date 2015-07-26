@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
+﻿using MatrixExtensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using MatrixExtensions;
+using System.Diagnostics;
 
 namespace HadoukInput
 {
