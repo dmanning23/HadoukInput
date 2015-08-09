@@ -16,17 +16,17 @@ namespace HadoukInput
 		private Dictionary<EKeystroke, MoveNode> Children { get; set; }
 
 		///	<summary>
-		///	if this	is a leaf node,	this is	the	message	id to send for this	Move
+		///	if this is a leaf node, this is the message id to send for this Move
 		///	</summary>
 		private int MessageId { get; set; }
 
 		///	<summary>
-		///	the	controller keystroke this node represents
+		///	the controller keystroke this node represents
 		///	</summary>
 		public EKeystroke Keystroke { get; set; }
 
 		///	<summary>
-		///	if this	is a leaf node,	the	name of	the	Move
+		///	if this is a leaf node, the name of the Move
 		///	</summary>
 		public string MoveName { get; private set; }
 
@@ -46,13 +46,13 @@ namespace HadoukInput
 		}
 
 		///	<summary>
-		///	Recursively	add	Moves to the tree
-		///	Set	all	this nodes parameters 
+		///	Recursively add Moves to the tree
+		///	Set all this nodes parameters 
 		///	Allocate and add children nodes
 		///	</summary>
-		///	<param name="keystrokes">array of all	the	keystrokes for this	move</param>
+		///	<param name="keystrokes">array of all the keystrokes for this move</param>
 		///	<param name="inputIndex">the index of the keystrokes that this node represents</param>
-		///	<param name="messageId">message id	to send	when this Movee	is activated</param>
+		///	<param name="messageId">message id to send when this Move is activated</param>
 		///	<param name="moveName">name of the move</param>
 		public void AddMove(
 			List<EKeystroke> keystrokes,
