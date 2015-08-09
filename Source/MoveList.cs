@@ -1,9 +1,10 @@
-﻿using System;
+﻿using FilenameBuddy;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Xml;
-using Microsoft.Xna.Framework;
+using XmlBuddy;
+
 #if OUYA
 using Ouya.Console.Api;
 #endif
@@ -16,12 +17,14 @@ namespace HadoukInput
 	/// </summary>
 	public class MoveList : XmlFileBuddy
 	{
-		#region Fields
+		#region Properties
 
 		/// <summary>
 		/// List of all the moves in this move list
 		/// </summary>
-		public List<MoveNode> Moves { get; set; }
+		public Dictionary<EKeystroke, MoveNode> Moves { get; private set; }
+
+		private MessageNameToId NameResolver { get; set; }
 
 		#endregion //Fields
 
@@ -30,16 +33,12 @@ namespace HadoukInput
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public MoveList(MessageNameToId nameResolver) : base("HadoukInput.MoveList")
+		public MoveList(MessageNameToId nameResolver, Filename xmlFilename)
+			: base("MoveList", xmlFilename)
 		{
-			Moves = new List<MoveNode>();
-
-			//set up the Movee tree
-			for (EKeystroke i = 0; i < EKeystroke.NumKeystrokes; i++)
-			{
-				Moves.Add(new MoveNode(i));
+			Moves = new Dictionary<EKeystroke, MoveNode>();
+			NameResolver = nameResolver;
 			}
-		}
 
 		/// <summary>
 		/// Get the next Move out of the queue
@@ -48,98 +47,60 @@ namespace HadoukInput
 		/// <returns>int: the id of the Move (as message index in statemachine). -1 for no Move</returns>
 		public int GetNextMove(List<InputItem> input)
 		{
-			Debug.Assert(null != Moves);
-			for (int i = 0; i < input.Count; i++)
+			Debug.Assert(null != input);
+			for (var i = 0; i < input.Count; i++)
 			{
 				//get the branch of the Move tree for the current keystroke
-				Debug.Assert(EKeystroke.NumKeystrokes != input[i].Keystroke);
-				var iKeystrokeIndex = (int)input[i].Keystroke;
-				Debug.Assert(iKeystrokeIndex < Moves.Count);
-				Debug.Assert(null != Moves[iKeystrokeIndex]);
-				int iMove = Moves[iKeystrokeIndex].ParseInput(input, i);
-				if (-1 != iMove)
+				if (Moves.ContainsKey(input[i].Keystroke))
 				{
-					return iMove;
+					var moveId = Moves[input[i].Keystroke].ParseInput(input, i);
+					if (-1 != moveId)
+					{
+						return moveId;
 				}
+			}
 			}
 
 			//no Moves were found
 			return -1;
 		}
 
-		/// <summary>
-		/// read input from a xna resource
-		/// </summary>
-		/// <param name="strResource">name of the resource to load</param>
-		/// <para name="rStates">delegate method for resolving message names</para>
-		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public bool ReadXmlFile(FilenameBuddy.Filename strResource, MessageNameToID rStates)
+		public override void ParseXmlNode(XmlNode node)
 		{
-			//Open the file.
-			#if OUYA
-			Stream stream = Game.Activity.Assets.Open(strResource.File);
-			#else
-			FileStream stream = File.Open(strResource.File, FileMode.Open, FileAccess.Read);
-			#endif
-			var xmlDoc = new XmlDocument();
-			xmlDoc.Load(stream);
-			XmlNode rootNode = xmlDoc.DocumentElement;
+			var name = node.Name;
+			var value = node.Value;
 
-			//make sure it is actually an xml node
-			if (rootNode.NodeType != XmlNodeType.Element)
+			switch (name)
 			{
-				//should be an xml node!!!
-				return false;
+				case "Moves":
+			{
+					ReadChildNodes(node, ReadMove);
+			}
+				break;
+				default:
+			{
+					throw new Exception(string.Format("unknown xml node passed to MoveList: {0}", name));
+			}
+			}
 			}
 
-			//eat up the name of that xml node
-			string strElementName = rootNode.Name;
-			if (("XnaContent" != strElementName) || !rootNode.HasChildNodes)
+		private void ReadMove(XmlNode node)
 			{
-				return false;
-			}
-
-			//next node is "<Asset Type="SPFSettings.MoveListXML">"
-			XmlNode AssetNode = rootNode.FirstChild;
-			if (null == AssetNode)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-			if (!AssetNode.HasChildNodes)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-			if ("Asset" != AssetNode.Name)
-			{
-				Debug.Assert(false);
-				return false;
-			}
-
-			//Read in all the moves
-			XmlNode movesNode = AssetNode.FirstChild;
-			for (XmlNode moveNode = movesNode.FirstChild;
-				 null != moveNode;
-				 moveNode = moveNode.NextSibling)
-			{
-				//if it isnt an element node, continue
-				if (moveNode.NodeType != XmlNodeType.Element)
-				{
-					continue;
-				}
-
 				//Get teh name node
-				XmlNode childNode = moveNode.FirstChild;
-				string strMessageName = childNode.InnerXml;
-				int iMessage = rStates(strMessageName);
-				Debug.Assert(iMessage >= 0);
+			var nameNode = node.FirstChild;
+			var moveName = nameNode.InnerXml;
+			var moveId = NameResolver(moveName);
+			Debug.Assert(moveId >= 0);
 
 				//get the keystrokes node
-				XmlNode keystrokesNode = childNode.NextSibling;
+			var keystrokesNode = nameNode.NextSibling;
+			if (null == keystrokesNode || !keystrokesNode.HasChildNodes)
+			{
+				return;
+			}
 
 				//put the input into a proper list
-				var listKeystrokes = new List<EKeystroke>();
+			var keystrokes = new List<EKeystroke>();
 				try
 				{
 					for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
@@ -147,7 +108,7 @@ namespace HadoukInput
 						 keystrokeNode = keystrokeNode.NextSibling)
 					{
 						var myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
-						listKeystrokes.Add(myKeystroke);
+					keystrokes.Add(myKeystroke);
 					}
 				}
 				catch (Exception ex)
@@ -155,17 +116,26 @@ namespace HadoukInput
 					throw new Exception("Bad xml in the move list", ex);
 				}
 
-				//add the move to the Move tree
-				Debug.Assert(EKeystroke.NumKeystrokes != listKeystrokes[0]);
-				var iKeystrokeIndex = (int)listKeystrokes[0];
-				Debug.Assert(iKeystrokeIndex < Moves.Count);
-				Debug.Assert(null != Moves[iKeystrokeIndex]);
-				Moves[iKeystrokeIndex].AddMove(listKeystrokes, 0, iMessage, strMessageName);
+			//Get the correct moveNode
+			var key = keystrokes[0];
+			MoveNode moveNode;
+			if (Moves.ContainsKey(key))
+			{
+				moveNode = Moves[key];
+			}
+			else
+			{
+				moveNode = new MoveNode(key);
+				Moves[key] = moveNode;
 			}
 
-			// Close the file.
-			stream.Close();
-			return true;
+				//add the move to the Move tree
+			moveNode.AddMove(keystrokes, 0, moveId, moveName);
+			}
+
+		public override void WriteXmlNodes(XmlTextWriter xmlFile)
+		{
+			throw new NotImplementedException();
 		}
 
 		#endregion //Methods

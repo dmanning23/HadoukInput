@@ -13,12 +13,12 @@ namespace HadoukInput
 		///	<summary>
 		///	child nodes
 		///	</summary>
-		private readonly List<MoveNode> m_listChildren;
+		private Dictionary<EKeystroke, MoveNode> Children { get; set; }
 
 		///	<summary>
 		///	if this	is a leaf node,	this is	the	message	id to send for this	Move
 		///	</summary>
-		private int m_iMessageID;
+		private int MessageId { get; set; }
 
 		///	<summary>
 		///	the	controller keystroke this node represents
@@ -37,12 +37,12 @@ namespace HadoukInput
 		/// <summary>
 		/// contrsuctor
 		/// </summary>
-		/// <param name="eKeystroke">the keystroke this move node represents</param>
-		public MoveNode(EKeystroke eKeystroke)
+		/// <param name="keystroke">the keystroke this move node represents</param>
+		public MoveNode(EKeystroke keystroke)
 		{
-			m_listChildren = new List<MoveNode>();
-			Keystroke = eKeystroke;
-			m_iMessageID = -1;
+			Children = new Dictionary<EKeystroke, MoveNode>();
+			Keystroke = keystroke;
+			MessageId = -1;
 		}
 
 		///	<summary>
@@ -50,84 +50,82 @@ namespace HadoukInput
 		///	Set	all	this nodes parameters 
 		///	Allocate and add children nodes
 		///	</summary>
-		///	<param name="rgInputItems">array of	all	the	keystrokes for this	move</param>
-		///	<param name="iInputIndex">the index	of the rgInputItems	that this node represents</param>
-		///	<param name="iMessageID">message id	to send	when this Movee	is activated</param>
-		///	<param name="strMoveName">name of the move</param>
+		///	<param name="keystrokes">array of all	the	keystrokes for this	move</param>
+		///	<param name="inputIndex">the index of the keystrokes that this node represents</param>
+		///	<param name="messageId">message id	to send	when this Movee	is activated</param>
+		///	<param name="moveName">name of the move</param>
 		public void AddMove(
-			List<EKeystroke> rgInputItems,
-			int iInputIndex,
-			int iMessageID,
-			string strMoveName)
+			List<EKeystroke> keystrokes,
+			int inputIndex,
+			int messageId,
+			string moveName)
 		{
-			Debug.Assert(null != rgInputItems);
-			Debug.Assert(iInputIndex >= 0);
-			Debug.Assert(iInputIndex < rgInputItems.Count);
-			Debug.Assert(iMessageID >= 0);
-			Debug.Assert(EKeystroke.NumKeystrokes > rgInputItems[iInputIndex]);
+			Debug.Assert(null != keystrokes);
+			Debug.Assert(inputIndex >= 0);
+			Debug.Assert(inputIndex < keystrokes.Count);
+			Debug.Assert(messageId >= 0);
 
 			//verify that the input	item matches this dude
-			Debug.Assert(Keystroke == rgInputItems[iInputIndex]);
+			Debug.Assert(Keystroke == keystrokes[inputIndex]);
 
 			//If the index is the end of the list, make	this a leaf
-			if (iInputIndex == (rgInputItems.Count - 1))
+			if (inputIndex == (keystrokes.Count - 1))
 			{
-				m_iMessageID = iMessageID;
-				MoveName = strMoveName;
+				MessageId = messageId;
+				MoveName = moveName;
 				return;
 			}
 
 			//Get the child	node for the next input	item, recurse
-			int iNextIndex = iInputIndex + 1;
-			MoveNode rNode = GetChildNode(rgInputItems[iNextIndex]);
-			rNode.AddMove(rgInputItems, iNextIndex, iMessageID, strMoveName);
+			var nextIndex = inputIndex + 1;
+			var node = GetChildNode(keystrokes[nextIndex]);
+			node.AddMove(keystrokes, nextIndex, messageId, moveName);
 		}
 
 		///	<summary>
 		///	Parse a	list of	inputitems to find the next	Move.
 		///	</summary>
-		///	<param name="rgInputItems">a list of input to parse</param>
-		///	<param name="iInputIndex">index	of the input buffer	to check. If a Move	is found, the item at this index will be removed.</param>
+		///	<param name="inputItems">a list of input to parse</param>
+		///	<param name="inputIndex">index	of the input buffer	to check. If a Move	is found, the item at this index will be removed.</param>
 		///	<returns>int: The first	Move that matches the input. -1	if no Moves	are	found</returns>
-		public int ParseInput(List<InputItem> rgInputItems, int iInputIndex)
+		public int ParseInput(List<InputItem> inputItems, int inputIndex)
 		{
-			Debug.Assert(0 <= iInputIndex);
-			Debug.Assert(iInputIndex < rgInputItems.Count);
+			Debug.Assert(0 <= inputIndex);
+			Debug.Assert(inputIndex < inputItems.Count);
 
 			//verify that the input	item matches this dude
-			Debug.Assert(Keystroke == rgInputItems[iInputIndex].Keystroke);
+			Debug.Assert(Keystroke == inputItems[inputIndex].Keystroke);
 
 			//Check	if this	is a leaf node
-			if (0 <= m_iMessageID)
+			if (0 <= MessageId)
 			{
 				//remove item from linked list
-				rgInputItems.RemoveAt(iInputIndex);
+				inputItems.RemoveAt(inputIndex);
+
 				//return my Move
-				return m_iMessageID;
+				return MessageId;
 			}
 
 			//check	if iter	is at end of list
-			if (iInputIndex == (rgInputItems.Count - 1))
+			if (inputIndex == (inputItems.Count - 1))
 			{
 				return -1;
 			}
 
-			//otherwise, find child	nodes that matches next	input item
-			int iNextIndex = iInputIndex + 1;
-			for (int i = 0; i < m_listChildren.Count; i++)
+			//otherwise, find child nodes that matches next input item
+			var nextIndex = inputIndex + 1;
+			if (Children.ContainsKey(inputItems[nextIndex].Keystroke))
 			{
-				if (m_listChildren[i].Keystroke == rgInputItems[iNextIndex].Keystroke)
+				//increment iter and recurse into child	node
+				var childNode = Children[inputItems[nextIndex].Keystroke];
+				var childMove = childNode.ParseInput(inputItems, nextIndex);
+				if (-1 != childMove)
 				{
-					//increment	iter and recurse into child	node
-					int iChildMove = m_listChildren[i].ParseInput(rgInputItems, iNextIndex);
-					if (-1 != iChildMove)
-					{
-						//if child node	returns	Move, remove my	node from linked list
-						rgInputItems.RemoveAt(iInputIndex);
+					//if child node returns Move, remove my	node from linked list
+					inputItems.RemoveAt(inputIndex);
 
-						//return the found Move
-						return iChildMove;
-					}
+					//return the found Move
+					return childMove;
 				}
 			}
 
@@ -135,30 +133,23 @@ namespace HadoukInput
 		}
 
 		///	<summary>
-		///	Get	a child	node with a	specified input	item.
-		///	if the child node does not exist, this function	creates	it,	sets it, and adds it to	the	list of	child nodes
+		///	Get a child node with a specified input	item.
+		///	if the child node does not exist, this function creates it, sets it, and adds it to the list of child nodes
 		///	</summary>
-		///	<param name="eKeystroke">the keystroke we want a node for</param>
+		///	<param name="keystroke">the keystroke we want a node for</param>
 		///	<returns>MoveNode:	a child	node that uses that	keystroke</returns>
-		private MoveNode GetChildNode(EKeystroke eKeystroke)
+		private MoveNode GetChildNode(EKeystroke keystroke)
 		{
-			//check	if a node exists already with that input item
-			for (int i = 0; i < m_listChildren.Count; i++)
+			if (Children.ContainsKey(keystroke))
 			{
-				if (eKeystroke == m_listChildren[i].Keystroke)
-				{
-					//return the existing node
-					return m_listChildren[i];
-				}
+				return Children[keystroke];
 			}
-
-			//if not, create the node and set it
-			var rNode = new MoveNode(eKeystroke);
-
-			//add the node to the list
-			m_listChildren.Add(rNode);
-
-			return rNode;
+			else
+			{
+				var moveNode = new MoveNode(keystroke);
+				Children[keystroke] = moveNode;
+				return moveNode;
+			}
 		}
 
 		#endregion //Methods
