@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
+using XmlBuddy;
 using Microsoft.Xna.Framework;
 #if OUYA
 using Ouya.Console.Api;
 #endif
-using XmlBuddy;
 
 namespace HadoukInput
 {
 	/// <summary>
 	/// This is the object that holds all the data for a move list after it is loaded from XML by the XMLImporter.
 	/// </summary>
-	public class MoveList : XmlFileBuddy
+	public class MoveListModel : XmlFileBuddy
 	{
 		#region Fields
 
@@ -30,7 +30,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public MoveList(MessageNameToId nameResolver) : base("HadoukInput.MoveList")
+		public MoveList()
 		{
 			Moves = new List<MoveNode>();
 
@@ -169,15 +169,5 @@ namespace HadoukInput
 		}
 
 		#endregion //Methods
-
-		public override void ParseXmlNode(XmlNode xmlNode)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void WriteXmlNodes(XmlTextWriter xmlFile)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

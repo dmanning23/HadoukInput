@@ -113,6 +113,10 @@
       <Project>{2A84DFE8-75E0-4774-BAAF-00629ED44405}</Project>
       <Name>Filename.Windows</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\XmlBuddy\Windows\XmlBuddy.Windows.csproj">
+      <Project>{58b118ee-bd5d-4a5d-8ead-8c039dae553a}</Project>
+      <Name>XmlBuddy.Windows</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

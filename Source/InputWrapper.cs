@@ -11,7 +11,7 @@ namespace HadoukInput
 	/// </summary>
 	/// <param name="strMessageName">name of the message to get ID for</param>
 	/// <returns>ID of that message</returns>
-	public delegate int MessageNameToID(string strMessageName);
+	public delegate int MessageNameToId(string strMessageName);
 
 	/// <summary>
 	/// A delegate to get the current time.
