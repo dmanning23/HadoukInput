@@ -38,7 +38,7 @@ namespace HadoukInput
 		{
 			Moves = new Dictionary<EKeystroke, MoveNode>();
 			NameResolver = nameResolver;
-			}
+		}
 
 		/// <summary>
 		/// Get the next Move out of the queue
@@ -57,8 +57,8 @@ namespace HadoukInput
 					if (-1 != moveId)
 					{
 						return moveId;
+					}
 				}
-			}
 			}
 
 			//no Moves were found
@@ -73,48 +73,48 @@ namespace HadoukInput
 			switch (name)
 			{
 				case "Moves":
-			{
+				{
 					ReadChildNodes(node, ReadMove);
-			}
+				}
 				break;
 				default:
-			{
+				{
 					throw new Exception(string.Format("unknown xml node passed to MoveList: {0}", name));
+				}
 			}
-			}
-			}
+		}
 
 		private void ReadMove(XmlNode node)
-			{
-				//Get teh name node
+		{
+			//Get teh name node
 			var nameNode = node.FirstChild;
 			var moveName = nameNode.InnerXml;
 			var moveId = NameResolver(moveName);
 			Debug.Assert(moveId >= 0);
 
-				//get the keystrokes node
+			//get the keystrokes node
 			var keystrokesNode = nameNode.NextSibling;
 			if (null == keystrokesNode || !keystrokesNode.HasChildNodes)
 			{
 				return;
 			}
 
-				//put the input into a proper list
+			//put the input into a proper list
 			var keystrokes = new List<EKeystroke>();
-				try
+			try
+			{
+				for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
+					 null != keystrokeNode;
+					 keystrokeNode = keystrokeNode.NextSibling)
 				{
-					for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
-						 null != keystrokeNode;
-						 keystrokeNode = keystrokeNode.NextSibling)
-					{
-						var myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
+					var myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
 					keystrokes.Add(myKeystroke);
-					}
 				}
-				catch (Exception ex)
-				{
-					throw new Exception("Bad xml in the move list", ex);
-				}
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Bad xml in the move list", ex);
+			}
 
 			//Get the correct moveNode
 			var key = keystrokes[0];
@@ -129,9 +129,9 @@ namespace HadoukInput
 				Moves[key] = moveNode;
 			}
 
-				//add the move to the Move tree
+			//add the move to the Move tree
 			moveNode.AddMove(keystrokes, 0, moveId, moveName);
-			}
+		}
 
 		public override void WriteXmlNodes(XmlTextWriter xmlFile)
 		{
@@ -139,15 +139,5 @@ namespace HadoukInput
 		}
 
 		#endregion //Methods
-
-		public override void ParseXmlNode(XmlNode xmlNode)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override void WriteXmlNodes(XmlTextWriter xmlFile)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

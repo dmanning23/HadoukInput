@@ -43,18 +43,7 @@ namespace HadoukInput
 		/// <summary>
 		/// the dot product of the forward vector and a direction has to be greater than this number to count as "forward"
 		/// </summary>
-		private float ForwardThreshold;
-
-		/// <summary>
-		/// This is the dot product of a forward vector and 45 degree angle, so this is for square gated directions.
-		/// square root of 2 divided by 2
-		/// </summary>
-		//private const float SquareGate = 0.70710678118654752440084436210485f;
-
-		/// <summary>
-		/// This is the dot product of a forward vector and 67 degree angle, so this is for octogon gated directions.
-		/// </summary>
-		//private const float SquareRoot2DividedBy2 = 0.70710678118654752440084436210485f;
+		private readonly float ForwardThreshold;
 
 		#endregion //Members
 
@@ -425,31 +414,5 @@ namespace HadoukInput
 		}
 
 		#endregion //Methods
-
-		#region Networking
-
-#if NETWORKING
-		
-	/// <summary>
-	/// Read this object from a network packet reader.
-	/// </summary>
-		public void ReadFromNetwork(PacketReader packetReader)
-		{
-			m_PrevDirection = packetReader.ReadVector2();
-			m_Direction = packetReader.ReadVector2();
-		}
-		
-		/// <summary>
-		/// Write this object to a network packet reader.
-		/// </summary>
-		public void WriteToNetwork(PacketWriter packetWriter)
-		{
-			packetWriter.Write(m_PrevDirection);
-			packetWriter.Write(m_Direction);
-		}
-		
-#endif
-
-		#endregion //Networking
 	}
 }

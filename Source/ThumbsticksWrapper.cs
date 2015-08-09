@@ -88,31 +88,5 @@ namespace HadoukInput
 		}
 
 		#endregion //Methods
-
-		#region Networking
-
-#if NETWORKING
-		
-	/// <summary>
-	/// Read this object from a network packet reader.
-	/// </summary>
-		public void ReadFromNetwork(PacketReader packetReader)
-		{
-			LeftThumbstick.ReadFromNetwork(packetReader);
-			RightThumbstick.ReadFromNetwork(packetReader);
-		}
-		
-		/// <summary>
-		/// Write this object to a network packet reader.
-		/// </summary>
-		public void WriteToNetwork(PacketWriter packetWriter)
-		{
-			LeftThumbstick.WriteToNetwork(packetWriter);
-			RightThumbstick.WriteToNetwork(packetWriter);
-		}
-		
-#endif
-
-		#endregion //Networking
 	}
 }
