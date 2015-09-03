@@ -4,11 +4,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 using XmlBuddy;
-
 #if OUYA
 using Ouya.Console.Api;
 #endif
-using XmlBuddy;
 
 namespace HadoukInput
 {
