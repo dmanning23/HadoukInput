@@ -137,23 +137,14 @@ namespace HadoukInput
 				{
 					//check up... 
 					bThumbstickDirection = false;
-					#if OUYA
-					//godammit, y axis is backwards on the dpad but not the thumbstick
+
 					m_Direction.Y = -1.0f;
-					#else
-					m_Direction.Y += 1.0f;
-					#endif
 				}
 				else if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Down)
 				{
 					//check down... 
 					bThumbstickDirection = false;
-					#if OUYA
-					//godammit, y axis is backwards on the dpad but not the thumbstick
 					m_Direction.Y = 1.0f;
-					#else
-					m_Direction.Y -= 1.0f;
-					#endif
 				}
 
 				if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Left)
@@ -177,13 +168,13 @@ namespace HadoukInput
 					{
 						//check up... 
 						bThumbstickDirection = false;
-						m_Direction.Y += 1.0f;
+						m_Direction.Y -= 1.0f;
 					}
 					else if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Down)))
 					{
 						//check down... 
 						bThumbstickDirection = false;
-						m_Direction.Y -= 1.0f;
+						m_Direction.Y += 1.0f;
 					}
 
 					if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Left)))
