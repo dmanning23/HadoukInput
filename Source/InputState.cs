@@ -407,7 +407,7 @@ namespace HadoukInput
 			return
 				IsNewKeyPress(Keys.Up) ||
 				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
+				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
 		}
 
 		/// <summary>
@@ -422,7 +422,7 @@ namespace HadoukInput
 			return
 				IsNewKeyPress(Keys.Down) ||
 				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
-				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
+				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
 		}
 
 		/// <summary>
