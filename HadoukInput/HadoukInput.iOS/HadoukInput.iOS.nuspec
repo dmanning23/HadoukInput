@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>HadoukInput.iOS</id>
+        <version>1.0.1</version>
+        <title>HadoukInput.iOS</title>
+        <authors>dmanning23</authors>
+		<owners>dmanning23</owners>
+		<projectUrl>https://github.com/dmanning23/HadoukInput</projectUrl>
+		<licenseUrl>https://github.com/dmanning23/HadoukInput/blob/master/LICENSE.txt</licenseUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>MonoGame input library for sanitizing and pattern matching of controller input</description>
+        <releaseNotes />
+        <copyright>Copyright 2016</copyright>
+        <tags>MonoGame iOS</tags>
+        <dependencies>
+            <dependency id="MonoGame.Framework.iOS" version="(3.5,)"/>
+			<dependency id="FilenameBuddy.iOS" version="(1,)"/>
+			<dependency id="MatrixExtensions.iOS" version="(1,)"/>
+			<dependency id="RandomExtensions.iOS" version="(1,)"/>
+			<dependency id="Vector2Extensions.iOS" version="(1,)"/>
+			<dependency id="XmlBuddy.iOS" version="(1,)"/>
+		</dependencies>
+    </metadata>
+    <files>
+        <file src="Y:\Documents\Projects\HadoukInput\HadoukInput\HadoukInput.iOS\bin\Release\HadoukInput.iOS.pdb" target="lib\HadoukInput.iOS.pdb" />
+        <file src="Y:\Documents\Projects\HadoukInput\HadoukInput\HadoukInput.iOS\bin\Release\HadoukInput.iOS.dll" target="lib\HadoukInput.iOS.dll" />
+    </files>
+</package>

@@ -103,7 +103,7 @@ namespace HadoukInput
 			for (int i = 0; i < MaxInputs; i++)
 			{
 				m_LastGamePadStates[i] = m_CurrentGamePadStates[i];
-				m_CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i);
+				m_CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i, GamePadDeadZone.None);
 
 				// Keep track of whether a gamepad has ever been connected, so we can detect if it is unplugged.
 				if (m_CurrentGamePadStates[i].IsConnected)

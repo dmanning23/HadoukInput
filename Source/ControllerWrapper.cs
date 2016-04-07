@@ -196,9 +196,6 @@ namespace HadoukInput
 		/// </summary>
 		static ControllerWrapper()
 		{
-#if !XNA
-			GamePadThumbSticks.Gate = GamePadThumbSticks.GateType.None;
-#endif
 		}
 
 		/// <summary>
