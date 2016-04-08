@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>HadoukInput.DesktopGL</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <title>HadoukInput.DesktopGL</title>
         <authors>dmanning23</authors>
 		<owners>dmanning23</owners>
@@ -17,7 +17,7 @@
             <dependency id="MonoGame.Framework.DesktopGL" version="(3.5,)"/>
 			<dependency id="FilenameBuddy.DesktopGL" version="(1,)"/>
 			<dependency id="MatrixExtensions.DesktopGL" version="(1,)"/>
-			<dependency id="RandomExtensions.DesktopGL" version="(1,)"/>
+			<dependency id="RandomExtensions.dmanning23.DesktopGL" version="(1,)"/>
 			<dependency id="Vector2Extensions.DesktopGL" version="(1,)"/>
 			<dependency id="XmlBuddy.DesktopGL" version="(1,)"/>
 		</dependencies>

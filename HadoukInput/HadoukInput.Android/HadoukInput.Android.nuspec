@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>HadoukInput.Android</id>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <title>HadoukInput.Android</title>
         <authors>dmanning23</authors>
 		<owners>dmanning23</owners>
@@ -17,7 +17,7 @@
             <dependency id="MonoGame.Framework.Android" version="(3.5,)"/>
 			<dependency id="FilenameBuddy.Android" version="(1,)"/>
 			<dependency id="MatrixExtensions.Android" version="(1,)"/>
-			<dependency id="RandomExtensions.Android" version="(1,)"/>
+			<dependency id="RandomExtensions.dmanning23.Android" version="(1,)"/>
 			<dependency id="Vector2Extensions.Android" version="(1,)"/>
 			<dependency id="XmlBuddy.Android" version="(1,)"/>
 		</dependencies>
