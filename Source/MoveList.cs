@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 using XmlBuddy;
-#if OUYA
-using Ouya.Console.Api;
-#endif
 
 namespace HadoukInput
 {
@@ -131,7 +128,11 @@ namespace HadoukInput
 			moveNode.AddMove(keystrokes, 0, moveId, moveName);
 		}
 
+#if WINDOWS_UWP
+		public override void WriteXmlNodes()
+#else
 		public override void WriteXmlNodes(XmlTextWriter xmlFile)
+#endif
 		{
 			throw new NotImplementedException();
 		}
