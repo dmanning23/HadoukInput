@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.DesktopGL", "HadoukInput.DesktopGL\HadoukInput.DesktopGL.csproj", "{688D97C3-2345-4E7C-B074-88CF2645DB62}"
 EndProject
@@ -17,7 +17,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		HadoukInput.nuspec = HadoukInput.nuspec
 	EndProjectSection
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HadoukInput.SharedProject", "HadoukInput.SharedProject\HadoukInput.SharedProject.shproj", "{71A30BBC-91F3-43A9-BE36-BDA5AE30772C}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{544f38c0-f0be-4936-b79d-16506f41de8e}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{688d97c3-2345-4e7c-b074-88cf2645db62}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{71a30bbc-91f3-43a9-be36-bda5ae30772c}*SharedItemsImports = 13
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{c7539cd3-4b5c-4c65-ab21-b75b73b65b71}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{d77c2424-9736-47f0-9469-2f38cf5e8def}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|ARM = AppStore|ARM
@@ -81,14 +90,14 @@ Global
 		{544F38C0-F0BE-4936-B79D-16506F41DE8E}.Release|x64.Build.0 = Release|Any CPU
 		{544F38C0-F0BE-4936-B79D-16506F41DE8E}.Release|x86.ActiveCfg = Release|Any CPU
 		{544F38C0-F0BE-4936-B79D-16506F41DE8E}.Release|x86.Build.0 = Release|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|ARM.ActiveCfg = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|ARM.Build.0 = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x64.ActiveCfg = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x64.Build.0 = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x86.ActiveCfg = AppStore|Any CPU
-		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x86.Build.0 = AppStore|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|ARM.ActiveCfg = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|ARM.Build.0 = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x64.ActiveCfg = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x64.Build.0 = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x86.ActiveCfg = Release|Any CPU
+		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.AppStore|x86.Build.0 = Release|Any CPU
 		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7539CD3-4B5C-4C65-AB21-B75B73B65B71}.Debug|ARM.ActiveCfg = Debug|Any CPU

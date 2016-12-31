@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FilenameBuddy.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FilenameBuddy.1.0.2\lib\Xamarin.iOS10\FilenameBuddy.iOS.dll</HintPath>
+      <HintPath>..\packages\FilenameBuddy.1.0.3\lib\Xamarin.iOS10\FilenameBuddy.iOS.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MatrixExtensions.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -56,7 +56,7 @@
     </Reference>
     <Reference Include="Xamarin.iOS" />
     <Reference Include="XmlBuddy.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\XmlBuddy.1.0.2\lib\Xamarin.iOS10\XmlBuddy.iOS.dll</HintPath>
+      <HintPath>..\packages\XmlBuddy.1.0.13\lib\Xamarin.iOS10\XmlBuddy.iOS.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -64,43 +64,11 @@
     <Folder Include="Resources\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Source\ControllerAction.cs">
-      <Link>ControllerAction.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ControllerWrapper.cs">
-      <Link>ControllerWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\DeadZoneType.cs">
-      <Link>DeadZoneType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputItem.cs">
-      <Link>InputItem.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputState.cs">
-      <Link>InputState.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputWrapper.cs">
-      <Link>InputWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\Keystroke.cs">
-      <Link>Keystroke.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveList.cs">
-      <Link>MoveList.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveNode.cs">
-      <Link>MoveNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbsticksWrapper.cs">
-      <Link>ThumbsticksWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbstickWrapper.cs">
-      <Link>ThumbstickWrapper.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\HadoukInput.SharedProject\HadoukInput.SharedProject.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

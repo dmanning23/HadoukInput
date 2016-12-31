@@ -1,11 +1,13 @@
 ﻿{
   "dependencies": {
-    "FilenameBuddy": "1.0.2",
+    "FilenameBuddy": "1.0.3",
     "MatrixExtensions": "1.0.1",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
     "MonoGame.Framework.WindowsUniversal": "3.5.1.1679",
+    "System.Xml.ReaderWriter": "4.3.0",
+    "System.Xml.XmlDocument": "4.3.0",
     "Vector2Extensions": "1.0.1",
-    "XmlBuddy": "1.0.2"
+    "XmlBuddy": "1.0.13"
   },
   "frameworks": {
     "uap10.0": {}

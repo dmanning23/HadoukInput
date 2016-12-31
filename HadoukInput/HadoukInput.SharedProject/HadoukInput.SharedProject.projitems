@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>71a30bbc-91f3-43a9-be36-bda5ae30772c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HadoukInput.SharedProject</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ControllerAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ControllerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeadZoneType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InputWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Keystroke.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MoveList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MoveNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThumbsticksWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ThumbstickWrapper.cs" />
+  </ItemGroup>
+</Project>

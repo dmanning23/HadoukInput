@@ -11,7 +11,7 @@
     <AssemblyName>HadoukInput.WindowsUniversal</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10586.0</TargetPlatformVersion>
+    <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -107,42 +107,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Source\ControllerAction.cs">
-      <Link>ControllerAction.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ControllerWrapper.cs">
-      <Link>ControllerWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\DeadZoneType.cs">
-      <Link>DeadZoneType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputItem.cs">
-      <Link>InputItem.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputState.cs">
-      <Link>InputState.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputWrapper.cs">
-      <Link>InputWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\Keystroke.cs">
-      <Link>Keystroke.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveList.cs">
-      <Link>MoveList.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveNode.cs">
-      <Link>MoveNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbsticksWrapper.cs">
-      <Link>ThumbsticksWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbstickWrapper.cs">
-      <Link>ThumbstickWrapper.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\HadoukInput.WindowsUniversal.rd.xml" />
   </ItemGroup>
+  <Import Project="..\HadoukInput.SharedProject\HadoukInput.SharedProject.projitems" Label="Shared" />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

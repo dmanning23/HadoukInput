@@ -1,5 +1,6 @@
 ﻿using FilenameBuddy;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -652,10 +653,10 @@ namespace HadoukInput
 		/// <param name="xmlFilename">name of the resource to load</param>
 		/// <param name="messageIds">delegate method for resolving message names</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds)
+		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds, ContentManager content = null)
 		{
 			Moves = new MoveList(messageIds, xmlFilename);
-			Moves.ReadXmlFile();
+			Moves.ReadXmlFile(content);
 		}
 
 		#endregion //File IO

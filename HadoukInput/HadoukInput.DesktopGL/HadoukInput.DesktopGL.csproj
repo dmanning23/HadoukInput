@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FilenameBuddy.DesktopGL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FilenameBuddy.1.0.2\lib\net452\FilenameBuddy.DesktopGL.dll</HintPath>
+      <HintPath>..\packages\FilenameBuddy.1.0.3\lib\net452\FilenameBuddy.DesktopGL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MatrixExtensions.DesktopGL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -67,49 +67,17 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="XmlBuddy.DesktopGL, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\XmlBuddy.1.0.2\lib\net451\XmlBuddy.DesktopGL.dll</HintPath>
+      <HintPath>..\packages\XmlBuddy.1.0.13\lib\net451\XmlBuddy.DesktopGL.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Source\ControllerAction.cs">
-      <Link>ControllerAction.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ControllerWrapper.cs">
-      <Link>ControllerWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\DeadZoneType.cs">
-      <Link>DeadZoneType.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputItem.cs">
-      <Link>InputItem.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputState.cs">
-      <Link>InputState.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\InputWrapper.cs">
-      <Link>InputWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\Keystroke.cs">
-      <Link>Keystroke.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveList.cs">
-      <Link>MoveList.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\MoveNode.cs">
-      <Link>MoveNode.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbsticksWrapper.cs">
-      <Link>ThumbsticksWrapper.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Source\ThumbstickWrapper.cs">
-      <Link>ThumbstickWrapper.cs</Link>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\HadoukInput.SharedProject\HadoukInput.SharedProject.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

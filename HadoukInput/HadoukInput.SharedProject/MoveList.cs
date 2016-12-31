@@ -128,14 +128,12 @@ namespace HadoukInput
 			moveNode.AddMove(keystrokes, 0, moveId, moveName);
 		}
 
-#if WINDOWS_UWP
-		public override void WriteXmlNodes()
-#else
+#if !WINDOWS_UWP
 		public override void WriteXmlNodes(XmlTextWriter xmlFile)
-#endif
 		{
 			throw new NotImplementedException();
 		}
+#endif
 
 		#endregion //Methods
 	}
