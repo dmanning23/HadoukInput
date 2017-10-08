@@ -83,8 +83,8 @@ namespace HadoukInput
 		public void UpdateThumbsticks(InputState rInputState, int i)
 		{
 			//update the left thumbstick
-			LeftThumbstick.Update(rInputState, i, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Left, true);
-			RightThumbstick.Update(rInputState, i, rInputState.m_CurrentGamePadStates[i].ThumbSticks.Right, false);
+			LeftThumbstick.Update(rInputState, i, rInputState._currentGamePadStates[i].ThumbSticks.Left, true);
+			RightThumbstick.Update(rInputState, i, rInputState._currentGamePadStates[i].ThumbSticks.Right, false);
 		}
 
 		#endregion //Methods

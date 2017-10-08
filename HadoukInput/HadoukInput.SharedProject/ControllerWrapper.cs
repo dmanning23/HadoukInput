@@ -268,7 +268,7 @@ namespace HadoukInput
 			var i = (int)GamePadIndex;
 
 			//check if the controller is plugged in
-			ControllerPluggedIn = rInputState.m_CurrentGamePadStates[i].IsConnected;
+			ControllerPluggedIn = rInputState._currentGamePadStates[i].IsConnected;
 
 			//update the thumbstick
 			Thumbsticks.UpdateThumbsticks(rInputState, i);

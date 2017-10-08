@@ -20,11 +20,11 @@ namespace HadoukInput
 		/// </summary>
 		private const float TriggerDeadZone = 0.25f;
 
-		public readonly GamePadState[] m_CurrentGamePadStates;
+		public readonly GamePadState[] _currentGamePadStates;
 
-		public readonly GamePadState[] m_LastGamePadStates;
+		public readonly GamePadState[] _lastGamePadStates;
 
-		public readonly bool[] m_bGamePadWasConnected;
+		public readonly bool[] _gamePadWasConnected;
 
 		/// <summary>
 		/// the radius of the controller thumbstick dead zone
@@ -68,6 +68,8 @@ namespace HadoukInput
 			get { return _deadZoneSquared; }
 		}
 
+		public bool CheckControllers { get; set; }
+
 		#endregion //Properties
 
 		#region Initialization
@@ -77,13 +79,18 @@ namespace HadoukInput
 		/// </summary>
 		public InputState()
 		{
+			CheckControllers = true;
 			CurrentKeyboardState = new KeyboardState();
 			LastKeyboardState = new KeyboardState();
 
-			m_CurrentGamePadStates = new GamePadState[MaxInputs];
-			m_LastGamePadStates = new GamePadState[MaxInputs];
+			_currentGamePadStates = new GamePadState[MaxInputs];
+			_lastGamePadStates = new GamePadState[MaxInputs];
 
-			m_bGamePadWasConnected = new bool[MaxInputs];
+			_gamePadWasConnected = new bool[MaxInputs];
+			for (int i = 0; i < MaxInputs; i++)
+			{
+				_gamePadWasConnected[i] = false;
+			}
 
 			DeadZone = 0.27f;
 		}
@@ -100,15 +107,18 @@ namespace HadoukInput
 			LastKeyboardState = CurrentKeyboardState;
 			CurrentKeyboardState = Keyboard.GetState();
 
-			for (int i = 0; i < MaxInputs; i++)
+			if (CheckControllers)
 			{
-				m_LastGamePadStates[i] = m_CurrentGamePadStates[i];
-				m_CurrentGamePadStates[i] = GamePad.GetState((PlayerIndex)i, GamePadDeadZone.None);
-
-				// Keep track of whether a gamepad has ever been connected, so we can detect if it is unplugged.
-				if (m_CurrentGamePadStates[i].IsConnected)
+				for (int i = 0; i < MaxInputs; i++)
 				{
-					m_bGamePadWasConnected[i] = true;
+					_lastGamePadStates[i] = _currentGamePadStates[i];
+					_currentGamePadStates[i] = GamePad.GetState((PlayerIndex)i, GamePadDeadZone.None);
+
+					// Keep track of whether a gamepad has ever been connected, so we can detect if it is unplugged.
+					if (_currentGamePadStates[i].IsConnected)
+					{
+						_gamePadWasConnected[i] = true;
+					}
 				}
 			}
 		}
@@ -201,7 +211,7 @@ namespace HadoukInput
 		public bool ButtonDown(int iPlayerIndex, Buttons button)
 		{
 			//check that button on that gamepad
-			return CheckButton(m_CurrentGamePadStates[iPlayerIndex], button);
+			return CheckButton(_currentGamePadStates[iPlayerIndex], button);
 		}
 
 		/// <summary>
@@ -213,7 +223,7 @@ namespace HadoukInput
 		public bool PrevButtonDown(int iPlayerIndex, Buttons button)
 		{
 			//check that button on that gamepad
-			return CheckButton(m_LastGamePadStates[iPlayerIndex], button);
+			return CheckButton(_lastGamePadStates[iPlayerIndex], button);
 		}
 
 		/// <summary>

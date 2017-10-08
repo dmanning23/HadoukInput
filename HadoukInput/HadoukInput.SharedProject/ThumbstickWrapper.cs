@@ -133,27 +133,27 @@ namespace HadoukInput
 			if (bLeft)
 			{
 				//Check keyboard so we can test this stuff on computer
-				if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Up)
+				if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Up)
 				{
 					//check up... 
 					bThumbstickDirection = false;
 
 					m_Direction.Y = -1.0f;
 				}
-				else if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Down)
+				else if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Down)
 				{
 					//check down... 
 					bThumbstickDirection = false;
 					m_Direction.Y = 1.0f;
 				}
 
-				if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Left)
+				if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Left)
 				{
 					//check left
 					bThumbstickDirection = false;
 					m_Direction.X -= 1.0f;
 				}
-				else if (ButtonState.Pressed == rInputState.m_CurrentGamePadStates[i].DPad.Right)
+				else if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Right)
 				{
 					//check right
 					bThumbstickDirection = false;
