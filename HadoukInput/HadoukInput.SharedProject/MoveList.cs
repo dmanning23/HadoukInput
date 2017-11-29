@@ -65,17 +65,28 @@ namespace HadoukInput
 			var name = node.Name;
 			var value = node.Value;
 
-			switch (name)
+			switch (name.ToLower())
 			{
-				case "Moves":
-				{
-					ReadChildNodes(node, ReadMove);
-				}
-				break;
+				case "asset":
+					{
+						//skip these old ass nodes
+						XmlFileBuddy.ReadChildNodes(node, ParseXmlNode);
+					}
+					break;
+				case "type":
+					{
+						//Really skip these old ass nodes
+					}
+					break;
+				case "moves":
+					{
+						ReadChildNodes(node, ReadMove);
+					}
+					break;
 				default:
-				{
-					throw new Exception(string.Format("unknown xml node passed to MoveList: {0}", name));
-				}
+					{
+						throw new Exception(string.Format("unknown xml node passed to MoveList: {0}", name));
+					}
 			}
 		}
 
