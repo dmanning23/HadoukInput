@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
 		<id>HadoukInput</id>
-		<version>1.0.6</version>
+		<version>1.0.7</version>
 		<title>HadoukInput</title>
 		<authors>dmanning23</authors>
 		<owners>dmanning23</owners>
@@ -47,7 +47,7 @@
 			</group>
 
 			<group targetFramework="net451">
-				<dependency id="MonoGame.Framework.DesktopGL" version="3.5"/>
+				<dependency id="MonoGame.Framework.WindowsDX" version="3.5"/>
 				<dependency id="FilenameBuddy" version="1.0.1"/>
 				<dependency id="MatrixExtensions" version="1.0"/>
 				<dependency id="RandomExtensions.dmanning23" version="1.0"/>
@@ -71,9 +71,9 @@
 		<file src="HadoukInput.WindowsUniversal\bin\Release\HadoukInput.WindowsUniversal.pdb" target="lib\uap10.0\HadoukInput.WindowsUniversal.pdb" />
 		<file src="HadoukInput.WindowsUniversal\bin\Release\HadoukInput.WindowsUniversal.dll" target="lib\uap10.0\HadoukInput.WindowsUniversal.dll" />
 
-		<!--DesktopGL-->
-		<file src="HadoukInput.DesktopGL\bin\Release\HadoukInput.DesktopGL.pdb" target="lib\net451\HadoukInput.DesktopGL.pdb" />
-		<file src="HadoukInput.DesktopGL\bin\Release\HadoukInput.DesktopGL.dll" target="lib\net451\HadoukInput.DesktopGL.dll" />
+		<!--WindowsDX-->
+		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.pdb" target="lib\net451\HadoukInput.WindowsDX.pdb" />
+		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.dll" target="lib\net451\HadoukInput.WindowsDX.dll" />
 
 	</files>
 </package>
