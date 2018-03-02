@@ -653,10 +653,10 @@ namespace HadoukInput
 		/// <param name="xmlFilename">name of the resource to load</param>
 		/// <param name="messageIds">delegate method for resolving message names</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds, ContentManager content = null)
+		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds, ContentManager xmlContent = null)
 		{
 			Moves = new MoveList(messageIds, xmlFilename);
-			Moves.ReadXmlFile(content);
+			Moves.ReadXmlFile(xmlContent);
 		}
 
 		#endregion //File IO
