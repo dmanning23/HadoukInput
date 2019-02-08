@@ -31,11 +31,6 @@ namespace HadoukInput
 		/// </summary>
 		private float _deadZone;
 
-		/// <summary>
-		/// the square of the thumbstick dead zone
-		/// </summary>
-		private float _deadZoneSquared;
-
 		#endregion
 
 		#region Properties
@@ -55,18 +50,14 @@ namespace HadoukInput
 			set
 			{
 				_deadZone = value;
-				_deadZoneSquared = _deadZone * _deadZone;
+				DeadZoneSquared = _deadZone * _deadZone;
 			}
 		}
 
 		/// <summary>
-		/// Gets the dead zone squared.
+		/// the square of the thumbstick dead zone
 		/// </summary>
-		/// <value>The dead zone squared.</value>
-		public float DeadZoneSquared
-		{
-			get { return _deadZoneSquared; }
-		}
+		public float DeadZoneSquared { get; private set; }
 
 		public bool CheckControllers { get; set; }
 
@@ -87,7 +78,7 @@ namespace HadoukInput
 			_lastGamePadStates = new GamePadState[MaxInputs];
 
 			_gamePadWasConnected = new bool[MaxInputs];
-			for (int i = 0; i < MaxInputs; i++)
+			for (var i = 0; i < MaxInputs; i++)
 			{
 				_gamePadWasConnected[i] = false;
 			}
@@ -109,7 +100,7 @@ namespace HadoukInput
 
 			if (CheckControllers)
 			{
-				for (int i = 0; i < MaxInputs; i++)
+				for (var i = 0; i < MaxInputs; i++)
 				{
 					_lastGamePadStates[i] = _currentGamePadStates[i];
 					_currentGamePadStates[i] = GamePad.GetState((PlayerIndex)i, GamePadDeadZone.None);
@@ -149,15 +140,15 @@ namespace HadoukInput
 				// Read input from the specified player.
 				playerIndex = controllingPlayer.Value;
 				return (ButtonDown(playerIndex, button) &&
-				        !PrevButtonDown(playerIndex, button));
+						!PrevButtonDown(playerIndex, button));
 			}
 			else
 			{
 				// Accept input from any player.
 				return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
-				        IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
-				        IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
-				        IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
+						IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
+						IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
+						IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
 			}
 		}
 
@@ -183,184 +174,184 @@ namespace HadoukInput
 		/// Check if the is button down.
 		/// </summary>
 		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
-		/// <param name="myPlayer">My player.</param>
+		/// <param name="playerIndex">My player.</param>
 		/// <param name="button">Button.</param>
-		public bool ButtonDown(PlayerIndex myPlayer, Buttons button)
+		public bool ButtonDown(PlayerIndex playerIndex, Buttons button)
 		{
-			return ButtonDown((int)myPlayer, button);
+			return ButtonDown((int)playerIndex, button);
 		}
 
 		/// <summary>
 		/// Check if the wass button down last time
 		/// </summary>
 		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
-		/// <param name="myPlayer">My player.</param>
+		/// <param name="playerIndex">My player.</param>
 		/// <param name="button">Button.</param>
-		public bool PrevButtonDown(PlayerIndex myPlayer, Buttons button)
+		public bool PrevButtonDown(PlayerIndex playerIndex, Buttons button)
 		{
 			//Get the game pad state
-			return PrevButtonDown((int)myPlayer, button);
+			return PrevButtonDown((int)playerIndex, button);
 		}
 
 		/// <summary>
 		/// Check if the is button down.
 		/// </summary>
 		/// <returns><c>true</c>, if down was buttoned, <c>false</c> otherwise.</returns>
-		/// <param name="iPlayerIndex">I player index.</param>
+		/// <param name="playerIndex">I player index.</param>
 		/// <param name="button">Button.</param>
-		public bool ButtonDown(int iPlayerIndex, Buttons button)
+		public bool ButtonDown(int playerIndex, Buttons button)
 		{
 			//check that button on that gamepad
-			return CheckButton(_currentGamePadStates[iPlayerIndex], button);
+			return CheckButton(_currentGamePadStates[playerIndex], button);
 		}
 
 		/// <summary>
 		/// Check if the wass button down last time
 		/// </summary>
 		/// <returns><c>true</c>, if button down was previoused, <c>false</c> otherwise.</returns>
-		/// <param name="iPlayerIndex">I player index.</param>
+		/// <param name="playerIndex">I player index.</param>
 		/// <param name="button">Button.</param>
-		public bool PrevButtonDown(int iPlayerIndex, Buttons button)
+		public bool PrevButtonDown(int playerIndex, Buttons button)
 		{
 			//check that button on that gamepad
-			return CheckButton(_lastGamePadStates[iPlayerIndex], button);
+			return CheckButton(_lastGamePadStates[playerIndex], button);
 		}
 
 		/// <summary>
 		/// Given a game pad state and a button, check if the button is down on that gamepadstate
 		/// </summary>
 		/// <returns><c>true</c>, if button was checked, <c>false</c> otherwise.</returns>
-		/// <param name="myGamePad">My game pad.</param>
+		/// <param name="gamePad">My game pad.</param>
 		/// <param name="button">Button.</param>
-		private bool CheckButton(GamePadState myGamePad, Buttons button)
+		private bool CheckButton(GamePadState gamePad, Buttons button)
 		{
 			switch (button)
 			{
 				case Buttons.DPadUp:
-				{
-					return ButtonState.Pressed == myGamePad.DPad.Up;
-				}
+					{
+						return ButtonState.Pressed == gamePad.DPad.Up;
+					}
 				case Buttons.DPadDown:
-				{
-					//don't do down if a horizontal direction is held
-					return (!CheckButton(myGamePad, Buttons.DPadLeft) &&
-					        !CheckButton(myGamePad, Buttons.DPadRight) &&
-					        (ButtonState.Pressed == myGamePad.DPad.Down));
-				}
+					{
+						//don't do down if a horizontal direction is held
+						return (!CheckButton(gamePad, Buttons.DPadLeft) &&
+								!CheckButton(gamePad, Buttons.DPadRight) &&
+								(ButtonState.Pressed == gamePad.DPad.Down));
+					}
 				case Buttons.DPadLeft:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
-					        (ButtonState.Pressed == myGamePad.DPad.Left));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.DPadUp) &&
+								(ButtonState.Pressed == gamePad.DPad.Left));
+					}
 				case Buttons.DPadRight:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.DPadUp) &&
-					        (ButtonState.Pressed == myGamePad.DPad.Right));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.DPadUp) &&
+								(ButtonState.Pressed == gamePad.DPad.Right));
+					}
 				case Buttons.Start:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.Start;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.Start;
+					}
 				case Buttons.Back:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.Back;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.Back;
+					}
 				case Buttons.LeftStick:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.LeftStick;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.LeftStick;
+					}
 				case Buttons.RightStick:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.RightStick;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.RightStick;
+					}
 				case Buttons.LeftShoulder:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.LeftShoulder;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.LeftShoulder;
+					}
 				case Buttons.RightShoulder:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.RightShoulder;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.RightShoulder;
+					}
 				case Buttons.BigButton:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.BigButton;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.BigButton;
+					}
 				case Buttons.A:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.A;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.A;
+					}
 				case Buttons.B:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.B;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.B;
+					}
 				case Buttons.X:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.X;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.X;
+					}
 				case Buttons.Y:
-				{
-					return ButtonState.Pressed == myGamePad.Buttons.Y;
-				}
+					{
+						return ButtonState.Pressed == gamePad.Buttons.Y;
+					}
 				case Buttons.RightTrigger:
-				{
-					return myGamePad.Triggers.Right > TriggerDeadZone;
-				}
+					{
+						return gamePad.Triggers.Right > TriggerDeadZone;
+					}
 				case Buttons.LeftTrigger:
-				{
-					return myGamePad.Triggers.Left > TriggerDeadZone;
-				}
+					{
+						return gamePad.Triggers.Left > TriggerDeadZone;
+					}
 				case Buttons.LeftThumbstickUp:
-				{
-					return myGamePad.ThumbSticks.Left.Y < -DeadZone;
-				}
+					{
+						return gamePad.ThumbSticks.Left.Y > DeadZone;
+					}
 				case Buttons.LeftThumbstickDown:
-				{
-					//don't do down if a horizontal direction is held
-					return (!CheckButton(myGamePad, Buttons.LeftThumbstickLeft) &&
-					        !CheckButton(myGamePad, Buttons.LeftThumbstickRight) &&
-					        (myGamePad.ThumbSticks.Left.Y > DeadZone));
-				}
+					{
+						//don't do down if a horizontal direction is held
+						return (!CheckButton(gamePad, Buttons.LeftThumbstickLeft) &&
+								!CheckButton(gamePad, Buttons.LeftThumbstickRight) &&
+								(gamePad.ThumbSticks.Left.Y < -DeadZone));
+					}
 				case Buttons.LeftThumbstickLeft:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.LeftThumbstickUp) &&
-					        (myGamePad.ThumbSticks.Left.X < -DeadZone));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.LeftThumbstickUp) &&
+								(gamePad.ThumbSticks.Left.X < -DeadZone));
+					}
 				case Buttons.LeftThumbstickRight:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.LeftThumbstickUp) &&
-					        (myGamePad.ThumbSticks.Left.X > DeadZone));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.LeftThumbstickUp) &&
+								(gamePad.ThumbSticks.Left.X > DeadZone));
+					}
 				case Buttons.RightThumbstickUp:
-				{
-					return myGamePad.ThumbSticks.Right.Y < -DeadZone;
-				}
+					{
+						return gamePad.ThumbSticks.Right.Y < -DeadZone;
+					}
 				case Buttons.RightThumbstickDown:
-				{
-					//don't do down if a horizontal direction is held
-					return (!CheckButton(myGamePad, Buttons.RightThumbstickLeft) &&
-							!CheckButton(myGamePad, Buttons.RightThumbstickRight) &&
-							 (myGamePad.ThumbSticks.Right.Y > DeadZone));
-				}
+					{
+						//don't do down if a horizontal direction is held
+						return (!CheckButton(gamePad, Buttons.RightThumbstickLeft) &&
+								!CheckButton(gamePad, Buttons.RightThumbstickRight) &&
+								 (gamePad.ThumbSticks.Right.Y > DeadZone));
+					}
 				case Buttons.RightThumbstickLeft:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.RightThumbstickUp) &&
-							(myGamePad.ThumbSticks.Right.X < -DeadZone));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.RightThumbstickUp) &&
+								(gamePad.ThumbSticks.Right.X < -DeadZone));
+					}
 				case Buttons.RightThumbstickRight:
-				{
-					//don't do horizontal if up direction is held
-					return (!CheckButton(myGamePad, Buttons.RightThumbstickUp) &&
-							(myGamePad.ThumbSticks.Right.X > DeadZone));
-				}
+					{
+						//don't do horizontal if up direction is held
+						return (!CheckButton(gamePad, Buttons.RightThumbstickUp) &&
+								(gamePad.ThumbSticks.Right.X > DeadZone));
+					}
 				default:
-				{
-					return false;
-				}
+					{
+						return false;
+					}
 			}
 		}
 

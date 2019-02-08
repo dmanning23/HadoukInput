@@ -24,23 +24,23 @@
 		/// <summary>
 		/// Constructor!
 		/// </summary>
-		/// <param name="fTime">game time of the input creation</param>
-		/// <param name="eKeystroke">keystroke of this input item</param>
-		public InputItem(float fTime, EKeystroke eKeystroke)
+		/// <param name="time">game time of the input creation</param>
+		/// <param name="keystroke">keystroke of this input item</param>
+		public InputItem(float time, EKeystroke keystroke)
 		{
-			Set(fTime, eKeystroke);
+			Set(time, keystroke);
 		}
 
 		/// <summary>
 		/// Set the parameters of this input item.
 		/// Separate from the constructor so we can reuse these items in the factory.
 		/// </summary>
-		/// <param name="fTime">game time of the input creation</param>
-		/// <param name="eKeystroke">keystroke of this input item</param>
-		public void Set(float fTime, EKeystroke eKeystroke)
+		/// <param name="time">game time of the input creation</param>
+		/// <param name="keystroke">keystroke of this input item</param>
+		public void Set(float time, EKeystroke keystroke)
 		{
-			Time = fTime;
-			Keystroke = eKeystroke;
+			Time = time;
+			Keystroke = keystroke;
 		}
 
 		#endregion //Methods

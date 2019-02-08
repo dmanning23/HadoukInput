@@ -2,7 +2,6 @@ using MatrixExtensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Diagnostics;
 
 namespace HadoukInput
 {
@@ -21,18 +20,18 @@ namespace HadoukInput
 		/// <summary>
 		/// The previous direction of the thumbstick, cleaned up however we want.
 		/// </summary>
-		private Vector2 m_PrevDirection;
+		private Vector2 _prevDirection;
 
 		/// <summary>
 		/// The current direction of the thumbstick, cleaned up however we want.
 		/// </summary>
-		private Vector2 m_Direction;
+		private Vector2 _direction;
 
 		/// <summary>
 		/// constant value used to direct the thumbstick power curve
 		/// between -3 -> 3
 		/// </summary>
-		private float m_fPower = 3.0f;
+		private float _thumbstickPower = 3.0f;
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
@@ -54,22 +53,22 @@ namespace HadoukInput
 		/// </summary>
 		public Vector2 Direction
 		{
-			get { return m_Direction; }
+			get { return _direction; }
 		}
 
 		public Vector2 PrevDirection
 		{
-			get { return m_PrevDirection; }
+			get { return _prevDirection; }
 		}
 
 		public float ThumbstickPower
 		{
-			get { return m_fPower; }
+			get { return _thumbstickPower; }
 			set
 			{
 				if ((value <= 3.0f) && (value >= -3.0f))
 				{
-					m_fPower = value;
+					_thumbstickPower = value;
 				}
 			}
 		}
@@ -81,7 +80,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbstickWrapper(ControllerWrapper controls, bool bSquareGate)
+		public ThumbstickWrapper(ControllerWrapper controls, bool squareGate)
 		{
 			//grba the controller 
 			Controller = controls;
@@ -89,13 +88,13 @@ namespace HadoukInput
 			//set up the forward threshold
 
 			//get the forward vector
-			Vector2 forwardVect = new Vector2(1.0f, 0.0f);
-			
+			var forwardVect = new Vector2(1.0f, 0.0f);
+
 			//rotate the vector and get the min threshhold that counts as "forward"
-			Matrix rot = (bSquareGate ? 
-				MatrixExt.Orientation(MathHelper.ToRadians(45.0f)) : 
+			var rot = (squareGate ?
+				MatrixExt.Orientation(MathHelper.ToRadians(45.0f)) :
 				MatrixExt.Orientation(MathHelper.ToRadians(67.0f)));
-			Vector2 threshholdVect = MatrixExt.Multiply(rot, forwardVect);
+			var threshholdVect = MatrixExt.Multiply(rot, forwardVect);
 			ForwardThreshold = Vector2.Dot(forwardVect, threshholdVect);
 
 			ThumbstickScrubbing = DeadZoneType.Radial;
@@ -107,276 +106,270 @@ namespace HadoukInput
 		/// </summary>
 		public void Reset()
 		{
-			m_Direction = Vector2.Zero;
-			m_PrevDirection = Vector2.Zero;
+			_direction = Vector2.Zero;
+			_prevDirection = Vector2.Zero;
 		}
 
 		/// <summary>
 		/// Update one single thumbsticks.
 		/// </summary>
-		/// <param name="rInputState">The current input state.</param>
+		/// <param name="inputState">The current input state.</param>
 		/// <param name="i">controller index to check</param>
 		/// <param name="controllerThumbstick">the raw thumbstick input from the controller</param>
-		/// <param name="bLeft">whether or not this thumbstick is the left</param>
-		public void Update(InputState rInputState, int i, Vector2 controllerThumbstick, bool bLeft)
+		/// <param name="left">whether or not this thumbstick is the left</param>
+		public void Update(InputState inputState, int i, Vector2 controllerThumbstick, bool left)
 		{
 			//First set the prev direction
-			m_PrevDirection = m_Direction;
+			_prevDirection = _direction;
 
 			//first set the thumbstick to 0.  it will be set to the real value below
-			m_Direction = Vector2.Zero;
+			_direction = Vector2.Zero;
 
 			//flag used to tell if direction is from thumbstick or not.  if this flag is true, apply the deadzone logic
-			bool bThumbstickDirection = true;
+			var thumbstickDirection = true;
 
 			//Check dpad if this is the left thumbstick
-			if (bLeft)
+			if (left)
 			{
 				//Check keyboard so we can test this stuff on computer
-				if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Up)
+				if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Up)
 				{
 					//check up... 
-					bThumbstickDirection = false;
+					thumbstickDirection = false;
 
-					m_Direction.Y = -1.0f;
+					_direction.Y = 1.0f;
 				}
-				else if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Down)
+				else if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Down)
 				{
 					//check down... 
-					bThumbstickDirection = false;
-					m_Direction.Y = 1.0f;
+					thumbstickDirection = false;
+					_direction.Y = -1.0f;
 				}
 
-				if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Left)
+				if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Left)
 				{
 					//check left
-					bThumbstickDirection = false;
-					m_Direction.X -= 1.0f;
+					thumbstickDirection = false;
+					_direction.X -= 1.0f;
 				}
-				else if (ButtonState.Pressed == rInputState._currentGamePadStates[i].DPad.Right)
+				else if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Right)
 				{
 					//check right
-					bThumbstickDirection = false;
-					m_Direction.X += 1.0f;
+					thumbstickDirection = false;
+					_direction.X += 1.0f;
 				}
 
 				//if we didnt find a direction and using the keyboard, check it now
-				if (Controller.UseKeyboard && bThumbstickDirection)
+				if (Controller.UseKeyboard && thumbstickDirection)
 				{
 					//Check keyboard so we can test this stuff on computer
-					if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Up)))
+					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Up)))
 					{
 						//check up... 
-						bThumbstickDirection = false;
-						m_Direction.Y -= 1.0f;
+						thumbstickDirection = false;
+						_direction.Y += 1.0f;
 					}
-					else if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Down)))
+					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Down)))
 					{
 						//check down... 
-						bThumbstickDirection = false;
-						m_Direction.Y += 1.0f;
+						thumbstickDirection = false;
+						_direction.Y -= 1.0f;
 					}
 
-					if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Left)))
+					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Left)))
 					{
 						//check left
-						bThumbstickDirection = false;
-						m_Direction.X -= 1.0f;
+						thumbstickDirection = false;
+						_direction.X -= 1.0f;
 					}
-					else if (rInputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Right)))
+					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Right)))
 					{
 						//check right
-						bThumbstickDirection = false;
-						m_Direction.X += 1.0f;
+						thumbstickDirection = false;
+						_direction.X += 1.0f;
 					}
 				}
 			}
 
 			//do we need to apply dead zone scrubbing?
-			if (bThumbstickDirection)
+			if (thumbstickDirection)
 			{
 				//set the thumbstick to the real value
-				m_Direction = controllerThumbstick;
+				_direction = controllerThumbstick;
 
 				//are we doing scurbbing, or powercurving?
 				switch (ThumbstickScrubbing)
 				{
 					case DeadZoneType.Axial:
-					{
-						//This will give us a really sticky controller that square gates all the time
+						{
+							//This will give us a really sticky controller that square gates all the time
 
-						//First set the sticks to ignore the dead zone
-						if (Math.Abs(m_Direction.X) < rInputState.DeadZone)
-						{
-							m_Direction.X = 0.0f;
-						}
-						if (Math.Abs(m_Direction.Y) < rInputState.DeadZone)
-						{
-							m_Direction.Y = 0.0f;
-						}
+							//First set the sticks to ignore the dead zone
+							if (Math.Abs(_direction.X) < inputState.DeadZone)
+							{
+								_direction.X = 0.0f;
+							}
+							if (Math.Abs(_direction.Y) < inputState.DeadZone)
+							{
+								_direction.Y = 0.0f;
+							}
 
-						//Normalize the thumbsticks direction
-						if (m_Direction.LengthSquared() != 0.0f)
-						{
-							m_Direction.Normalize();
+							//Normalize the thumbsticks direction
+							if (_direction.LengthSquared() != 0.0f)
+							{
+								_direction.Normalize();
+							}
 						}
-					}
 						break;
 
 					case DeadZoneType.Radial:
-					{
-						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
 						{
-							//Radial just cares about the direction, so just normalize the stick
-							m_Direction.Normalize();
+							if (controllerThumbstick.LengthSquared() >= inputState.DeadZoneSquared)
+							{
+								//Radial just cares about the direction, so just normalize the stick
+								_direction.Normalize();
+							}
+							else
+							{
+								//stick is not outside the deadzone
+								_direction = Vector2.Zero;
+							}
 						}
-						else
-						{
-							//stick is not outside the deadzone
-							m_Direction = Vector2.Zero;
-						}
-					}
 						break;
 
 					case DeadZoneType.ScaledRadial:
-					{
-						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
 						{
-							//this gives a nice linear thumbstick, starting at the deadzone
-							Vector2 normalizedThumbstick = m_Direction;
-							normalizedThumbstick.Normalize();
-							m_Direction = normalizedThumbstick * ((m_Direction.Length() - rInputState.DeadZone) / (1 - rInputState.DeadZone));
+							if (controllerThumbstick.LengthSquared() >= inputState.DeadZoneSquared)
+							{
+								//this gives a nice linear thumbstick, starting at the deadzone
+								var normalizedThumbstick = _direction;
+								normalizedThumbstick.Normalize();
+								_direction = normalizedThumbstick * ((_direction.Length() - inputState.DeadZone) / (1 - inputState.DeadZone));
+							}
+							else
+							{
+								//stick is not outside the deadzone
+								_direction = Vector2.Zero;
+							}
 						}
-						else
-						{
-							//stick is not outside the deadzone
-							m_Direction = Vector2.Zero;
-						}
-					}
 						break;
 
 					case DeadZoneType.PowerCurve:
-					{
-						if (controllerThumbstick.LengthSquared() >= rInputState.DeadZoneSquared)
 						{
-							//this gives a nice linear thumbstick, starting at the deadzone, but small values are smaller allowing for better precision
-							Vector2 normalizedThumbstick = m_Direction;
-							normalizedThumbstick.Normalize();
-							m_Direction.X = PowerCurve(m_Direction.X);
-							m_Direction.Y = PowerCurve(m_Direction.Y);
+							if (controllerThumbstick.LengthSquared() >= inputState.DeadZoneSquared)
+							{
+								//this gives a nice linear thumbstick, starting at the deadzone, but small values are smaller allowing for better precision
+								var normalizedThumbstick = _direction;
+								normalizedThumbstick.Normalize();
+								_direction.X = PowerCurve(_direction.X);
+								_direction.Y = PowerCurve(_direction.Y);
+							}
+							else
+							{
+								//stick is not outside the deadzone
+								_direction = Vector2.Zero;
+							}
 						}
-						else
-						{
-							//stick is not outside the deadzone
-							m_Direction = Vector2.Zero;
-						}
-					}
 						break;
 				}
 			}
 
-			#if  OUYA
-			//thumbstick needs to be flipped on Y to match screen coords
-			m_Direction.Y *= -1.0f;
-			#endif
-
 			//constrain the thumbstick to length of one
-			if (m_Direction.LengthSquared() > 1.0f)
+			if (_direction.LengthSquared() > 1.0f)
 			{
-				m_Direction.Normalize();
+				_direction.Normalize();
 			}
 		}
 
 		/// <summary>
 		/// Run the thumbstick direction through a power curve to clean it up a bit.
 		/// </summary>
-		/// <param name="fValue">the value to run through the power curve, -1.0 - 1.0</param>
+		/// <param name="initialValue">the value to run through the power curve, -1.0 - 1.0</param>
 		/// <returns>float: the input value run through the power curve</returns>
-		private float PowerCurve(float fValue)
+		private float PowerCurve(float initialValue)
 		{
-			return (float)System.Math.Pow(System.Math.Abs(fValue), ThumbstickPower) * System.Math.Sign(fValue);
+			return (float)System.Math.Pow(System.Math.Abs(initialValue), ThumbstickPower) * System.Math.Sign(initialValue);
 		}
 
 		/// <summary>
 		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="keystroke">the keystroke to check for</param>
 		/// <param name="direction">The NORMALIZED direction to check against</param>
 		/// <param name="upVect">The NORMALIZED up vector from the direciont</param>
 		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke, Vector2 direction, Vector2 upVect)
+		public bool CheckKeystroke(EKeystroke keystroke, Vector2 direction, Vector2 upVect)
 		{
-			switch (eKeystroke)
+			switch (keystroke)
 			{
 				//CHECK THE DIRECTIONS
 
 				case EKeystroke.Up:
-				{
-					//get the direction to check for 'up'
-					return CheckDirectionHeld(upVect, Direction, true);
-				}
+					{
+						//get the direction to check for 'up'
+						return CheckDirectionHeld(upVect, Direction, true);
+					}
 				case EKeystroke.Down:
-				{
-					//Don't send down if left or right are held... it pops really bad
-					if (CheckDirectionHeld(direction, Direction, true) ||
-						CheckDirectionHeld(direction, Direction, false))
 					{
-						return false;
-					}
+						//Don't send down if left or right are held... it pops really bad
+						if (CheckDirectionHeld(direction, Direction, true) ||
+							CheckDirectionHeld(direction, Direction, false))
+						{
+							return false;
+						}
 
-					//get the direction to check for 'down'
-					return CheckDirectionHeld(upVect, Direction, false);
-				}
+						//get the direction to check for 'down'
+						return CheckDirectionHeld(upVect, Direction, false);
+					}
 				case EKeystroke.Forward:
-				{
-					//Don't send left/right if up is held... it pops really bad
-					if (CheckDirectionHeld(upVect, Direction, true))
 					{
-						return false;
-					}
+						//Don't send left/right if up is held... it pops really bad
+						if (CheckDirectionHeld(upVect, Direction, true))
+						{
+							return false;
+						}
 
-					//get the direction to check for 'forward'
-					return CheckDirectionHeld(direction, Direction, true);
-				}
+						//get the direction to check for 'forward'
+						return CheckDirectionHeld(direction, Direction, true);
+					}
 				case EKeystroke.Back:
-				{
-					//Don't send left/right if up is held... it pops really bad
-					if (CheckDirectionHeld(upVect, Direction, true))
 					{
-						return false;
-					}
+						//Don't send left/right if up is held... it pops really bad
+						if (CheckDirectionHeld(upVect, Direction, true))
+						{
+							return false;
+						}
 
-					//get the direction to check for 'Back'
-					return CheckDirectionHeld(direction, Direction, false);
-				}
+						//get the direction to check for 'Back'
+						return CheckDirectionHeld(direction, Direction, false);
+					}
 
 				case EKeystroke.UpR:
-				{
-					//get the direction to check for 'up'
-					return CheckDirectionHeld(upVect, Direction, true);
-				}
+					{
+						//get the direction to check for 'up'
+						return CheckDirectionHeld(upVect, Direction, true);
+					}
 				case EKeystroke.DownR:
-				{
-					//get the direction to check for 'down'
-					return CheckDirectionHeld(upVect, Direction, false);
-				}
+					{
+						//get the direction to check for 'down'
+						return CheckDirectionHeld(upVect, Direction, false);
+					}
 				case EKeystroke.ForwardR:
-				{
-					//get the direction to check for 'forward'
-					return CheckDirectionHeld(direction, Direction, true);
-				}
+					{
+						//get the direction to check for 'forward'
+						return CheckDirectionHeld(direction, Direction, true);
+					}
 				case EKeystroke.BackR:
-				{
-					//get the direction to check for 'Back'
-					return CheckDirectionHeld(direction, Direction, false);
-				}
+					{
+						//get the direction to check for 'Back'
+						return CheckDirectionHeld(direction, Direction, false);
+					}
 
 				//For everything else, send to the other method
 				default:
-				{
-					Debug.Assert(false);
-					return false;
-				}
+					{
+						return false;
+					}
 			}
 		}
 
@@ -385,15 +378,15 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="direction">the direction to check</param>
 		/// <param name="controllerDirection">the direction the controller is pointed</param>
-		/// <param name="bSameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
+		/// <param name="sameDirection">true to check if they are poining in same direction, false to check for oppsite diurection</param>
 		/// <returns></returns>
-		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool bSameDirection)
+		private bool CheckDirectionHeld(Vector2 direction, Vector2 controllerDirection, bool sameDirection)
 		{
 			//get the dot product of the directions
 			float dot = Vector2.Dot(direction, controllerDirection);
 
 			//check the correct direction
-			if (bSameDirection)
+			if (sameDirection)
 			{
 				//this magic number is squareroot2 / 2
 				return (ForwardThreshold <= dot);

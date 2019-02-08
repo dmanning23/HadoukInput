@@ -78,13 +78,13 @@ namespace HadoukInput
 		/// <summary>
 		/// called each frame to update the thumbstick vector and the cleaned "direction" vector
 		/// </summary>
-		/// <param name="rInputState"></param>
+		/// <param name="inputState"></param>
 		/// <param name="i"></param>
-		public void UpdateThumbsticks(InputState rInputState, int i)
+		public void UpdateThumbsticks(InputState inputState, int i)
 		{
 			//update the left thumbstick
-			LeftThumbstick.Update(rInputState, i, rInputState._currentGamePadStates[i].ThumbSticks.Left, true);
-			RightThumbstick.Update(rInputState, i, rInputState._currentGamePadStates[i].ThumbSticks.Right, false);
+			LeftThumbstick.Update(inputState, i, inputState._currentGamePadStates[i].ThumbSticks.Left, true);
+			RightThumbstick.Update(inputState, i, inputState._currentGamePadStates[i].ThumbSticks.Right, false);
 		}
 
 		#endregion //Methods

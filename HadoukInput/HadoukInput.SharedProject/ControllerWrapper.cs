@@ -8,7 +8,7 @@ namespace HadoukInput
 	/// <summary>
 	/// This is a class that wraps around a raw controller object and abstracts the input a little bit
 	/// </summary>
-	public class ControllerWrapper
+	public class ControllerWrapper : IControllerWrapper
 	{
 		#region Mapped Keys
 
@@ -129,7 +129,7 @@ namespace HadoukInput
 
 		#endregion
 
-		#region Member Variables
+		#region Properties
 
 		/// <summary>
 		/// If this is a gamepad input, which gamepad is it?
@@ -162,10 +162,6 @@ namespace HadoukInput
 			}
 		}
 
-		#endregion
-
-		#region Properties
-
 		///<summary>
 		///flags for which actions are pressed
 		///one flag for each controller action
@@ -184,7 +180,7 @@ namespace HadoukInput
 		/// </summary>
 		private bool[] ControllerActionRelease { get; set; }
 
-		#endregion
+		#endregion //Properties
 
 		#region Methods
 
@@ -202,20 +198,15 @@ namespace HadoukInput
 		///	hello, standard constructor!
 		/// </summary>
 		/// <param name="iGamePadIndex">If this isn't a keyboard, which gamepad index it should use.</param>
-		public ControllerWrapper(PlayerIndex? eGamePadIndex, bool bUseKeyboard = false)
+		public ControllerWrapper(PlayerIndex? playerIndex, bool useKeyboard = false)
 		{
 			Thumbsticks = new ThumbsticksWrapper(this);
 
-#if OUYA
-			//no keyboard at all on the Ouya
-			UseKeyboard = false;
-#else
-			UseKeyboard = bUseKeyboard;
-#endif
+			UseKeyboard = useKeyboard;
 
-			if (eGamePadIndex.HasValue)
+			if (playerIndex.HasValue)
 			{
-				GamePadIndex = eGamePadIndex.Value;
+				GamePadIndex = playerIndex.Value;
 			}
 
 			ControllerActionPress = new bool[(int)EControllerAction.NumControllerActions];
@@ -243,17 +234,14 @@ namespace HadoukInput
 		/// <summary>
 		/// Map a players controller actions to a set of keys
 		/// </summary>
-		/// <param name="eIndex">player index to remap</param>
+		/// <param name="playerIndex">player index to remap</param>
 		/// <param name="mappedKeys">keys to use for that player</param>
-		static public void MapKeys(PlayerIndex eIndex, Keys[] mappedKeys)
+		static public void MapKeys(PlayerIndex playerIndex, Keys[] mappedKeys)
 		{
-			//make sure there are the correct num of keys
-			Debug.Assert(mappedKeys.Length == 12);
-
 			//replace them all!
 			for (int i = 0; i < mappedKeys.Length; i++)
 			{
-				g_KeyMap[(int)eIndex, i] = mappedKeys[i];
+				g_KeyMap[(int)playerIndex, i] = mappedKeys[i];
 			}
 		}
 
@@ -262,143 +250,142 @@ namespace HadoukInput
 		/// <summary>
 		/// update the current state of this controller interface
 		/// </summary>
-		/// <param name="rInputState">current state of all the input in the system</param>
-		public virtual void Update(InputState rInputState)
+		/// <param name="inputState">current state of all the input in the system</param>
+		public virtual void Update(InputState inputState)
 		{
 			var i = (int)GamePadIndex;
 
 			//check if the controller is plugged in
-			ControllerPluggedIn = rInputState._currentGamePadStates[i].IsConnected;
+			ControllerPluggedIn = inputState._currentGamePadStates[i].IsConnected;
 
 			//update the thumbstick
-			Thumbsticks.UpdateThumbsticks(rInputState, i);
+			Thumbsticks.UpdateThumbsticks(inputState, i);
 
 			for (EControllerAction j = 0; j < EControllerAction.NumControllerActions; j++)
 			{
 				//update which buttons were presses this frame
-				ControllerActionPress[(int)j] = CheckControllerActionPress(rInputState, i, j);
+				ControllerActionPress[(int)j] = CheckControllerActionPress(inputState, i, j);
 
 				//update which directions are held this frame
-				ControllerActionHeld[(int)j] = CheckControllerActionHeld(rInputState, i, j);
+				ControllerActionHeld[(int)j] = CheckControllerActionHeld(inputState, i, j);
 
 				//update which dircetions are released this frame
-				ControllerActionRelease[(int)j] = CheckControllerActionReleased(rInputState, i, j);
+				ControllerActionRelease[(int)j] = CheckControllerActionReleased(inputState, i, j);
 			}
 		}
 
 		/// <summary>
 		/// Get the keyboard key that is mapped to an action
 		/// </summary>
-		/// <param name="iGamePadIndex"></param>
-		/// <param name="iAction"></param>
+		/// <param name="gamePadIndex"></param>
+		/// <param name="action"></param>
 		/// <returns></returns>
-		internal Keys MappedKey(int iGamePadIndex, EControllerAction iAction)
+		internal Keys MappedKey(int gamePadIndex, EControllerAction action)
 		{
-			return g_KeyMap[iGamePadIndex, (int)iAction];
+			return g_KeyMap[gamePadIndex, (int)action];
 		}
 
 		/// <summary>
 		/// Check for a specific keystroke
 		/// only used for button press keystrokes
 		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="keystroke">the keystroke to check for</param>
 		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke)
+		public bool CheckKeystroke(EKeystroke keystroke)
 		{
-			switch (eKeystroke)
+			switch (keystroke)
 			{
 				case EKeystroke.Up:
-				{
-					return ControllerActionPress[(int)EControllerAction.Up];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.Up];
+					}
 				case EKeystroke.Down:
-				{
-					return ControllerActionPress[(int)EControllerAction.Down];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.Down];
+					}
 				case EKeystroke.Back:
-				{
-					return ControllerActionPress[(int)EControllerAction.Left];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.Left];
+					}
 				case EKeystroke.Forward:
-				{
-					return ControllerActionPress[(int)EControllerAction.Right];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.Right];
+					}
 
 				case EKeystroke.A:
-				{
-					return ControllerActionPress[(int)EControllerAction.A];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.A];
+					}
 				case EKeystroke.B:
-				{
-					return ControllerActionPress[(int)EControllerAction.B];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.B];
+					}
 				case EKeystroke.X:
-				{
-					return ControllerActionPress[(int)EControllerAction.X];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.X];
+					}
 				case EKeystroke.Y:
-				{
-					return ControllerActionPress[(int)EControllerAction.Y];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.Y];
+					}
 				case EKeystroke.LShoulder:
-				{
-					return ControllerActionPress[(int)EControllerAction.LShoulder];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.LShoulder];
+					}
 				case EKeystroke.RShoulder:
-				{
-					return ControllerActionPress[(int)EControllerAction.RShoulder];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.RShoulder];
+					}
 				case EKeystroke.LTrigger:
-				{
-					return ControllerActionPress[(int)EControllerAction.LTrigger];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.LTrigger];
+					}
 				case EKeystroke.RTrigger:
-				{
-					return ControllerActionPress[(int)EControllerAction.RTrigger];
-				}
+					{
+						return ControllerActionPress[(int)EControllerAction.RTrigger];
+					}
 
 				//CHECK BUTTONS RELEASED
 
 				case EKeystroke.ARelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.A];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.A];
+					}
 				case EKeystroke.BRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.B];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.B];
+					}
 				case EKeystroke.XRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.X];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.X];
+					}
 				case EKeystroke.YRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.Y];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.Y];
+					}
 				case EKeystroke.LShoulderRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.LShoulder];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.LShoulder];
+					}
 				case EKeystroke.RShoulderRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.RShoulder];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.RShoulder];
+					}
 				case EKeystroke.LTriggerRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.LTrigger];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.LTrigger];
+					}
 				case EKeystroke.RTriggerRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.RTrigger];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.RTrigger];
+					}
 
 				default:
-				{
-					//you used the wrong CheckKeystroke method?
-					//you passed in one of the direction+button keystrokes?
-					Debug.Assert(false);
-					return false;
-				}
+					{
+						//you used the wrong CheckKeystroke method?
+						//you passed in one of the direction+button keystrokes?
+						return false;
+					}
 			}
 		}
 
@@ -406,119 +393,118 @@ namespace HadoukInput
 		/// Check for a specific keystroke
 		/// only used for button press keystrokes
 		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
+		/// <param name="keystroke">the keystroke to check for</param>
 		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystrokeHeld(EKeystroke eKeystroke)
+		public bool CheckKeystrokeHeld(EKeystroke keystroke)
 		{
-			switch (eKeystroke)
+			switch (keystroke)
 			{
 				case EKeystroke.Up:
-				{
-					return ControllerActionHeld[(int)EControllerAction.Up];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.Up];
+					}
 				case EKeystroke.Down:
-				{
-					return ControllerActionHeld[(int)EControllerAction.Down];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.Down];
+					}
 				case EKeystroke.Back:
-				{
-					return ControllerActionHeld[(int)EControllerAction.Left];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.Left];
+					}
 				case EKeystroke.Forward:
-				{
-					return ControllerActionHeld[(int)EControllerAction.Right];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.Right];
+					}
 
 				case EKeystroke.A:
-				{
-					return ControllerActionHeld[(int)EControllerAction.A];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.A];
+					}
 				case EKeystroke.B:
-				{
-					return ControllerActionHeld[(int)EControllerAction.B];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.B];
+					}
 				case EKeystroke.X:
-				{
-					return ControllerActionHeld[(int)EControllerAction.X];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.X];
+					}
 				case EKeystroke.Y:
-				{
-					return ControllerActionHeld[(int)EControllerAction.Y];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.Y];
+					}
 				case EKeystroke.LShoulder:
-				{
-					return ControllerActionHeld[(int)EControllerAction.LShoulder];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.LShoulder];
+					}
 				case EKeystroke.RShoulder:
-				{
-					return ControllerActionHeld[(int)EControllerAction.RShoulder];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.RShoulder];
+					}
 				case EKeystroke.LTrigger:
-				{
-					return ControllerActionHeld[(int)EControllerAction.LTrigger];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.LTrigger];
+					}
 				case EKeystroke.RTrigger:
-				{
-					return ControllerActionHeld[(int)EControllerAction.RTrigger];
-				}
+					{
+						return ControllerActionHeld[(int)EControllerAction.RTrigger];
+					}
 
 				//CHECK BUTTONS RELEASED
 
 				case EKeystroke.ARelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.A];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.A];
+					}
 				case EKeystroke.BRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.B];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.B];
+					}
 				case EKeystroke.XRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.X];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.X];
+					}
 				case EKeystroke.YRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.Y];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.Y];
+					}
 				case EKeystroke.LShoulderRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.LShoulder];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.LShoulder];
+					}
 				case EKeystroke.RShoulderRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.RShoulder];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.RShoulder];
+					}
 				case EKeystroke.LTriggerRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.LTrigger];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.LTrigger];
+					}
 				case EKeystroke.RTriggerRelease:
-				{
-					return ControllerActionRelease[(int)EControllerAction.RTrigger];
-				}
+					{
+						return ControllerActionRelease[(int)EControllerAction.RTrigger];
+					}
 
 				default:
-				{
-					//you used the wrong CheckKeystroke method?
-					//you passed in one of the direction+button keystrokes?
-					Debug.Assert(false);
-					return false;
-				}
+					{
+						//you used the wrong CheckKeystroke method?
+						//you passed in one of the direction+button keystrokes?
+						return false;
+					}
 			}
 		}
 
-		public static Vector2 UpVect(bool bFlipped, Vector2 direction)
+		public static Vector2 UpVect(bool flipped, Vector2 direction)
 		{
-			if (bFlipped)
+			if (flipped)
 			{
-				//If it is flipped, the up vector is the direction rotated 90 degrees
-				Matrix rotate = MatrixExt.Orientation(1.57079633f);
+				//If it is flipped, the up vector is the direction rotated -90 degrees
+				var rotate = MatrixExt.Orientation(-1.57079633f);
 				return MatrixExt.Multiply(rotate, direction);
 			}
 			else
 			{
-				//If it is not flipped, the up vector is the direction rotated -90 degrees
-				Matrix rotate = MatrixExt.Orientation(-1.57079633f);
+				//If it is not flipped, the up vector is the direction rotated 90 degrees
+				var rotate = MatrixExt.Orientation(1.57079633f);
 				return MatrixExt.Multiply(rotate, direction);
 			}
 		}
@@ -526,126 +512,125 @@ namespace HadoukInput
 		/// <summary>
 		/// Check for a specific keystroke, but with a rotated direction.
 		/// </summary>
-		/// <param name="eKeystroke">the keystroke to check for</param>
-		/// <param name="bFlipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
+		/// <param name="keystroke">the keystroke to check for</param>
+		/// <param name="flipped">Whether or not the check should be flipped on x axis.  If true, "left" will be "forward" and vice/versa</param>
 		/// <param name="direction">The NORMALIZED direction to check against</param>
 		/// <returns>bool: the keystroke is being held</returns>
-		public bool CheckKeystroke(EKeystroke eKeystroke, bool bFlipped, Vector2 direction)
+		public bool CheckKeystroke(EKeystroke keystroke, bool flipped, Vector2 direction)
 		{
 			//This method should only be used for the really basic keystrokes...
-			Debug.Assert(EKeystroke.RTriggerRelease >= eKeystroke);
 
 			//Get the 'up' vector...
-			Vector2 upVect = UpVect(bFlipped, direction);
+			var upVect = UpVect(flipped, direction);
 
-			switch (eKeystroke)
+			switch (keystroke)
 			{
 				//CHECK THE DIRECTIONS
 
 				case EKeystroke.Up:
-				{
-					//get the direction to check for 'up'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'up'
+						return Thumbsticks.LeftThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.Down:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'down'
+						return Thumbsticks.LeftThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.Forward:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'forward'
+						return Thumbsticks.LeftThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.Back:
-				{
-					//get the direction to check for 'Back'
-					return Thumbsticks.LeftThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'Back'
+						return Thumbsticks.LeftThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 
 				//Check the left thumnbsticks released
 				case EKeystroke.Neutral:
-				{
-					//are any keys being held?
-					if (!ControllerActionHeld[(int)EControllerAction.Up] &&
-						!ControllerActionHeld[(int)EControllerAction.Down] &&
-						!ControllerActionHeld[(int)EControllerAction.Right] &&
-						!ControllerActionHeld[(int)EControllerAction.Left])
 					{
-						//did a "key up" action occur?
-						return (ControllerActionRelease[(int)EControllerAction.Up] ||
-							ControllerActionRelease[(int)EControllerAction.Down] ||
-							ControllerActionRelease[(int)EControllerAction.Right] ||
-							ControllerActionRelease[(int)EControllerAction.Left]);
+						//are any keys being held?
+						if (!ControllerActionHeld[(int)EControllerAction.Up] &&
+							!ControllerActionHeld[(int)EControllerAction.Down] &&
+							!ControllerActionHeld[(int)EControllerAction.Right] &&
+							!ControllerActionHeld[(int)EControllerAction.Left])
+						{
+							//did a "key up" action occur?
+							return (ControllerActionRelease[(int)EControllerAction.Up] ||
+								ControllerActionRelease[(int)EControllerAction.Down] ||
+								ControllerActionRelease[(int)EControllerAction.Right] ||
+								ControllerActionRelease[(int)EControllerAction.Left]);
+						}
+						else
+						{
+							return false;
+						}
 					}
-					else
-					{
-						return false;
-					}
-				}
 
 				//CHECK RIGHT THUMBSTICK STUFF
 
 				case EKeystroke.UpR:
-				{
-					//get the direction to check for 'up'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'up'
+						return Thumbsticks.RightThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.DownR:
-				{
-					//get the direction to check for 'down'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'down'
+						return Thumbsticks.RightThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.ForwardR:
-				{
-					//get the direction to check for 'forward'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'forward'
+						return Thumbsticks.RightThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 				case EKeystroke.BackR:
-				{
-					//get the direction to check for 'Back'
-					return Thumbsticks.RightThumbstick.CheckKeystroke(eKeystroke, direction, upVect);
-				}
+					{
+						//get the direction to check for 'Back'
+						return Thumbsticks.RightThumbstick.CheckKeystroke(keystroke, direction, upVect);
+					}
 
 				//Check the right thumnbsticks released
 				case EKeystroke.NeutralR:
-				{
-					//are any keys being held?
-					if (!ControllerActionHeld[(int)EControllerAction.UpR] &&
-						!ControllerActionHeld[(int)EControllerAction.DownR] &&
-						!ControllerActionHeld[(int)EControllerAction.RightR] &&
-						!ControllerActionHeld[(int)EControllerAction.LeftR])
 					{
-						//did a "key up" action occur?
-						return (ControllerActionRelease[(int)EControllerAction.UpR] ||
-							ControllerActionRelease[(int)EControllerAction.DownR] ||
-							ControllerActionRelease[(int)EControllerAction.RightR] ||
-							ControllerActionRelease[(int)EControllerAction.LeftR]);
+						//are any keys being held?
+						if (!ControllerActionHeld[(int)EControllerAction.UpR] &&
+							!ControllerActionHeld[(int)EControllerAction.DownR] &&
+							!ControllerActionHeld[(int)EControllerAction.RightR] &&
+							!ControllerActionHeld[(int)EControllerAction.LeftR])
+						{
+							//did a "key up" action occur?
+							return (ControllerActionRelease[(int)EControllerAction.UpR] ||
+								ControllerActionRelease[(int)EControllerAction.DownR] ||
+								ControllerActionRelease[(int)EControllerAction.RightR] ||
+								ControllerActionRelease[(int)EControllerAction.LeftR]);
+						}
+						else
+						{
+							return false;
+						}
 					}
-					else
-					{
-						return false;
-					}
-				}
 
 				case EKeystroke.ForwardShoulder:
-				{
-					return (bFlipped ? ControllerActionPress[(int)EControllerAction.LShoulder]: 
-						ControllerActionPress[(int)EControllerAction.RShoulder]);
-				}
+					{
+						return (flipped ? ControllerActionPress[(int)EControllerAction.LShoulder] :
+							ControllerActionPress[(int)EControllerAction.RShoulder]);
+					}
 
 				case EKeystroke.BackShoulder:
-				{
-					return (!bFlipped ? ControllerActionPress[(int)EControllerAction.LShoulder] :
-						ControllerActionPress[(int)EControllerAction.RShoulder]);
-				}
+					{
+						return (!flipped ? ControllerActionPress[(int)EControllerAction.LShoulder] :
+							ControllerActionPress[(int)EControllerAction.RShoulder]);
+					}
 
 				//CHECK BUTTONS
 
 				default:
-				{
-					return CheckKeystroke(eKeystroke);
-				}
+					{
+						return CheckKeystroke(keystroke);
+					}
 			}
 		}
 
@@ -657,76 +642,74 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button was activated this frame</returns>
-		private bool CheckControllerActionPress(InputState rInputState, int i, EControllerAction iAction)
+		private bool CheckControllerActionPress(InputState inputState, int i, EControllerAction action)
 		{
-			Debug.Assert(iAction < EControllerAction.NumControllerActions);
-
-			if (UseKeyboard && (iAction < EControllerAction.UpR))
+			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
 				//get the key to check
-				if (CheckKeyDown(rInputState, i, MappedKey(i, iAction)))
+				if (CheckKeyDown(inputState, i, MappedKey(i, action)))
 				{
 					return true;
 				}
 			}
 
 			//First check if it is a direction
-			switch (iAction)
+			switch (action)
 			{
 				case EControllerAction.Up:
-				{
-					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
-					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
-					        (rInputState.ButtonDown(i, Buttons.DPadUp) &&
-					         !rInputState.PrevButtonDown(i, Buttons.DPadUp)));
-				}
+					{
+						return ((inputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
+								 !inputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
+								(inputState.ButtonDown(i, Buttons.DPadUp) &&
+								 !inputState.PrevButtonDown(i, Buttons.DPadUp)));
+					}
 				case EControllerAction.Down:
-				{
-					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
-					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
-					        (rInputState.ButtonDown(i, Buttons.DPadDown) &&
-					         !rInputState.PrevButtonDown(i, Buttons.DPadDown)));
-				}
+					{
+						return ((inputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
+								 !inputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
+								(inputState.ButtonDown(i, Buttons.DPadDown) &&
+								 !inputState.PrevButtonDown(i, Buttons.DPadDown)));
+					}
 				case EControllerAction.Left:
-				{
-					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
-					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
-					        (rInputState.ButtonDown(i, Buttons.DPadLeft) &&
-					         !rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
-				}
+					{
+						return ((inputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
+								 !inputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
+								(inputState.ButtonDown(i, Buttons.DPadLeft) &&
+								 !inputState.PrevButtonDown(i, Buttons.DPadLeft)));
+					}
 				case EControllerAction.Right:
-				{
-					return ((rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
-					         !rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
-					        (rInputState.ButtonDown(i, Buttons.DPadRight) &&
-					         !rInputState.PrevButtonDown(i, Buttons.DPadRight)));
-				}
+					{
+						return ((inputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
+								 !inputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
+								(inputState.ButtonDown(i, Buttons.DPadRight) &&
+								 !inputState.PrevButtonDown(i, Buttons.DPadRight)));
+					}
 				case EControllerAction.UpR:
-				{
-					return (rInputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
-							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
+								 !inputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
+					}
 				case EControllerAction.DownR:
-				{
-					return (rInputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
-							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
+								 !inputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
+					}
 				case EControllerAction.LeftR:
-				{
-					return (rInputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
-							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
+								 !inputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
+					}
 				case EControllerAction.RightR:
-				{
-					return (rInputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
-							 !rInputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
+								 !inputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
+					}
 				default:
-				{
-					//get the attack button to check
-					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
-					return (rInputState.ButtonDown(i, mappedButton) && !rInputState.PrevButtonDown(i, mappedButton));
-				}
+					{
+						//get the attack button to check
+						Buttons mappedButton = g_ButtonMap[i, (action - EControllerAction.A)];
+						return (inputState.ButtonDown(i, mappedButton) && !inputState.PrevButtonDown(i, mappedButton));
+					}
 			}
 		}
 
@@ -736,62 +719,62 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button is held this frame</returns>
-		private bool CheckControllerActionHeld(InputState rInputState, int i, EControllerAction iAction)
+		private bool CheckControllerActionHeld(InputState inputState, int i, EControllerAction action)
 		{
-			if (UseKeyboard && (iAction < EControllerAction.UpR))
+			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
 				//get the key to check
-				if (rInputState.CurrentKeyboardState.IsKeyDown(MappedKey(i, iAction)))
+				if (inputState.CurrentKeyboardState.IsKeyDown(MappedKey(i, action)))
 				{
 					return true;
 				}
 			}
 
 			//First check if it is a direction
-			switch (iAction)
+			switch (action)
 			{
 				case EControllerAction.Up:
-				{
-					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) ||
-					        rInputState.ButtonDown(i, Buttons.DPadUp));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.LeftThumbstickUp) ||
+								inputState.ButtonDown(i, Buttons.DPadUp));
+					}
 				case EControllerAction.Down:
-				{
-					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) ||
-					        rInputState.ButtonDown(i, Buttons.DPadDown));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.LeftThumbstickDown) ||
+								inputState.ButtonDown(i, Buttons.DPadDown));
+					}
 				case EControllerAction.Left:
-				{
-					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) ||
-					        rInputState.ButtonDown(i, Buttons.DPadLeft));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.LeftThumbstickLeft) ||
+								inputState.ButtonDown(i, Buttons.DPadLeft));
+					}
 				case EControllerAction.Right:
-				{
-					return (rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) ||
-					        rInputState.ButtonDown(i, Buttons.DPadRight));
-				}
+					{
+						return (inputState.ButtonDown(i, Buttons.LeftThumbstickRight) ||
+								inputState.ButtonDown(i, Buttons.DPadRight));
+					}
 				case EControllerAction.UpR:
-				{
-					return rInputState.ButtonDown(i, Buttons.RightThumbstickUp);
-				}
+					{
+						return inputState.ButtonDown(i, Buttons.RightThumbstickUp);
+					}
 				case EControllerAction.DownR:
-				{
-					return rInputState.ButtonDown(i, Buttons.RightThumbstickDown);
-				}
+					{
+						return inputState.ButtonDown(i, Buttons.RightThumbstickDown);
+					}
 				case EControllerAction.LeftR:
-				{
-					return rInputState.ButtonDown(i, Buttons.RightThumbstickLeft);
-				}
+					{
+						return inputState.ButtonDown(i, Buttons.RightThumbstickLeft);
+					}
 				case EControllerAction.RightR:
-				{
-					return rInputState.ButtonDown(i, Buttons.RightThumbstickRight);
-				}
+					{
+						return inputState.ButtonDown(i, Buttons.RightThumbstickRight);
+					}
 				default:
-				{
-					//get the attack button to check
-					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
-					return rInputState.ButtonDown(i, mappedButton);
-				}
+					{
+						//get the attack button to check
+						Buttons mappedButton = g_ButtonMap[i, (action - EControllerAction.A)];
+						return inputState.ButtonDown(i, mappedButton);
+					}
 			}
 		}
 
@@ -801,91 +784,89 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button was deactivated this frame</returns>
-		private bool CheckControllerActionReleased(InputState rInputState, int i, EControllerAction iAction)
+		private bool CheckControllerActionReleased(InputState inputState, int i, EControllerAction action)
 		{
-			Debug.Assert(iAction < EControllerAction.NumControllerActions);
-
-			if (UseKeyboard && (iAction < EControllerAction.UpR))
+			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
 				//first do the keyboard check
-				if (CheckKeyUp(rInputState, i, MappedKey(i, iAction)))
+				if (CheckKeyUp(inputState, i, MappedKey(i, action)))
 				{
 					return true;
 				}
 			}
 
 			//First check if it is a direction
-			switch (iAction)
+			switch (action)
 			{
 				case EControllerAction.Up:
-				{
-					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
-					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
-					        (!rInputState.ButtonDown(i, Buttons.DPadUp) &&
-					         rInputState.PrevButtonDown(i, Buttons.DPadUp)));
-				}
+					{
+						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
+								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
+								(!inputState.ButtonDown(i, Buttons.DPadUp) &&
+								 inputState.PrevButtonDown(i, Buttons.DPadUp)));
+					}
 				case EControllerAction.Down:
-				{
-					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
-					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
-					        (!rInputState.ButtonDown(i, Buttons.DPadDown) &&
-					         rInputState.PrevButtonDown(i, Buttons.DPadDown)));
-				}
+					{
+						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
+								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
+								(!inputState.ButtonDown(i, Buttons.DPadDown) &&
+								 inputState.PrevButtonDown(i, Buttons.DPadDown)));
+					}
 				case EControllerAction.Left:
-				{
-					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
-					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
-					        (!rInputState.ButtonDown(i, Buttons.DPadLeft) &&
-					         rInputState.PrevButtonDown(i, Buttons.DPadLeft)));
-				}
+					{
+						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
+								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
+								(!inputState.ButtonDown(i, Buttons.DPadLeft) &&
+								 inputState.PrevButtonDown(i, Buttons.DPadLeft)));
+					}
 				case EControllerAction.Right:
-				{
-					return ((!rInputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
-					         rInputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
-					        (!rInputState.ButtonDown(i, Buttons.DPadRight) &&
-					         rInputState.PrevButtonDown(i, Buttons.DPadRight)));
-				}
+					{
+						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
+								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
+								(!inputState.ButtonDown(i, Buttons.DPadRight) &&
+								 inputState.PrevButtonDown(i, Buttons.DPadRight)));
+					}
 				case EControllerAction.UpR:
-				{
-					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
-							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
-				}
+					{
+						return (!inputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
+								 inputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
+					}
 				case EControllerAction.DownR:
-				{
-					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
-							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
-				}
+					{
+						return (!inputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
+								 inputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
+					}
 				case EControllerAction.LeftR:
-				{
-					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
-							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
-				}
+					{
+						return (!inputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
+								 inputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
+					}
 				case EControllerAction.RightR:
-				{
-					return (!rInputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
-							 rInputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
-				}
+					{
+						return (!inputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
+								 inputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
+					}
 				default:
-				{
-					//get the attack button to check
-					Buttons mappedButton = g_ButtonMap[i, (iAction - EControllerAction.A)];
-					return (!rInputState.ButtonDown(i, mappedButton) && rInputState.PrevButtonDown(i, mappedButton));
-				}
+					{
+						//get the attack button to check
+						Buttons mappedButton = g_ButtonMap[i, (action - EControllerAction.A)];
+						return (!inputState.ButtonDown(i, mappedButton) && inputState.PrevButtonDown(i, mappedButton));
+					}
 			}
 		}
 
 		/// <summary>
 		/// Check if a keyboard key was pressed this update
 		/// </summary>
-		/// <param name="rInputState">current input state</param>
+		/// <param name="inputState">current input state</param>
 		/// <param name="i">controller index</param>
-		/// <param name="myKey">key to check</param>
+		/// <param name="key">key to check</param>
 		/// <returns>bool: key was pressed this update</returns>
-		private bool CheckKeyDown(InputState rInputState, int i, Keys myKey)
+		private bool CheckKeyDown(InputState inputState, int i, Keys key)
 		{
 			if (UseKeyboard)
 			{
-				return (rInputState.CurrentKeyboardState.IsKeyDown(myKey) && rInputState.LastKeyboardState.IsKeyUp(myKey));
+				return (inputState.CurrentKeyboardState.IsKeyDown(key) && inputState.LastKeyboardState.IsKeyUp(key));
 			}
 			else
 			{
@@ -896,15 +877,15 @@ namespace HadoukInput
 		/// <summary>
 		/// check if a key was released this update
 		/// </summary>
-		/// <param name="rInputState">current input state</param>
+		/// <param name="inputState">current input state</param>
 		/// <param name="i">controller index</param>
-		/// <param name="myKey">key to check</param>
+		/// <param name="key">key to check</param>
 		/// <returns>bool: true if the key was released this update.</returns>
-		private bool CheckKeyUp(InputState rInputState, int i, Keys myKey)
+		private bool CheckKeyUp(InputState inputState, int i, Keys key)
 		{
 			if (UseKeyboard)
 			{
-				return (rInputState.CurrentKeyboardState.IsKeyUp(myKey) && rInputState.LastKeyboardState.IsKeyDown(myKey));
+				return (inputState.CurrentKeyboardState.IsKeyUp(key) && inputState.LastKeyboardState.IsKeyDown(key));
 			}
 			else
 			{

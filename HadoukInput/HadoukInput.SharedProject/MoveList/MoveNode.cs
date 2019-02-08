@@ -13,17 +13,7 @@ namespace HadoukInput
 		///	<summary>
 		///	child nodes
 		///	</summary>
-		private Dictionary<EKeystroke, MoveNode> Children { get; set; }
-
-		///	<summary>
-		///	if this is a leaf node, this is the message id to send for this Move
-		///	</summary>
-		private int MessageId { get; set; }
-
-		///	<summary>
-		///	the controller keystroke this node represents
-		///	</summary>
-		public EKeystroke Keystroke { get; set; }
+		public Dictionary<EKeystroke, MoveNode> Moves { get; private set; }
 
 		///	<summary>
 		///	if this is a leaf node, the name of the Move
@@ -38,11 +28,9 @@ namespace HadoukInput
 		/// contrsuctor
 		/// </summary>
 		/// <param name="keystroke">the keystroke this move node represents</param>
-		public MoveNode(EKeystroke keystroke)
+		public MoveNode()
 		{
-			Children = new Dictionary<EKeystroke, MoveNode>();
-			Keystroke = keystroke;
-			MessageId = -1;
+			Moves = new Dictionary<EKeystroke, MoveNode>();
 		}
 
 		///	<summary>
@@ -50,28 +38,14 @@ namespace HadoukInput
 		///	Set all this nodes parameters 
 		///	Allocate and add children nodes
 		///	</summary>
-		///	<param name="keystrokes">array of all the keystrokes for this move</param>
 		///	<param name="inputIndex">the index of the keystrokes that this node represents</param>
-		///	<param name="messageId">message id to send when this Move is activated</param>
 		///	<param name="moveName">name of the move</param>
-		public void AddMove(
-			List<EKeystroke> keystrokes,
-			int inputIndex,
-			int messageId,
-			string moveName)
+		///	<param name="keystrokes">array of all the keystrokes for this move</param>
+		public void AddMove(int inputIndex, string moveName, params EKeystroke [] keystrokes)
 		{
-			Debug.Assert(null != keystrokes);
-			Debug.Assert(inputIndex >= 0);
-			Debug.Assert(inputIndex < keystrokes.Count);
-			Debug.Assert(messageId >= 0);
-
-			//verify that the input	item matches this dude
-			Debug.Assert(Keystroke == keystrokes[inputIndex]);
-
 			//If the index is the end of the list, make	this a leaf
-			if (inputIndex == (keystrokes.Count - 1))
+			if (inputIndex == (keystrokes.Length - 1))
 			{
-				MessageId = messageId;
 				MoveName = moveName;
 				return;
 			}
@@ -79,7 +53,35 @@ namespace HadoukInput
 			//Get the child	node for the next input	item, recurse
 			var nextIndex = inputIndex + 1;
 			var node = GetChildNode(keystrokes[nextIndex]);
-			node.AddMove(keystrokes, nextIndex, messageId, moveName);
+			node.AddMove(nextIndex, moveName, keystrokes);
+		}
+
+		public bool RemoveMove(int inputIndex, string moveName, params EKeystroke[] keystrokes)
+		{
+			//If the index is the end of the list, make	this a leaf
+			if (MoveName == moveName)
+			{
+				return true;
+			}
+			else if (!string.IsNullOrEmpty(MoveName))
+			{
+				return false;
+			}
+
+			//Get the child	node for the next input	item, recurse
+			var nextIndex = inputIndex + 1;
+			if (Moves.ContainsKey(keystrokes[nextIndex]))
+			{
+				var node = Moves[keystrokes[nextIndex]];
+				var removeChild = node.RemoveMove(nextIndex, moveName, keystrokes);
+				if (removeChild)
+				{
+					Moves.Remove(keystrokes[nextIndex]);
+					return Moves.Count == 0;
+				}
+			}
+
+			return false;
 		}
 
 		///	<summary>
@@ -88,38 +90,32 @@ namespace HadoukInput
 		///	<param name="inputItems">a list of input to parse</param>
 		///	<param name="inputIndex">index	of the input buffer	to check. If a Move	is found, the item at this index will be removed.</param>
 		///	<returns>int: The first	Move that matches the input. -1	if no Moves	are	found</returns>
-		public int ParseInput(List<InputItem> inputItems, int inputIndex)
+		public string ParseInput(List<InputItem> inputItems, int inputIndex)
 		{
-			Debug.Assert(0 <= inputIndex);
-			Debug.Assert(inputIndex < inputItems.Count);
-
-			//verify that the input	item matches this dude
-			Debug.Assert(Keystroke == inputItems[inputIndex].Keystroke);
-
 			//Check	if this	is a leaf node
-			if (0 <= MessageId)
+			if (!string.IsNullOrEmpty(MoveName))
 			{
 				//remove item from linked list
 				inputItems.RemoveAt(inputIndex);
 
 				//return my Move
-				return MessageId;
+				return MoveName;
 			}
 
 			//check	if iter	is at end of list
 			if (inputIndex == (inputItems.Count - 1))
 			{
-				return -1;
+				return string.Empty;
 			}
 
 			//otherwise, find child nodes that matches next input item
 			var nextIndex = inputIndex + 1;
-			if (Children.ContainsKey(inputItems[nextIndex].Keystroke))
+			if (Moves.ContainsKey(inputItems[nextIndex].Keystroke))
 			{
 				//increment iter and recurse into child	node
-				var childNode = Children[inputItems[nextIndex].Keystroke];
+				var childNode = Moves[inputItems[nextIndex].Keystroke];
 				var childMove = childNode.ParseInput(inputItems, nextIndex);
-				if (-1 != childMove)
+				if (!string.IsNullOrEmpty(childMove))
 				{
 					//if child node returns Move, remove my	node from linked list
 					inputItems.RemoveAt(inputIndex);
@@ -129,7 +125,7 @@ namespace HadoukInput
 				}
 			}
 
-			return -1;
+			return string.Empty;
 		}
 
 		///	<summary>
@@ -140,14 +136,14 @@ namespace HadoukInput
 		///	<returns>MoveNode:	a child	node that uses that	keystroke</returns>
 		private MoveNode GetChildNode(EKeystroke keystroke)
 		{
-			if (Children.ContainsKey(keystroke))
+			if (Moves.ContainsKey(keystroke))
 			{
-				return Children[keystroke];
+				return Moves[keystroke];
 			}
 			else
 			{
-				var moveNode = new MoveNode(keystroke);
-				Children[keystroke] = moveNode;
+				var moveNode = new MoveNode();
+				Moves[keystroke] = moveNode;
 				return moveNode;
 			}
 		}

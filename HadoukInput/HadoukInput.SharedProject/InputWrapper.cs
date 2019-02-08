@@ -3,18 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 
 namespace HadoukInput
 {
-	/// <summary>
-	/// A delegate to a method that takes a message name and spits out an integer ID
-	/// </summary>
-	/// <param name="strMessageName">name of the message to get ID for</param>
-	/// <returns>ID of that message</returns>
-	public delegate int MessageNameToId(string strMessageName);
-
 	/// <summary>
 	/// A delegate to get the current time.
 	/// </summary>
@@ -27,14 +19,10 @@ namespace HadoukInput
 	/// </summary>
 	public class InputWrapper
 	{
-		#region Fields
+		#region Properties
 
 		public const float DefaultBufferedInputExpire = 0.05f;
 		public const float DefaultQueuedInputExpire = 0.5f;
-
-		#endregion //Fields
-
-		#region Members
 
 		/// <summary>
 		/// state machine for combining the keystrokes of input items
@@ -58,28 +46,23 @@ namespace HadoukInput
 		private readonly CurrentTime GetCurrentTime;
 
 		/// <summary>
-		/// The controller this dude will use
-		/// </summary>
-		private readonly ControllerWrapper m_Controller;
-
-		/// <summary>
 		/// The move tree, which acutally holds the wholle move list
 		/// </summary>
-		private MoveList Moves { get; set; }
+		public MoveList Moves { get; set; }
 
 		/// <summary>
 		/// This is the buffer for input before it is put in the listInput
 		/// this allows for simultaneous button presses
 		/// Input is held in here for a split second, condensed into keystrokes as they come in, then put in the queue.
 		/// </summary>
-		private readonly List<InputItem> m_listBufferedInput;
+		private readonly List<InputItem> BufferedInput;
 
 		/// <summary>
 		/// list of queued input
 		/// This is used to look for patterns as loaded from the move list.
 		/// Input is held in here for a little bit while it parses for moves.
 		/// </summary>
-		private readonly List<InputItem> m_listQueuedInput;
+		private readonly List<InputItem> QueuedInput;
 
 		/// <summary>
 		/// A dictionary of all the keystroke combinations
@@ -88,14 +71,7 @@ namespace HadoukInput
 		/// </summary>
 		private static readonly EKeystroke[][] g_KeystrokeCombinations;
 
-		#endregion //Members
-
-		#region Properties
-
-		public ControllerWrapper Controller
-		{
-			get { return m_Controller; }
-		}
+		public ControllerWrapper Controller { get; private set; }
 
 		/// <summary>
 		/// Length of time input items are held in the buffer before being put in the queue
@@ -355,17 +331,16 @@ namespace HadoukInput
 		/// contructor
 		/// </summary>
 		/// <param name="controller">index of the controller this player will use</param>
-		/// <param name="rClock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
-		public InputWrapper(ControllerWrapper controller, CurrentTime rClock)
+		/// <param name="clock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
+		public InputWrapper(ControllerWrapper controller, CurrentTime clock)
 		{
-			Debug.Assert(null != rClock);
-
 			BufferedInputExpire = DefaultBufferedInputExpire;
 			QueuedInputExpire = DefaultQueuedInputExpire;
-			m_listBufferedInput = new List<InputItem>();
-			m_listQueuedInput = new List<InputItem>();
-			m_Controller = controller;
-			GetCurrentTime = rClock;
+			BufferedInput = new List<InputItem>();
+			QueuedInput = new List<InputItem>();
+			Controller = controller;
+			GetCurrentTime = clock;
+			Moves = new MoveList();
 		}
 
 		#endregion //Initialization 
@@ -375,8 +350,8 @@ namespace HadoukInput
 		/// </summary>
 		public void Clear()
 		{
-			m_listBufferedInput.Clear();
-			m_listQueuedInput.Clear();
+			BufferedInput.Clear();
+			QueuedInput.Clear();
 		}
 
 		/// <summary>
@@ -384,61 +359,61 @@ namespace HadoukInput
 		/// This update function will read input from the controller and then parse the move lists and queues.
 		/// Use this update if the character is your game only faces left or right.
 		/// </summary>
-		/// <param name="rInputState">the current input state of the game.
+		/// <param name="inputState">the current input state of the game.
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
-		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
-		public void Update(InputState rInputState, bool bFlipped)
+		/// <param name="flipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		public void Update(InputState inputState, bool flipped)
 		{
-			UpdateController(rInputState);
+			UpdateController(inputState);
 			
 			//create a fake direction for left or right
-			UpdateMoveQueue(bFlipped, (bFlipped ? -Vector2.UnitX : Vector2.UnitX));
+			UpdateMoveQueue(flipped, (flipped ? -Vector2.UnitX : Vector2.UnitX));
 		}
 
 		/// <summary>
 		/// Parse the move lists and queues.  This method is called every frame, unless the game is paused.
 		/// This update function will read input from the controller and then parse the move lists and queues.
 		/// </summary>
-		/// <param name="rInputState">the current input state of the game.
+		/// <param name="inputState">the current input state of the game.
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
-		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="flipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		/// <param name="direction">the direction the character is facing</param>
-		public void Update(InputState rInputState, bool bFlipped, Vector2 direction)
+		public void Update(InputState inputState, bool flipped, Vector2 direction)
 		{
-			UpdateController(rInputState);
-			UpdateMoveQueue(bFlipped, direction);
+			UpdateController(inputState);
+			UpdateMoveQueue(flipped, direction);
 		}
 
 		/// <summary>
 		/// update the controller
 		/// </summary>
-		/// <param name="rInputState"></param>
-		private void UpdateController(InputState rInputState)
+		/// <param name="inputState"></param>
+		private void UpdateController(InputState inputState)
 		{
 			//first update the controller if an input state was passed in.
-			if ((null != rInputState) && (null != m_Controller))
+			if ((null != inputState) && (null != Controller))
 			{
-				m_Controller.Update(rInputState);
+				Controller.Update(inputState);
 			}
 		}
 
 		/// <summary>
 		/// update all the queues that hold the move data
 		/// </summary>
-		/// <param name="bFlipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
+		/// <param name="flipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		/// <param name="direction">the direction the character is facing</param>
-		protected void UpdateMoveQueue(bool bFlipped, Vector2 direction)
+		protected void UpdateMoveQueue(bool flipped, Vector2 direction)
 		{
 			//first, remove any old input from the system
-			float fCurrentTime = GetCurrentTime();
-			float fMinInputItemTime = fCurrentTime - QueuedInputExpire;
-			while (m_listQueuedInput.Count > 0)
+			var currentTime = GetCurrentTime();
+			var minInputItemTime = currentTime - QueuedInputExpire;
+			while (QueuedInput.Count > 0)
 			{
-				if (m_listQueuedInput[0].Time <= fMinInputItemTime)
+				if (QueuedInput[0].Time <= minInputItemTime)
 				{
-					m_listQueuedInput.RemoveAt(0);
+					QueuedInput.RemoveAt(0);
 				}
 				else
 				{
@@ -448,44 +423,44 @@ namespace HadoukInput
 			}
 
 			//loop through and check directions and single actions
-			if (null != m_Controller)
+			if (null != Controller)
 			{
 				//start at the top so they get combined in the correct order
-				for (EKeystroke i = EKeystroke.RTriggerRelease; i >= 0; i--)
+				for (var i = EKeystroke.RTriggerRelease; i >= 0; i--)
 				{
 					//get the result of checking that input button
-					if (m_Controller.CheckKeystroke(i, bFlipped, direction))
+					if (Controller.CheckKeystroke(i, flipped, direction))
 					{
-						BufferKeyStroke(i, fCurrentTime);
+						BufferKeyStroke(i, currentTime);
 					}
 				}
 			}
 
 			//check if any buffered input keys are expired
-			fMinInputItemTime = fCurrentTime - BufferedInputExpire;
-			while (m_listBufferedInput.Count > 0)
+			minInputItemTime = currentTime - BufferedInputExpire;
+			while (BufferedInput.Count > 0)
 			{
-				if (m_listBufferedInput[0].Time <= fMinInputItemTime)
+				if (BufferedInput[0].Time <= minInputItemTime)
 				{
 					//Check if this message is already queued
-					bool bFound = false;
-					for (int i = 0; i < m_listQueuedInput.Count; i++)
+					var found = false;
+					for (var i = 0; i < QueuedInput.Count; i++)
 					{
-						if (m_listQueuedInput[i] == m_listBufferedInput[0])
+						if (QueuedInput[i] == BufferedInput[0])
 						{
-							bFound = true;
+							found = true;
 							break;
 						}
 					}
 
 					//if message not already queued, add the input message to the input list
-					if (!bFound)
+					if (!found)
 					{
-						m_listQueuedInput.Add(m_listBufferedInput[0]);
+						QueuedInput.Add(BufferedInput[0]);
 					}
 
 					//remove the message from the buffered input
-					m_listBufferedInput.RemoveAt(0);
+					BufferedInput.RemoveAt(0);
 				}
 				else
 				{
@@ -495,62 +470,62 @@ namespace HadoukInput
 			}
 		}
 
-		private void BufferKeyStroke(EKeystroke foundKey, float fCurrentTime)
+		private void BufferKeyStroke(EKeystroke foundKey, float currentTime)
 		{
 			//ok, found a keystroke... check if we even need it
-			bool bNeedIt = true;
-			for (int i = 0; i < m_listBufferedInput.Count; i++)
+			var needIt = true;
+			for (var i = 0; i < BufferedInput.Count; i++)
 			{
 				//is it a dupe keystroke?
-				if (m_listBufferedInput[i].Keystroke == foundKey)
+				if (BufferedInput[i].Keystroke == foundKey)
 				{
 					//yeah we got plenty of that shit already
-					bNeedIt = false;
+					needIt = false;
 					break;
 				}
 
 				//Is this new keystroke part of a combination that is already buffered?
-				if (RedundantKeystroke(m_listBufferedInput[i].Keystroke, foundKey))
+				if (RedundantKeystroke(BufferedInput[i].Keystroke, foundKey))
 				{
-					bNeedIt = false;
+					needIt = false;
 					break;
 				}
 
 				//Can we combine these keystrokes?
-				EKeystroke combined = m_listBufferedInput[i].Keystroke;
-				if (CombineKeystrokes(m_listBufferedInput[i].Keystroke, foundKey, ref combined))
+				var combined = BufferedInput[i].Keystroke;
+				if (CombineKeystrokes(BufferedInput[i].Keystroke, foundKey, ref combined))
 				{
 					//Ok, these two keystrokes can be combined... 
 					
 					//remove the old keystroke
-					m_listBufferedInput.RemoveAt(i);
+					BufferedInput.RemoveAt(i);
 
 					//buffer the new keystroke
-					BufferKeyStroke(combined, fCurrentTime);
-					bNeedIt = false;
+					BufferKeyStroke(combined, currentTime);
+					needIt = false;
 					break;
 				}
 			}
 
-			if (bNeedIt)
+			if (needIt)
 			{
 				//add to the buffered input for checking later
-				m_listBufferedInput.Add(new InputItem(fCurrentTime, foundKey));
+				BufferedInput.Add(new InputItem(currentTime, foundKey));
 			}
 		}
 
 		/// <summary>
 		/// given two keys, check if the second key is part of the first one
 		/// </summary>
-		/// <param name="eCurKey"></param>
-		/// <param name="eNextKey"></param>
+		/// <param name="currentKey"></param>
+		/// <param name="nextKey"></param>
 		/// <returns></returns>
-		private bool RedundantKeystroke(EKeystroke eCurKey, EKeystroke eNextKey)
+		private bool RedundantKeystroke(EKeystroke currentKey, EKeystroke nextKey)
 		{
 			//iterate through the components of that higher keystroke and see if the lower is part of it
-			for (int i = 0; i < g_KeystrokeCombinations[(int)eCurKey].Length; i++)
+			for (var i = 0; i < g_KeystrokeCombinations[(int)currentKey].Length; i++)
 			{
-				if (eNextKey == g_KeystrokeCombinations[(int)eCurKey][i])
+				if (nextKey == g_KeystrokeCombinations[(int)currentKey][i])
 				{
 					//this new keystroke is part of an existing one
 					return true;
@@ -564,22 +539,21 @@ namespace HadoukInput
 		/// <summary>
 		/// Given two keystrokes, check if they can be combined into a third
 		/// </summary>
-		/// <param name="eCurKey">the current key to check</param>
-		/// <param name="eNextKey">the new key to check</param>
-		/// <param name="eCombined">If the keystrokes can be combined, this will hold the result.</param>
+		/// <param name="currentKey">the current key to check</param>
+		/// <param name="nextKey">the new key to check</param>
+		/// <param name="combinedKey">If the keystrokes can be combined, this will hold the result.</param>
 		/// <returns>true if the keystrokes were successfully combined.</returns>
-		private bool CombineKeystrokes(EKeystroke eCurKey, EKeystroke eNextKey, ref EKeystroke eCombined)
+		private bool CombineKeystrokes(EKeystroke currentKey, EKeystroke nextKey, ref EKeystroke combinedKey)
 		{
 			//see if the two keystrokes can be combined
-			EKeystroke firstKey = ((eCurKey < eNextKey) ? eCurKey : eNextKey);
-			EKeystroke secondKey = ((eCurKey <= eNextKey) ? eNextKey : eCurKey);
-			Debug.Assert(firstKey <= secondKey); //always check the smalelr number as the first index
+			var firstKey = ((currentKey < nextKey) ? currentKey : nextKey);
+			var secondKey = ((currentKey <= nextKey) ? nextKey : currentKey);
 
 			//If this is a keystroke that can be combined...
 			if (((int)firstKey < TransitionsRowSize) && ((int)secondKey < TransitionsColumnSize))
 			{
-				eCombined = g_InputTransitions[(int)firstKey, (int)secondKey];
-				if (firstKey != eCombined)
+				combinedKey = g_InputTransitions[(int)firstKey, (int)secondKey];
+				if (firstKey != combinedKey)
 				{
 					//They can be combined
 					return true;
@@ -594,20 +568,20 @@ namespace HadoukInput
 		/// This clears the move out of the queue, so you can only get it once!
 		/// </summary>
 		/// <returns>int: the id of the Move (as message index in statemachine). -1 for no Move</returns>
-		public int GetNextMove()
+		public string GetNextMove()
 		{
-			return Moves.GetNextMove(m_listQueuedInput);
+			return Moves.GetNextMove(QueuedInput);
 		}
 
 		public override string ToString()
 		{
-			var myText = new StringBuilder();
-			for (int i = 0; i < m_listQueuedInput.Count; i++)
+			var inputTextmyText = new StringBuilder();
+			for (var i = 0; i < QueuedInput.Count; i++)
 			{
-				myText.AppendFormat("{0}, ", m_listQueuedInput[i].Keystroke.ToString());
+				inputTextmyText.AppendFormat("{0}, ", QueuedInput[i].Keystroke.ToString());
 			}
 
-			return myText.ToString();
+			return inputTextmyText.ToString();
 		}
 
 		/// <summary>
@@ -616,13 +590,13 @@ namespace HadoukInput
 		/// <returns></returns>
 		public string GetBufferedInput()
 		{
-			var myText = new StringBuilder();
-			for (int i = 0; i < m_listBufferedInput.Count; i++)
+			var inputText = new StringBuilder();
+			for (var i = 0; i < BufferedInput.Count; i++)
 			{
-				myText.AppendFormat("{0}, ", m_listBufferedInput[i].Keystroke.ToString());
+				inputText.AppendFormat("{0}, ", BufferedInput[i].Keystroke.ToString());
 			}
 
-			return myText.ToString();
+			return inputText.ToString();
 		}
 
 		/// <summary>
@@ -631,16 +605,16 @@ namespace HadoukInput
 		/// <returns>The num of gamepads.</returns>
 		public static int NumGamepads()
 		{
-			int iTotal = 0;
+			var total = 0;
 			for (var i = PlayerIndex.One; i <= PlayerIndex.Four; i++)
 			{
 				if (GamePad.GetState(i).IsConnected)
 				{
-					iTotal++;
+					total++;
 				}
 			}
 
-			return iTotal;
+			return total;
 		}
 
 		#endregion //Methods
@@ -653,10 +627,13 @@ namespace HadoukInput
 		/// <param name="xmlFilename">name of the resource to load</param>
 		/// <param name="messageIds">delegate method for resolving message names</param>
 		/// <returns>bool: whether or not it was able to load the input list</returns>
-		public void ReadXmlFile(Filename xmlFilename, MessageNameToId messageIds, ContentManager xmlContent = null)
+		public void ReadXmlFile(Filename xmlFilename, ContentManager xmlContent = null)
 		{
-			Moves = new MoveList(messageIds, xmlFilename);
-			Moves.ReadXmlFile(xmlContent);
+			using (var moveListModel = new MoveListModel(xmlFilename))
+			{
+				moveListModel.ReadXmlFile(xmlContent);
+				Moves = new MoveList(moveListModel);
+			}
 		}
 
 		#endregion //File IO

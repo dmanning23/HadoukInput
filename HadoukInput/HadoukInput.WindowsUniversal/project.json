@@ -1,9 +1,9 @@
 ﻿{
   "dependencies": {
-    "FilenameBuddy": "2.0.0",
+    "FilenameBuddy": "2.0.1",
     "MatrixExtensions": "2.0.0",
     "Microsoft.NETCore.UniversalWindowsPlatform": "6.1.9",
-    "MonoGame.Framework.WindowsUniversal": "3.7.0.1708",
+    "MonoGame.Framework.WindowsUniversal": "3.7.1.189",
     "RandomExtensions.dmanning23": "2.0.0",
     "System.Xml.ReaderWriter": "4.3.1",
     "System.Xml.XmlDocument": "4.3.0",
