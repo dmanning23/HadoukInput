@@ -33,9 +33,22 @@ namespace HadoukInput
 
 		public MoveList(MoveListModel moveListModel) : this()
 		{
+			AddMoves(moveListModel);
+		}
+
+		public void AddMoves(MoveListModel moveListModel)
+		{
 			foreach (var move in moveListModel.Moves)
 			{
 				AddMove(move.Key, move.Value.ToArray());
+			}
+		}
+
+		public void RemoveMoves(MoveListModel moveListModel)
+		{
+			foreach (var move in moveListModel.Moves)
+			{
+				RemoveMove(move.Key, move.Value.ToArray());
 			}
 		}
 
