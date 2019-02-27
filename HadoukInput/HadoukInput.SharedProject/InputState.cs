@@ -160,11 +160,10 @@ namespace HadoukInput
 		public bool IsPauseGame(PlayerIndex? controllingPlayer)
 		{
 			//blah throwaway variable
-			PlayerIndex playerIndex;
 
 			return
 				IsNewKeyPress(Keys.Escape) ||
-				IsNewButtonPress(Buttons.Back, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.Back, controllingPlayer, out PlayerIndex playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
 
@@ -403,11 +402,9 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuUp(PlayerIndex? controllingPlayer)
 		{
-			PlayerIndex playerIndex;
-
 			return
 				IsNewKeyPress(Keys.Up) ||
-				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out PlayerIndex playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
 		}
 
@@ -418,11 +415,9 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuDown(PlayerIndex? controllingPlayer)
 		{
-			PlayerIndex playerIndex;
-
 			return
 				IsNewKeyPress(Keys.Down) ||
-				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out PlayerIndex playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
 		}
 
@@ -433,11 +428,9 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuLeft(PlayerIndex? controllingPlayer)
 		{
-			PlayerIndex playerIndex;
-
 			return
 				IsNewKeyPress(Keys.Left) ||
-				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out PlayerIndex playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
 		}
 
@@ -448,11 +441,9 @@ namespace HadoukInput
 		/// </summary>
 		public bool IsMenuRight(PlayerIndex? controllingPlayer)
 		{
-			PlayerIndex playerIndex;
-
 			return
 				IsNewKeyPress(Keys.Right) ||
-				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out playerIndex) ||
+				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out PlayerIndex playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
 		}
 
