@@ -40,7 +40,7 @@ namespace HadoukInput
 		{
 			foreach (var move in moveListModel.Moves)
 			{
-				AddMove(move.Key, move.Value.ToArray());
+				AddMove(move.Name, move.Keystrokes.ToArray());
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace HadoukInput
 		{
 			foreach (var move in moveListModel.Moves)
 			{
-				RemoveMove(move.Key, move.Value.ToArray());
+				RemoveMove(move.Name, move.Keystrokes.ToArray());
 			}
 		}
 

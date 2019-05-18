@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Keystroke.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveListModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveNode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThumbsticksWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ThumbstickWrapper.cs" />

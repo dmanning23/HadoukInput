@@ -17,7 +17,7 @@ namespace HadoukInput
 		/// <summary>
 		/// List of all the moves in this move list
 		/// </summary>
-		public Dictionary<string, List<EKeystroke>> Moves { get; private set; }
+		public List<MoveModel> Moves { get; private set; }
 
 		#endregion //Fields
 
@@ -29,7 +29,7 @@ namespace HadoukInput
 		public MoveListModel(Filename xmlFilename)
 			: base("MoveList", xmlFilename)
 		{
-			Moves = new Dictionary<string, List<EKeystroke>>();
+			Moves = new List<MoveModel> ();
 		}
 
 		public override void ParseXmlNode(XmlNode node)
@@ -66,7 +66,7 @@ namespace HadoukInput
 		{
 			//Get teh name node
 			var nameNode = node.FirstChild;
-			var moveName = nameNode.InnerXml;
+			var move = new MoveModel(nameNode.InnerXml);
 
 			//get the keystrokes node
 			var keystrokesNode = nameNode.NextSibling;
@@ -76,7 +76,6 @@ namespace HadoukInput
 			}
 
 			//put the input into a proper list
-			var keystrokes = new List<EKeystroke>();
 			try
 			{
 				for (XmlNode keystrokeNode = keystrokesNode.FirstChild;
@@ -84,15 +83,15 @@ namespace HadoukInput
 					 keystrokeNode = keystrokeNode.NextSibling)
 				{
 					var myKeystroke = (EKeystroke)Enum.Parse(typeof(EKeystroke), keystrokeNode.InnerXml);
-					keystrokes.Add(myKeystroke);
+					move.Keystrokes.Add(myKeystroke);
 				}
+
+				Moves.Add(move);
 			}
 			catch (Exception ex)
 			{
 				throw new Exception("Bad xml in the move list", ex);
 			}
-
-			Moves[moveName] = keystrokes;
 		}
 
 #if !WINDOWS_UWP
