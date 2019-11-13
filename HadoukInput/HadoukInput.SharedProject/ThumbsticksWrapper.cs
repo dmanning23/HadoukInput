@@ -60,7 +60,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbsticksWrapper(ControllerWrapper controls)
+		public ThumbsticksWrapper(IControllerWrapper controls)
 		{
 			LeftThumbstick = new ThumbstickWrapper(controls, true);
 			RightThumbstick = new ThumbstickWrapper(controls, false);
@@ -80,11 +80,11 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="inputState"></param>
 		/// <param name="i"></param>
-		public void UpdateThumbsticks(InputState inputState, int i)
+		public void UpdateThumbsticks(IInputState inputState, int i)
 		{
 			//update the left thumbstick
-			LeftThumbstick.Update(inputState, i, inputState._currentGamePadStates[i].ThumbSticks.Left, true);
-			RightThumbstick.Update(inputState, i, inputState._currentGamePadStates[i].ThumbSticks.Right, false);
+			LeftThumbstick.Update(inputState, i, inputState.LeftThumbstick(i), true);
+			RightThumbstick.Update(inputState, i, inputState.RightThumbstick(i), false);
 		}
 
 		#endregion //Methods

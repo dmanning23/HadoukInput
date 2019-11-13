@@ -33,11 +33,7 @@ namespace HadoukInput
 		/// </summary>
 		private float _thumbstickPower = 3.0f;
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
-		/// </summary>
-		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public ControllerWrapper Controller { get; set; }
+		public IControllerWrapper Controller { get; set; }
 
 		/// <summary>
 		/// the dot product of the forward vector and a direction has to be greater than this number to count as "forward"
@@ -80,7 +76,7 @@ namespace HadoukInput
 		/// <summary>
 		/// Initializes a new instance of the <see cref="HadoukInput.ThumbsticksWrapper"/> class.
 		/// </summary>
-		public ThumbstickWrapper(ControllerWrapper controls, bool squareGate)
+		public ThumbstickWrapper(IControllerWrapper controls, bool squareGate)
 		{
 			//grba the controller 
 			Controller = controls;
@@ -117,7 +113,7 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="controllerThumbstick">the raw thumbstick input from the controller</param>
 		/// <param name="left">whether or not this thumbstick is the left</param>
-		public void Update(InputState inputState, int i, Vector2 controllerThumbstick, bool left)
+		public void Update(IInputState inputState, int i, Vector2 controllerThumbstick, bool left)
 		{
 			//First set the prev direction
 			_prevDirection = _direction;
@@ -132,27 +128,27 @@ namespace HadoukInput
 			if (left)
 			{
 				//Check keyboard so we can test this stuff on computer
-				if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Up)
+				if (inputState.DPadUp(i))
 				{
 					//check up... 
 					thumbstickDirection = false;
 
 					_direction.Y = 1.0f;
 				}
-				else if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Down)
+				else if (inputState.DPadDown(i))
 				{
 					//check down... 
 					thumbstickDirection = false;
 					_direction.Y = -1.0f;
 				}
 
-				if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Left)
+				if (inputState.DPadLeft(i))
 				{
 					//check left
 					thumbstickDirection = false;
 					_direction.X -= 1.0f;
 				}
-				else if (ButtonState.Pressed == inputState._currentGamePadStates[i].DPad.Right)
+				else if (inputState.DPadRight(i))
 				{
 					//check right
 					thumbstickDirection = false;

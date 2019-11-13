@@ -9,7 +9,7 @@ namespace HadoukInput
 	/// methods for high level input actions such as "move up through the menu"
 	/// or "pause the game".
 	/// </summary>
-	public class InputState
+	public class InputState : IInputState
 	{
 		#region Fields
 
@@ -89,6 +89,41 @@ namespace HadoukInput
 		#endregion //Initialization
 
 		#region Public Methods
+
+		public bool IsConnected(int controllerIndex)
+		{
+			return _currentGamePadStates[controllerIndex].IsConnected;
+		}
+
+		public virtual Vector2 LeftThumbstick(int controllerIndex)
+		{
+			return _currentGamePadStates[controllerIndex].ThumbSticks.Left;
+		}
+
+		public virtual Vector2 RightThumbstick(int controllerIndex)
+		{
+			return _currentGamePadStates[controllerIndex].ThumbSticks.Right;
+		}
+
+		public bool DPadUp(int controllerIndex)
+		{
+			return ButtonState.Pressed == _currentGamePadStates[controllerIndex].DPad.Up;
+		}
+
+		public bool DPadDown(int controllerIndex)
+		{
+			return ButtonState.Pressed == _currentGamePadStates[controllerIndex].DPad.Down;
+		}
+
+		public bool DPadLeft(int controllerIndex)
+		{
+			return ButtonState.Pressed == _currentGamePadStates[controllerIndex].DPad.Left;
+		}
+
+		public bool DPadRight(int controllerIndex)
+		{
+			return ButtonState.Pressed == _currentGamePadStates[controllerIndex].DPad.Right;
+		}
 
 		/// <summary>
 		/// Reads the latest state of the keyboard and gamepad.
@@ -198,7 +233,7 @@ namespace HadoukInput
 		/// <returns><c>true</c>, if down was buttoned, <c>false</c> otherwise.</returns>
 		/// <param name="playerIndex">I player index.</param>
 		/// <param name="button">Button.</param>
-		public bool ButtonDown(int playerIndex, Buttons button)
+		public virtual bool ButtonDown(int playerIndex, Buttons button)
 		{
 			//check that button on that gamepad
 			return CheckButton(_currentGamePadStates[playerIndex], button);
@@ -210,7 +245,7 @@ namespace HadoukInput
 		/// <returns><c>true</c>, if button down was previoused, <c>false</c> otherwise.</returns>
 		/// <param name="playerIndex">I player index.</param>
 		/// <param name="button">Button.</param>
-		public bool PrevButtonDown(int playerIndex, Buttons button)
+		public virtual bool PrevButtonDown(int playerIndex, Buttons button)
 		{
 			//check that button on that gamepad
 			return CheckButton(_lastGamePadStates[playerIndex], button);

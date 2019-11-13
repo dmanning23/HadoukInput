@@ -71,7 +71,7 @@ namespace HadoukInput
 		/// </summary>
 		private static readonly EKeystroke[][] g_KeystrokeCombinations;
 
-		public ControllerWrapper Controller { get; private set; }
+		public IControllerWrapper Controller { get; private set; }
 
 		/// <summary>
 		/// Length of time input items are held in the buffer before being put in the queue
@@ -332,7 +332,7 @@ namespace HadoukInput
 		/// </summary>
 		/// <param name="controller">index of the controller this player will use</param>
 		/// <param name="clock">The external clock that will be used to time this dude.  This guy doesn't update his own timer!</param>
-		public InputWrapper(ControllerWrapper controller, CurrentTime clock)
+		public InputWrapper(IControllerWrapper controller, CurrentTime clock)
 		{
 			BufferedInputExpire = DefaultBufferedInputExpire;
 			QueuedInputExpire = DefaultQueuedInputExpire;
@@ -363,7 +363,7 @@ namespace HadoukInput
 		/// If an input state is passed in, the controller wrapper will be updated with the data in there.
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
 		/// <param name="flipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
-		public void Update(InputState inputState, bool flipped)
+		public void Update(IInputState inputState, bool flipped)
 		{
 			UpdateController(inputState);
 			
@@ -380,7 +380,7 @@ namespace HadoukInput
 		/// If the controller wrapper has gotten it's input from somewhere else (ie the network), pass in null</param>
 		/// <param name="flipped">whether or not the character that this input wrapper controls is facing right(false) or left(true).</param>
 		/// <param name="direction">the direction the character is facing</param>
-		public void Update(InputState inputState, bool flipped, Vector2 direction)
+		public void Update(IInputState inputState, bool flipped, Vector2 direction)
 		{
 			UpdateController(inputState);
 			UpdateMoveQueue(flipped, direction);
@@ -390,7 +390,7 @@ namespace HadoukInput
 		/// update the controller
 		/// </summary>
 		/// <param name="inputState"></param>
-		private void UpdateController(InputState inputState)
+		private void UpdateController(IInputState inputState)
 		{
 			//first update the controller if an input state was passed in.
 			if ((null != inputState) && (null != Controller))

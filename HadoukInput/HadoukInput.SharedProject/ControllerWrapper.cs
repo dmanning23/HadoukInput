@@ -251,12 +251,12 @@ namespace HadoukInput
 		/// update the current state of this controller interface
 		/// </summary>
 		/// <param name="inputState">current state of all the input in the system</param>
-		public virtual void Update(InputState inputState)
+		public virtual void Update(IInputState inputState)
 		{
 			var i = (int)GamePadIndex;
 
 			//check if the controller is plugged in
-			ControllerPluggedIn = inputState._currentGamePadStates[i].IsConnected;
+			ControllerPluggedIn = inputState.IsConnected(i);
 
 			//update the thumbstick
 			Thumbsticks.UpdateThumbsticks(inputState, i);
@@ -280,7 +280,7 @@ namespace HadoukInput
 		/// <param name="gamePadIndex"></param>
 		/// <param name="action"></param>
 		/// <returns></returns>
-		internal Keys MappedKey(int gamePadIndex, EControllerAction action)
+		public Keys MappedKey(int gamePadIndex, EControllerAction action)
 		{
 			return g_KeyMap[gamePadIndex, (int)action];
 		}
@@ -642,12 +642,12 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button was activated this frame</returns>
-		private bool CheckControllerActionPress(InputState inputState, int i, EControllerAction action)
+		private bool CheckControllerActionPress(IInputState inputState, int i, EControllerAction action)
 		{
 			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
 				//get the key to check
-				if (CheckKeyDown(inputState, i, MappedKey(i, action)))
+				if (CheckKeyDown(inputState, MappedKey(i, action)))
 				{
 					return true;
 				}
@@ -719,7 +719,7 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button is held this frame</returns>
-		private bool CheckControllerActionHeld(InputState inputState, int i, EControllerAction action)
+		private bool CheckControllerActionHeld(IInputState inputState, int i, EControllerAction action)
 		{
 			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
@@ -784,12 +784,12 @@ namespace HadoukInput
 		/// <param name="i">controller index to check</param>
 		/// <param name="iButton">the action to get the mapped button for</param>
 		/// <returns>bool: whether or not that button was deactivated this frame</returns>
-		private bool CheckControllerActionReleased(InputState inputState, int i, EControllerAction action)
+		private bool CheckControllerActionReleased(IInputState inputState, int controllerIndex, EControllerAction action)
 		{
 			if (UseKeyboard && (action < EControllerAction.UpR))
 			{
 				//first do the keyboard check
-				if (CheckKeyUp(inputState, i, MappedKey(i, action)))
+				if (CheckKeyUp(inputState, MappedKey(controllerIndex, action)))
 				{
 					return true;
 				}
@@ -800,57 +800,57 @@ namespace HadoukInput
 			{
 				case EControllerAction.Up:
 					{
-						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickUp) &&
-								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickUp)) ||
-								(!inputState.ButtonDown(i, Buttons.DPadUp) &&
-								 inputState.PrevButtonDown(i, Buttons.DPadUp)));
+						return ((!inputState.ButtonDown(controllerIndex, Buttons.LeftThumbstickUp) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.LeftThumbstickUp)) ||
+								(!inputState.ButtonDown(controllerIndex, Buttons.DPadUp) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.DPadUp)));
 					}
 				case EControllerAction.Down:
 					{
-						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickDown) &&
-								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickDown)) ||
-								(!inputState.ButtonDown(i, Buttons.DPadDown) &&
-								 inputState.PrevButtonDown(i, Buttons.DPadDown)));
+						return ((!inputState.ButtonDown(controllerIndex, Buttons.LeftThumbstickDown) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.LeftThumbstickDown)) ||
+								(!inputState.ButtonDown(controllerIndex, Buttons.DPadDown) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.DPadDown)));
 					}
 				case EControllerAction.Left:
 					{
-						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickLeft) &&
-								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickLeft)) ||
-								(!inputState.ButtonDown(i, Buttons.DPadLeft) &&
-								 inputState.PrevButtonDown(i, Buttons.DPadLeft)));
+						return ((!inputState.ButtonDown(controllerIndex, Buttons.LeftThumbstickLeft) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.LeftThumbstickLeft)) ||
+								(!inputState.ButtonDown(controllerIndex, Buttons.DPadLeft) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.DPadLeft)));
 					}
 				case EControllerAction.Right:
 					{
-						return ((!inputState.ButtonDown(i, Buttons.LeftThumbstickRight) &&
-								 inputState.PrevButtonDown(i, Buttons.LeftThumbstickRight)) ||
-								(!inputState.ButtonDown(i, Buttons.DPadRight) &&
-								 inputState.PrevButtonDown(i, Buttons.DPadRight)));
+						return ((!inputState.ButtonDown(controllerIndex, Buttons.LeftThumbstickRight) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.LeftThumbstickRight)) ||
+								(!inputState.ButtonDown(controllerIndex, Buttons.DPadRight) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.DPadRight)));
 					}
 				case EControllerAction.UpR:
 					{
-						return (!inputState.ButtonDown(i, Buttons.RightThumbstickUp) &&
-								 inputState.PrevButtonDown(i, Buttons.RightThumbstickUp));
+						return (!inputState.ButtonDown(controllerIndex, Buttons.RightThumbstickUp) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.RightThumbstickUp));
 					}
 				case EControllerAction.DownR:
 					{
-						return (!inputState.ButtonDown(i, Buttons.RightThumbstickDown) &&
-								 inputState.PrevButtonDown(i, Buttons.RightThumbstickDown));
+						return (!inputState.ButtonDown(controllerIndex, Buttons.RightThumbstickDown) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.RightThumbstickDown));
 					}
 				case EControllerAction.LeftR:
 					{
-						return (!inputState.ButtonDown(i, Buttons.RightThumbstickLeft) &&
-								 inputState.PrevButtonDown(i, Buttons.RightThumbstickLeft));
+						return (!inputState.ButtonDown(controllerIndex, Buttons.RightThumbstickLeft) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.RightThumbstickLeft));
 					}
 				case EControllerAction.RightR:
 					{
-						return (!inputState.ButtonDown(i, Buttons.RightThumbstickRight) &&
-								 inputState.PrevButtonDown(i, Buttons.RightThumbstickRight));
+						return (!inputState.ButtonDown(controllerIndex, Buttons.RightThumbstickRight) &&
+								 inputState.PrevButtonDown(controllerIndex, Buttons.RightThumbstickRight));
 					}
 				default:
 					{
 						//get the attack button to check
-						Buttons mappedButton = g_ButtonMap[i, (action - EControllerAction.A)];
-						return (!inputState.ButtonDown(i, mappedButton) && inputState.PrevButtonDown(i, mappedButton));
+						Buttons mappedButton = g_ButtonMap[controllerIndex, (action - EControllerAction.A)];
+						return (!inputState.ButtonDown(controllerIndex, mappedButton) && inputState.PrevButtonDown(controllerIndex, mappedButton));
 					}
 			}
 		}
@@ -859,10 +859,9 @@ namespace HadoukInput
 		/// Check if a keyboard key was pressed this update
 		/// </summary>
 		/// <param name="inputState">current input state</param>
-		/// <param name="i">controller index</param>
 		/// <param name="key">key to check</param>
 		/// <returns>bool: key was pressed this update</returns>
-		private bool CheckKeyDown(InputState inputState, int i, Keys key)
+		private bool CheckKeyDown(IInputState inputState, Keys key)
 		{
 			if (UseKeyboard)
 			{
@@ -881,7 +880,7 @@ namespace HadoukInput
 		/// <param name="i">controller index</param>
 		/// <param name="key">key to check</param>
 		/// <returns>bool: true if the key was released this update.</returns>
-		private bool CheckKeyUp(InputState inputState, int i, Keys key)
+		private bool CheckKeyUp(IInputState inputState, Keys key)
 		{
 			if (UseKeyboard)
 			{
