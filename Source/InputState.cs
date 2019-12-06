@@ -419,22 +419,14 @@ namespace HadoukInput
 				}
 				case Buttons.LeftThumbstickUp:
 				{
-#if OUYA
-					return myGamePad.ThumbSticks.Left.Y < -DeadZone;
-#else
 					return myGamePad.ThumbSticks.Left.Y > DeadZone;
-#endif
 				}
 				case Buttons.LeftThumbstickDown:
 				{
 					//don't do down if a horizontal direction is held
 					return (!CheckButton(myGamePad, Buttons.LeftThumbstickLeft) &&
 					        !CheckButton(myGamePad, Buttons.LeftThumbstickRight) &&
-#if OUYA
-					        (myGamePad.ThumbSticks.Left.Y > DeadZone));
-#else
 					        (myGamePad.ThumbSticks.Left.Y < -DeadZone));
-#endif
 				}
 				case Buttons.LeftThumbstickLeft:
 				{
