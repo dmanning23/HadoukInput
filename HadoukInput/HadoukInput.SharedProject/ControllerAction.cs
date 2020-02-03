@@ -3,7 +3,7 @@
 	/// <summary>
 	/// this is an intermediate step between buttons/directions and keystrokes
 	/// </summary>
-	public enum EControllerAction
+	public enum ControllerAction
 	{
 		Up,
 		Down,

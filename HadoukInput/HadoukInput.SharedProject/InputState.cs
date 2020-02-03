@@ -11,10 +11,8 @@ namespace HadoukInput
 	/// </summary>
 	public class InputState : IInputState
 	{
-		#region Fields
-
-		private const int MaxInputs = 4;
-
+		#region Properties
+		
 		/// <summary>
 		/// The trigger dead zone.
 		/// </summary>
@@ -30,10 +28,6 @@ namespace HadoukInput
 		/// the radius of the controller thumbstick dead zone
 		/// </summary>
 		private float _deadZone;
-
-		#endregion
-
-		#region Properties
 
 		public KeyboardState CurrentKeyboardState { get; private set; }
 
@@ -74,11 +68,11 @@ namespace HadoukInput
 			CurrentKeyboardState = new KeyboardState();
 			LastKeyboardState = new KeyboardState();
 
-			_currentGamePadStates = new GamePadState[MaxInputs];
-			_lastGamePadStates = new GamePadState[MaxInputs];
+			_currentGamePadStates = new GamePadState[GamePad.MaximumGamePadCount];
+			_lastGamePadStates = new GamePadState[GamePad.MaximumGamePadCount];
 
-			_gamePadWasConnected = new bool[MaxInputs];
-			for (var i = 0; i < MaxInputs; i++)
+			_gamePadWasConnected = new bool[GamePad.MaximumGamePadCount];
+			for (var i = 0; i < GamePad.MaximumGamePadCount; i++)
 			{
 				_gamePadWasConnected[i] = false;
 			}
@@ -135,10 +129,10 @@ namespace HadoukInput
 
 			if (CheckControllers)
 			{
-				for (var i = 0; i < MaxInputs; i++)
+				for (var i = 0; i < GamePad.MaximumGamePadCount; i++)
 				{
 					_lastGamePadStates[i] = _currentGamePadStates[i];
-					_currentGamePadStates[i] = GamePad.GetState((PlayerIndex)i, GamePadDeadZone.None);
+					_currentGamePadStates[i] = GamePad.GetState(i, GamePadDeadZone.None);
 
 					// Keep track of whether a gamepad has ever been connected, so we can detect if it is unplugged.
 					if (_currentGamePadStates[i].IsConnected)
@@ -168,7 +162,7 @@ namespace HadoukInput
 		/// If this is null, it will accept input from any player. When a button press
 		/// is detected, the output playerIndex reports which player pressed it.
 		/// </summary>
-		public bool IsNewButtonPress(Buttons button, PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		public bool IsNewButtonPress(Buttons button, int? controllingPlayer, out int playerIndex)
 		{
 			if (controllingPlayer.HasValue)
 			{
@@ -180,10 +174,16 @@ namespace HadoukInput
 			else
 			{
 				// Accept input from any player.
-				return (IsNewButtonPress(button, PlayerIndex.One, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Two, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Three, out playerIndex) ||
-						IsNewButtonPress(button, PlayerIndex.Four, out playerIndex));
+				for (int i = 0; i < GamePad.MaximumGamePadCount; i++)
+				{
+					if (IsNewButtonPress(button, i, out playerIndex))
+					{
+						return true;
+					}
+				}
+
+				playerIndex = 0;
+				return false;
 			}
 		}
 
@@ -192,40 +192,17 @@ namespace HadoukInput
 		/// The controllingPlayer parameter specifies which player to read
 		/// input for. If this is null, it will accept input from any player.
 		/// </summary>
-		public bool IsPauseGame(PlayerIndex? controllingPlayer)
+		public bool IsPauseGame(int? controllingPlayer)
 		{
 			//blah throwaway variable
 
 			return
 				IsNewKeyPress(Keys.Escape) ||
-				IsNewButtonPress(Buttons.Back, controllingPlayer, out PlayerIndex playerIndex) ||
+				IsNewButtonPress(Buttons.Back, controllingPlayer, out int playerIndex) ||
 				IsNewButtonPress(Buttons.Start, controllingPlayer, out playerIndex);
 		}
 
 		#region Button Press Methods
-
-		/// <summary>
-		/// Check if the is button down.
-		/// </summary>
-		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
-		/// <param name="playerIndex">My player.</param>
-		/// <param name="button">Button.</param>
-		public bool ButtonDown(PlayerIndex playerIndex, Buttons button)
-		{
-			return ButtonDown((int)playerIndex, button);
-		}
-
-		/// <summary>
-		/// Check if the wass button down last time
-		/// </summary>
-		/// <returns><c>true</c>, if is button is currently active, <c>false</c> otherwise.</returns>
-		/// <param name="playerIndex">My player.</param>
-		/// <param name="button">Button.</param>
-		public bool PrevButtonDown(PlayerIndex playerIndex, Buttons button)
-		{
-			//Get the game pad state
-			return PrevButtonDown((int)playerIndex, button);
-		}
 
 		/// <summary>
 		/// Check if the is button down.
@@ -399,10 +376,10 @@ namespace HadoukInput
 		/// If this is null, it will accept input from any player. When the action
 		/// is detected, the output playerIndex reports which player pressed it.
 		/// </summary>
-		public bool IsMenuSelect(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		public bool IsMenuSelect(int? controllingPlayer, out int playerIndex)
 		{
 			//default to player 1 in case of keyboard
-			playerIndex = PlayerIndex.One;
+			playerIndex = 0;
 
 			return
 				IsNewKeyPress(Keys.Space) ||
@@ -418,10 +395,10 @@ namespace HadoukInput
 		/// If this is null, it will accept input from any player. When the action
 		/// is detected, the output playerIndex reports which player pressed it.
 		/// </summary>
-		public bool IsMenuCancel(PlayerIndex? controllingPlayer, out PlayerIndex playerIndex)
+		public bool IsMenuCancel(int? controllingPlayer, out int playerIndex)
 		{
 			//default to player 1 in case of keyboard
-			playerIndex = PlayerIndex.One;
+			playerIndex = 0;
 
 			return
 				IsNewKeyPress(Keys.Escape) ||
@@ -435,11 +412,11 @@ namespace HadoukInput
 		/// The controllingPlayer parameter specifies which player to read
 		/// input for. If this is null, it will accept input from any player.
 		/// </summary>
-		public bool IsMenuUp(PlayerIndex? controllingPlayer)
+		public bool IsMenuUp(int? controllingPlayer)
 		{
 			return
 				IsNewKeyPress(Keys.Up) ||
-				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out PlayerIndex playerIndex) ||
+				IsNewButtonPress(Buttons.DPadUp, controllingPlayer, out int playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickUp, controllingPlayer, out playerIndex);
 		}
 
@@ -448,11 +425,11 @@ namespace HadoukInput
 		/// The controllingPlayer parameter specifies which player to read
 		/// input for. If this is null, it will accept input from any player.
 		/// </summary>
-		public bool IsMenuDown(PlayerIndex? controllingPlayer)
+		public bool IsMenuDown(int? controllingPlayer)
 		{
 			return
 				IsNewKeyPress(Keys.Down) ||
-				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out PlayerIndex playerIndex) ||
+				IsNewButtonPress(Buttons.DPadDown, controllingPlayer, out int playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickDown, controllingPlayer, out playerIndex);
 		}
 
@@ -461,11 +438,11 @@ namespace HadoukInput
 		/// The controllingPlayer parameter specifies which player to read
 		/// input for. If this is null, it will accept input from any player.
 		/// </summary>
-		public bool IsMenuLeft(PlayerIndex? controllingPlayer)
+		public bool IsMenuLeft(int? controllingPlayer)
 		{
 			return
 				IsNewKeyPress(Keys.Left) ||
-				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out PlayerIndex playerIndex) ||
+				IsNewButtonPress(Buttons.DPadLeft, controllingPlayer, out int playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickLeft, controllingPlayer, out playerIndex);
 		}
 
@@ -474,11 +451,11 @@ namespace HadoukInput
 		/// The controllingPlayer parameter specifies which player to read
 		/// input for. If this is null, it will accept input from any player.
 		/// </summary>
-		public bool IsMenuRight(PlayerIndex? controllingPlayer)
+		public bool IsMenuRight(int? controllingPlayer)
 		{
 			return
 				IsNewKeyPress(Keys.Right) ||
-				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out PlayerIndex playerIndex) ||
+				IsNewButtonPress(Buttons.DPadRight, controllingPlayer, out int playerIndex) ||
 				IsNewButtonPress(Buttons.LeftThumbstickRight, controllingPlayer, out playerIndex);
 		}
 

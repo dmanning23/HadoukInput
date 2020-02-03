@@ -9,6 +9,7 @@
     <Import_RootNamespace>HadoukInput.SharedProject</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ButtonMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControllerAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ControllerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeadZoneType.cs" />
@@ -17,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)IInputState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)KeyMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keystroke.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveListModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveList.cs" />

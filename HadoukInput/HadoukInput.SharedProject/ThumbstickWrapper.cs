@@ -159,26 +159,26 @@ namespace HadoukInput
 				if (Controller.UseKeyboard && thumbstickDirection)
 				{
 					//Check keyboard so we can test this stuff on computer
-					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Up)))
+					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, ControllerAction.Up)))
 					{
 						//check up... 
 						thumbstickDirection = false;
 						_direction.Y += 1.0f;
 					}
-					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Down)))
+					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, ControllerAction.Down)))
 					{
 						//check down... 
 						thumbstickDirection = false;
 						_direction.Y -= 1.0f;
 					}
 
-					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Left)))
+					if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, ControllerAction.Left)))
 					{
 						//check left
 						thumbstickDirection = false;
 						_direction.X -= 1.0f;
 					}
-					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, EControllerAction.Right)))
+					else if (inputState.CurrentKeyboardState.IsKeyDown(Controller.MappedKey(i, ControllerAction.Right)))
 					{
 						//check right
 						thumbstickDirection = false;

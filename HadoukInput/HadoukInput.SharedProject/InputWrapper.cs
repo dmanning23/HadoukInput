@@ -606,7 +606,7 @@ namespace HadoukInput
 		public static int NumGamepads()
 		{
 			var total = 0;
-			for (var i = PlayerIndex.One; i <= PlayerIndex.Four; i++)
+			for (var i = 0; i < GamePad.MaximumGamePadCount; i++)
 			{
 				if (GamePad.GetState(i).IsConnected)
 				{

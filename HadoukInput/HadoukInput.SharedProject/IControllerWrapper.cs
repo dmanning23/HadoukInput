@@ -14,7 +14,7 @@ namespace HadoukInput
 		bool CheckKeystrokeHeld(EKeystroke keystroke);
 		void ResetController();
 
-		Keys MappedKey(int gamePadIndex, EControllerAction action);
+		Keys MappedKey(int gamePadIndex, ControllerAction action);
 
 		void Update(IInputState inputState);
 	}
