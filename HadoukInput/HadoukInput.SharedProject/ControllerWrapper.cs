@@ -94,7 +94,7 @@ namespace HadoukInput
 			for (int i = 0; i < GamePad.MaximumGamePadCount; i++)
 			{
 				ButtonMaps.Add(new ButtonMap());
-				KeyMaps.Add(new KeyMap(i));
+				KeyMaps.Add(new KeyMap());
 			}
 		}
 

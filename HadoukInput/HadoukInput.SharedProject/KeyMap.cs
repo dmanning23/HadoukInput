@@ -20,7 +20,7 @@ namespace HadoukInput
 		public Keys LeftTrigger { get; set; } = Keys.C;
 		public Keys RightTrigger { get; set; } = Keys.V;
 
-		public KeyMap(int playerIndex)
+		public void UseIpacMappings(int playerIndex)
 		{
 			switch (playerIndex)
 			{
