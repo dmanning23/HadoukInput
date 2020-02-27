@@ -7,7 +7,7 @@ namespace HadoukInput
 	{
 		bool AnyDirectionHeld { get; }
 		ThumbsticksWrapper Thumbsticks { get; }
-		bool UseKeyboard { get; set; }
+		bool UseKeyboard { get; }
 
 		bool CheckKeystroke(EKeystroke keystroke);
 		bool CheckKeystroke(EKeystroke keystroke, bool flipped, Vector2 direction);

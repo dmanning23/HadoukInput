@@ -14,21 +14,6 @@ namespace HadoukInput
 		#region Properties
 
 		/// <summary>
-		/// button mappings for all 4 controllers
-		/// These map a controller action to a button on a controller.
-		/// These can be changed to do button remapping...
-		/// TODO: add a function to do button remapping:  should take an action & button, reset the actions mapped to that same button
-		/// </summary>
-		static public List<ButtonMap> ButtonMaps { get; private set; }
-
-		/// <summary>
-		/// key mappings for all 4 controllers
-		/// These map a controller action to a key on the keyboard.
-		/// These can be changed to do key remapping...
-		/// </summary>
-		static public List<KeyMap> KeyMaps { get; private set; }
-
-		/// <summary>
 		/// If this is a gamepad input, which gamepad is it?
 		/// </summary>
 		public int GamePadIndex { get; set; }
@@ -43,7 +28,7 @@ namespace HadoukInput
 		/// Gets or sets a value indicating whether this <see cref="HadoukInput.ControllerWrapper"/> also uses keyboard.
 		/// </summary>
 		/// <value><c>true</c> if use keyboard; otherwise, <c>false</c>.</value>
-		public bool UseKeyboard { get; set; }
+		public bool UseKeyboard => Mappings.UseKeyboard[GamePadIndex];
 
 		public bool ControllerPluggedIn { get; set; }
 
@@ -84,29 +69,12 @@ namespace HadoukInput
 		#region Initialization / Cleanup
 
 		/// <summary>
-		/// Initializes the <see cref="HadoukInput.ControllerWrapper"/> class.
-		/// Thereare a few variables in Monogame that screw stuff up... set them here
-		/// </summary>
-		static ControllerWrapper()
-		{
-			ButtonMaps = new List<ButtonMap>();
-			KeyMaps = new List<KeyMap>();
-			for (int i = 0; i < GamePad.MaximumGamePadCount; i++)
-			{
-				ButtonMaps.Add(new ButtonMap());
-				KeyMaps.Add(new KeyMap());
-			}
-		}
-
-		/// <summary>
 		///	hello, standard constructor!
 		/// </summary>
 		/// <param name="iGamePadIndex">If this isn't a keyboard, which gamepad index it should use.</param>
-		public ControllerWrapper(int? playerIndex, bool useKeyboard = false)
+		public ControllerWrapper(int? playerIndex)
 		{
 			Thumbsticks = new ThumbsticksWrapper(this);
-
-			UseKeyboard = useKeyboard;
 
 			if (playerIndex.HasValue)
 			{
@@ -170,7 +138,7 @@ namespace HadoukInput
 		/// <returns></returns>
 		public Keys MappedKey(int gamePadIndex, ControllerAction action)
 		{
-			return KeyMaps[gamePadIndex].ActionMap(action);
+			return Mappings.KeyMaps[gamePadIndex].ActionMap(action);
 		}
 
 		/// <summary>
@@ -535,7 +503,7 @@ namespace HadoukInput
 			if (UseKeyboard && (action < ControllerAction.UpR))
 			{
 				//get the key to check
-				if (CheckKeyDown(inputState, MappedKey(playerIndex, action)))
+				if (CheckKeyDown(inputState, Mappings.MappedKey(playerIndex, action)))
 				{
 					return true;
 				}
@@ -595,7 +563,7 @@ namespace HadoukInput
 				default:
 					{
 						//get the attack button to check
-						var mappedButton = ButtonMaps[playerIndex].ActionMap(action);
+						var mappedButton = Mappings.ButtonMaps[playerIndex].ActionMap(action);
 						return (inputState.ButtonDown(playerIndex, mappedButton) && !inputState.PrevButtonDown(playerIndex, mappedButton));
 					}
 			}
@@ -612,7 +580,7 @@ namespace HadoukInput
 			if (UseKeyboard && (action < ControllerAction.UpR))
 			{
 				//get the key to check
-				if (inputState.CurrentKeyboardState.IsKeyDown(MappedKey(playerIndex, action)))
+				if (inputState.CurrentKeyboardState.IsKeyDown(Mappings.MappedKey(playerIndex, action)))
 				{
 					return true;
 				}
@@ -660,7 +628,7 @@ namespace HadoukInput
 				default:
 					{
 						//get the attack button to check
-						var mappedButton = ButtonMaps[playerIndex].ActionMap(action);
+						var mappedButton = Mappings.ButtonMaps[playerIndex].ActionMap(action);
 						return inputState.ButtonDown(playerIndex, mappedButton);
 					}
 			}
@@ -677,7 +645,7 @@ namespace HadoukInput
 			if (UseKeyboard && (action < ControllerAction.UpR))
 			{
 				//first do the keyboard check
-				if (CheckKeyUp(inputState, MappedKey(playerIndex, action)))
+				if (CheckKeyUp(inputState, Mappings.MappedKey(playerIndex, action)))
 				{
 					return true;
 				}
@@ -737,7 +705,7 @@ namespace HadoukInput
 				default:
 					{
 						//get the attack button to check
-						Buttons mappedButton = ButtonMaps[playerIndex].ActionMap(action);
+						Buttons mappedButton = Mappings.ButtonMaps[playerIndex].ActionMap(action);
 						return (!inputState.ButtonDown(playerIndex, mappedButton) && inputState.PrevButtonDown(playerIndex, mappedButton));
 					}
 			}

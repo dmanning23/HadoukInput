@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)InputWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)KeyMap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Keystroke.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Mappings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveListModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveList\MoveModel.cs" />
