@@ -338,14 +338,14 @@ namespace HadoukInput
 					}
 				case Buttons.RightThumbstickUp:
 					{
-						return gamePad.ThumbSticks.Right.Y < -DeadZone;
+						return gamePad.ThumbSticks.Right.Y > DeadZone;
 					}
 				case Buttons.RightThumbstickDown:
 					{
 						//don't do down if a horizontal direction is held
 						return (!CheckButton(gamePad, Buttons.RightThumbstickLeft) &&
 								!CheckButton(gamePad, Buttons.RightThumbstickRight) &&
-								 (gamePad.ThumbSticks.Right.Y > DeadZone));
+								 (gamePad.ThumbSticks.Right.Y <- DeadZone));
 					}
 				case Buttons.RightThumbstickLeft:
 					{

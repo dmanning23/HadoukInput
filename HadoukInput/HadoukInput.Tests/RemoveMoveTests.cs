@@ -8,7 +8,6 @@ namespace HadoukInput.Tests
 	public class RemoveMoveTests
 	{
 		MoveList moves;
-		List<InputItem> input;
 
 		[SetUp]
 		public void Setup()
