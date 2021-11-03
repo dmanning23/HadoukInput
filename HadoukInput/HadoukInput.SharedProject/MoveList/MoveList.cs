@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if !BRIDGE
 using System.Xml;
+#endif
 using XmlBuddy;
 
 namespace HadoukInput

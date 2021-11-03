@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if !BRIDGE
 using System.Xml;
+#endif
 using XmlBuddy;
 
 namespace HadoukInput
@@ -29,9 +31,10 @@ namespace HadoukInput
 		public MoveListModel(Filename xmlFilename)
 			: base("MoveList", xmlFilename)
 		{
-			Moves = new List<MoveModel> ();
+			Moves = new List<MoveModel>();
 		}
 
+#if !BRIDGE
 		public override void ParseXmlNode(XmlNode node)
 		{
 			var name = node.Name;
@@ -94,7 +97,6 @@ namespace HadoukInput
 			}
 		}
 
-#if !WINDOWS_UWP
 		public override void WriteXmlNodes(XmlTextWriter xmlFile)
 		{
 			throw new NotImplementedException();
