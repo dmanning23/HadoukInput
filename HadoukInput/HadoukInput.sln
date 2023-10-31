@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29709.97
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.Android", "HadoukInput.Android\HadoukInput.Android.csproj", "{544F38C0-F0BE-4936-B79D-16506F41DE8E}"
 EndProject
@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C844C0F-90F4-43E4-89A6-270BBC7161CD}"
 	ProjectSection(SolutionItems) = preProject
 		buildNugetPackages.ps1 = buildNugetPackages.ps1
-		HadoukInput.Bridge.nuspec = HadoukInput.Bridge.nuspec
 		HadoukInput.nuspec = HadoukInput.nuspec
 	EndProjectSection
 EndProject
@@ -20,17 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.WindowsDX", "Ha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.Tests", "HadoukInput.Tests\HadoukInput.Tests.csproj", "{19E6CD4B-98AD-47A7-836B-86502F16C515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.Bridge", "HadoukInput.Bridge\HadoukInput.Bridge.csproj", "{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}"
-EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{19e6cd4b-98ad-47a7-836b-86502f16c515}*SharedItemsImports = 4
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{2cfbcf3a-c3d0-4aad-ae17-814c66566abc}*SharedItemsImports = 4
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{348f0498-f9d4-4237-beb7-edef7304c1e4}*SharedItemsImports = 4
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{544f38c0-f0be-4936-b79d-16506f41de8e}*SharedItemsImports = 4
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{71a30bbc-91f3-43a9-be36-bda5ae30772c}*SharedItemsImports = 13
-		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{c7539cd3-4b5c-4c65-ab21-b75b73b65b71}*SharedItemsImports = 4
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppStore|Any CPU = AppStore|Any CPU
 		AppStore|ARM = AppStore|ARM
@@ -142,35 +131,18 @@ Global
 		{19E6CD4B-98AD-47A7-836B-86502F16C515}.Release|x64.Build.0 = Release|Any CPU
 		{19E6CD4B-98AD-47A7-836B-86502F16C515}.Release|x86.ActiveCfg = Release|Any CPU
 		{19E6CD4B-98AD-47A7-836B-86502F16C515}.Release|x86.Build.0 = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|Any CPU.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|ARM.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|ARM.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|x64.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|x64.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|x86.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.AppStore|x86.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|ARM.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|x64.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Debug|x86.Build.0 = Debug|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|ARM.ActiveCfg = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|ARM.Build.0 = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|x64.ActiveCfg = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|x64.Build.0 = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|x86.ActiveCfg = Release|Any CPU
-		{348F0498-F9D4-4237-BEB7-EDEF7304C1E4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03014813-2110-4D3D-B667-AD2B1986E055}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{19e6cd4b-98ad-47a7-836b-86502f16c515}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{2cfbcf3a-c3d0-4aad-ae17-814c66566abc}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{544f38c0-f0be-4936-b79d-16506f41de8e}*SharedItemsImports = 4
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{71a30bbc-91f3-43a9-be36-bda5ae30772c}*SharedItemsImports = 13
+		HadoukInput.SharedProject\HadoukInput.SharedProject.projitems*{c7539cd3-4b5c-4c65-ab21-b75b73b65b71}*SharedItemsImports = 4
 	EndGlobalSection
 EndGlobal

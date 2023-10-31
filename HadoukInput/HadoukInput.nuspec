@@ -2,16 +2,12 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 	<metadata>
 		<id>HadoukInput</id>
-		<version>2.0.34</version>
+		<version>4.0.0</version>
 		<title>HadoukInput</title>
 		<authors>dmanning23</authors>
-		<owners>dmanning23</owners>
 		<projectUrl>https://github.com/dmanning23/HadoukInput</projectUrl>
 		<licenseUrl>https://github.com/dmanning23/HadoukInput/blob/master/LICENSE.txt</licenseUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>MonoGame input library for sanitizing and pattern matching of controller input</description>
-		<releaseNotes />
-		<copyright>Copyright 2016</copyright>
 		<tags>android, ios, windows universal, monogame, xamarin</tags>
 		<dependencies>
 
@@ -35,7 +31,7 @@
 				<dependency id="XmlBuddy" version="2.0"/>
 			</group>
 
-			<group targetFramework="net451">
+			<group targetFramework="net452">
 				<dependency id="MonoGame.Framework.WindowsDX" version="3.7"/>
 				<dependency id="FilenameBuddy" version="2.0"/>
 				<dependency id="MatrixExtensions" version="2.0"/>
@@ -57,8 +53,8 @@
 		<file src="HadoukInput.iOS\bin\Release\HadoukInput.iOS.dll" target="lib\Xamarin.iOS10\HadoukInput.iOS.dll" />
 
 		<!--WindowsDX-->
-		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.pdb" target="lib\net451\HadoukInput.WindowsDX.pdb" />
-		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.dll" target="lib\net451\HadoukInput.WindowsDX.dll" />
+		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.pdb" target="lib\net452\HadoukInput.WindowsDX.pdb" />
+		<file src="HadoukInput.WindowsDX\bin\Release\HadoukInput.WindowsDX.dll" target="lib\net452\HadoukInput.WindowsDX.dll" />
 
 	</files>
 </package>
