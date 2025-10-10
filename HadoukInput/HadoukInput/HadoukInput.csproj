@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>HadoukInput</PackageId>
+    <Version>5.0.0</Version>
+    <Title>HadoukInput</Title>
+    <Authors>dmanning23</Authors>
+    <description>MonoGame input library for sanitizing and pattern matching of controller input</description>
+    <PackageProjectUrl>https://github.com/dmanning23/HadoukInput</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/dmanning23/HadoukInput</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>monogame</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FilenameBuddy" version="5.*"/>
+    <PackageReference Include="MatrixExtensions" version="5.*"/>
+    <PackageReference Include="RandomExtensions.dmanning23" version="5.*"/>
+    <PackageReference Include="Vector2Extensions" version="5.*"/>
+    <PackageReference Include="XmlBuddy" version="5.*"/>
+  </ItemGroup>
+</Project>
