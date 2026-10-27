@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput", "HadoukInput\HadoukInput.csproj", "{B51F6F20-831F-4B2A-9BF3-B263280A9299}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HadoukInput.Tests", "HadoukInput.Tests\HadoukInput.Tests.csproj", "{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{B51F6F20-831F-4B2A-9BF3-B263280A9299}.Release|x64.Build.0 = Release|Any CPU
 		{B51F6F20-831F-4B2A-9BF3-B263280A9299}.Release|x86.ActiveCfg = Release|Any CPU
 		{B51F6F20-831F-4B2A-9BF3-B263280A9299}.Release|x86.Build.0 = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|x64.Build.0 = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Debug|x86.Build.0 = Debug|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|x64.ActiveCfg = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|x64.Build.0 = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|x86.ActiveCfg = Release|Any CPU
+		{363BD1E4-8B5C-4175-BF5D-1C7404F42CE6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
