@@ -106,7 +106,7 @@ namespace HadoukInput
                 //get the branch of the Move tree for the current keystroke
                 if (Moves.ContainsKey(input[i].Keystroke))
                 {
-                    var moveId = Moves[input[i].Keystroke].ParseInput(input, i);
+                    var moveId = Moves[input[i].Keystroke].ParseInput(input, i, input.Count);
                     if (!string.IsNullOrEmpty(moveId))
                     {
                         return moveId;

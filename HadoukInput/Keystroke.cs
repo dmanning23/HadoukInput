@@ -36,6 +36,16 @@
         ForwardShoulder, //shoulder in the direction the player is facing
         BackShoulder, //shoulder in the other direction
 
+        //button-held keystrokes
+        AHeld,
+        BHeld,
+        XHeld,
+        YHeld,
+        LShoulderHeld,
+        RShoulderHeld,
+        LTriggerHeld,
+        RTriggerHeld,
+
         //button-up keystrokes
         ARelease,
         BRelease,
@@ -53,6 +63,7 @@
         RTriggerRShoulder,
 
         //Both trigger chords
+        LTriggerRTrigger,
         LTriggerRTriggerLShoulder,
         LTriggerRTriggerRShoulder,
 

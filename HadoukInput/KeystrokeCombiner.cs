@@ -126,6 +126,48 @@ namespace HadoukInput
                     }
                     break;
 
+                //Check buttons held
+                case EKeystroke.AHeld:
+                    {
+                        AddCombination(EKeystroke.AHeld, [EKeystroke.AHeld]);
+                    }
+                    break;
+                case EKeystroke.BHeld:
+                    {
+                        AddCombination(EKeystroke.BHeld, [EKeystroke.BHeld]);
+                    }
+                    break;
+                case EKeystroke.XHeld:
+                    {
+                        AddCombination(EKeystroke.XHeld, [EKeystroke.XHeld]);
+                    }
+                    break;
+                case EKeystroke.YHeld:
+                    {
+                        AddCombination(EKeystroke.YHeld, [EKeystroke.YHeld]);
+                    }
+                    break;
+                case EKeystroke.LShoulderHeld:
+                    {
+                        AddCombination(EKeystroke.LShoulderHeld, [EKeystroke.LShoulderHeld]);
+                    }
+                    break;
+                case EKeystroke.RShoulderHeld:
+                    {
+                        AddCombination(EKeystroke.RShoulderHeld, [EKeystroke.RShoulderHeld]);
+                    }
+                    break;
+                case EKeystroke.LTriggerHeld:
+                    {
+                        AddCombination(EKeystroke.LTriggerHeld, [EKeystroke.LTriggerHeld]);
+                    }
+                    break;
+                case EKeystroke.RTriggerHeld:
+                    {
+                        AddCombination(EKeystroke.RTriggerHeld, [EKeystroke.RTriggerHeld]);
+                    }
+                    break;
+
                 //button-up keystrokes
                 case EKeystroke.ARelease:
                     {
@@ -195,6 +237,16 @@ namespace HadoukInput
                     break;
 
                 //Both trigger chords
+                case EKeystroke.LTriggerRTrigger:
+                    {
+                        AddCombination(EKeystroke.LTriggerRTrigger,
+                        [
+                            EKeystroke.LTrigger,
+                            EKeystroke.RTrigger,
+                        ]);
+                        AddChord(EKeystroke.LTrigger, EKeystroke.RTrigger, EKeystroke.LTriggerRTrigger);
+                    }
+                    break;
                 case EKeystroke.LTriggerRTriggerLShoulder:
                     {
                         AddCombination(EKeystroke.LTriggerRTriggerLShoulder,
@@ -202,11 +254,13 @@ namespace HadoukInput
                             EKeystroke.LTrigger,
                             EKeystroke.RTrigger,
                             EKeystroke.LShoulder,
+                            EKeystroke.LTriggerRTrigger,
                             EKeystroke.LTriggerLShoulder,
                             EKeystroke.RTriggerLShoulder,
                         ]);
                         AddChord(EKeystroke.LTrigger, EKeystroke.RTriggerLShoulder, EKeystroke.LTriggerRTriggerLShoulder);
                         AddChord(EKeystroke.RTrigger, EKeystroke.LTriggerLShoulder, EKeystroke.LTriggerRTriggerLShoulder);
+                        AddChord(EKeystroke.LShoulder, EKeystroke.LTriggerRTrigger, EKeystroke.LTriggerRTriggerLShoulder);
                     }
                     break;
                 case EKeystroke.LTriggerRTriggerRShoulder:
@@ -216,11 +270,13 @@ namespace HadoukInput
                             EKeystroke.LTrigger,
                             EKeystroke.RTrigger,
                             EKeystroke.RShoulder,
+                            EKeystroke.LTriggerRTrigger,
                             EKeystroke.LTriggerRShoulder,
                             EKeystroke.RTriggerRShoulder,
                         ]);
                         AddChord(EKeystroke.LTrigger, EKeystroke.RTriggerRShoulder, EKeystroke.LTriggerRTriggerRShoulder);
                         AddChord(EKeystroke.RTrigger, EKeystroke.LTriggerRShoulder, EKeystroke.LTriggerRTriggerRShoulder);
+                        AddChord(EKeystroke.RShoulder, EKeystroke.LTriggerRTrigger, EKeystroke.LTriggerRTriggerRShoulder);
                     }
                     break;
 
