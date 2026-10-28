@@ -168,6 +168,62 @@ namespace HadoukInput
                     }
                     break;
 
+                //Chord the shoulder + trigger buttons
+                case EKeystroke.LTriggerLShoulder:
+                    {
+                        AddCombination(EKeystroke.LTriggerLShoulder, [EKeystroke.LTrigger, EKeystroke.LShoulder]);
+                        AddChord(EKeystroke.LTrigger, EKeystroke.LShoulder, EKeystroke.LTriggerLShoulder);
+                    }
+                    break;
+                case EKeystroke.LTriggerRShoulder:
+                    {
+                        AddCombination(EKeystroke.LTriggerRShoulder, [EKeystroke.LTrigger, EKeystroke.RShoulder]);
+                        AddChord(EKeystroke.LTrigger, EKeystroke.RShoulder, EKeystroke.LTriggerRShoulder);
+                    }
+                    break;
+                case EKeystroke.RTriggerLShoulder:
+                    {
+                        AddCombination(EKeystroke.RTriggerLShoulder, [EKeystroke.RTrigger, EKeystroke.LShoulder]);
+                        AddChord(EKeystroke.RTrigger, EKeystroke.LShoulder, EKeystroke.RTriggerLShoulder);
+                    }
+                    break;
+                case EKeystroke.RTriggerRShoulder:
+                    {
+                        AddCombination(EKeystroke.RTriggerRShoulder, [EKeystroke.RTrigger, EKeystroke.RShoulder]);
+                        AddChord(EKeystroke.RTrigger, EKeystroke.RShoulder, EKeystroke.RTriggerRShoulder);
+                    }
+                    break;
+
+                //Both trigger chords
+                case EKeystroke.LTriggerRTriggerLShoulder:
+                    {
+                        AddCombination(EKeystroke.LTriggerRTriggerLShoulder,
+                        [
+                            EKeystroke.LTrigger,
+                            EKeystroke.RTrigger,
+                            EKeystroke.LShoulder,
+                            EKeystroke.LTriggerLShoulder,
+                            EKeystroke.RTriggerLShoulder,
+                        ]);
+                        AddChord(EKeystroke.LTrigger, EKeystroke.RTriggerLShoulder, EKeystroke.LTriggerRTriggerLShoulder);
+                        AddChord(EKeystroke.RTrigger, EKeystroke.LTriggerLShoulder, EKeystroke.LTriggerRTriggerLShoulder);
+                    }
+                    break;
+                case EKeystroke.LTriggerRTriggerRShoulder:
+                    {
+                        AddCombination(EKeystroke.LTriggerRTriggerLShoulder,
+                        [
+                            EKeystroke.LTrigger,
+                            EKeystroke.RTrigger,
+                            EKeystroke.RShoulder,
+                            EKeystroke.LTriggerRShoulder,
+                            EKeystroke.RTriggerRShoulder,
+                        ]);
+                        AddChord(EKeystroke.LTrigger, EKeystroke.RTriggerRShoulder, EKeystroke.LTriggerRTriggerRShoulder);
+                        AddChord(EKeystroke.RTrigger, EKeystroke.LTriggerRShoulder, EKeystroke.LTriggerRTriggerRShoulder);
+                    }
+                    break;
+
                 //diagonals on right thumbstick
                 case EKeystroke.UpForwardR:
                     {

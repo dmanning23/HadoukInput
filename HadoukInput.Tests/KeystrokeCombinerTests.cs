@@ -457,6 +457,40 @@ namespace HadoukInput.Tests
             input.GetNextMove().ShouldBeEmpty();
         }
 
+        [Test]
+        public void SpecialGun()
+        {
+            input.AddMove("SpecialGun", EKeystroke.RTriggerRShoulder);
+            PressTogether(EKeystroke.RTrigger, EKeystroke.RShoulder);
+            input.GetNextMove().ShouldBe("SpecialGun");
+        }
+
+        [Test]
+        public void SpecialMissile()
+        {
+            input.AddMove("SpecialMissile", EKeystroke.LTriggerRShoulder);
+            PressTogether(EKeystroke.LTrigger, EKeystroke.RShoulder);
+            input.GetNextMove().ShouldBe("SpecialMissile");
+        }
+
+        [Test]
+        public void SuperWeapon()
+        {
+            input.AddMove("SuperWeapon", EKeystroke.LTriggerRTriggerRShoulder);
+            PressTogether(EKeystroke.LTrigger, EKeystroke.RTrigger, EKeystroke.RShoulder);
+            input.GetNextMove().ShouldBe("SuperWeapon");
+        }
+
+        [Test]
+        public void SuperWeaponNotSpecial()
+        {
+            input.AddMove("SuperWeapon", EKeystroke.LTriggerRTriggerRShoulder);
+            input.AddMove("SpecialGun", EKeystroke.RTriggerRShoulder);
+            input.AddMove("SpecialMissile", EKeystroke.LTriggerRShoulder);
+            PressTogether(EKeystroke.LTrigger, EKeystroke.RTrigger, EKeystroke.RShoulder);
+            input.GetNextMove().ShouldBe("SuperWeapon");
+        }
+
         #endregion //Move list
     }
 }
