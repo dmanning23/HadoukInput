@@ -32,7 +32,7 @@ namespace HadoukInput
         /// <summary>
         /// The move tree, which acutally holds the wholle move list
         /// </summary>
-        public MoveList Moves { get; set; }
+        private MoveList Moves { get; set; }
 
         /// <summary>
         /// This is the buffer for input before it is put in the listInput
@@ -321,6 +321,24 @@ namespace HadoukInput
 
         #region File IO
 
+        public void AddMove(string moveName, params EKeystroke[] keystrokes)
+        {
+            foreach (var keystroke in keystrokes)
+            {
+                KeystrokeCombiner.Add(keystroke);
+            }
+
+            Moves.AddMove(moveName, keystrokes);
+        }
+
+        public void AddMoves(MoveListModel moveListModel)
+        {
+            foreach (var move in moveListModel.Moves)
+            {
+                AddMove(move.Name, move.Keystrokes.ToArray());
+            }
+        }
+
         /// <summary>
         /// read input from a xna resource
         /// </summary>
@@ -332,7 +350,7 @@ namespace HadoukInput
             using (var moveListModel = new MoveListModel(xmlFilename))
             {
                 moveListModel.ReadXmlFile(xmlContent);
-                Moves = new MoveList(moveListModel);
+                AddMoves(moveListModel);
             }
         }
 

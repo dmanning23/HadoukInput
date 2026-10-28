@@ -713,6 +713,9 @@ namespace HadoukInput
 
         private void AddChord(EKeystroke first, EKeystroke second, EKeystroke result)
         {
+            Add(first);
+            Add(second);
+
             //Add the chord as passed in
             if (!Chords.ContainsKey(first))
             {

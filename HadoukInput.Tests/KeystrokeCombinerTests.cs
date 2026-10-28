@@ -368,18 +368,20 @@ namespace HadoukInput.Tests
         [Test]
         public void KnownBug_LeftStickThenRightDiagonal()
         {
+            input.KeystrokeCombiner.Add(EKeystroke.UpUpForward);
             //ForwardR is polled before UpR, so it grabs the buffered Up to make UpForward,
             //and UpR is left on its own.
             //Expected to become UpUpForward once combinations are order independent.
             Frame(0f, EKeystroke.Up);
             Frame(0.02f, EKeystroke.UpR, EKeystroke.ForwardR);
             Flush();
-            Queued().ShouldBe(new[] { EKeystroke.UpForward, EKeystroke.UpR });
+            Queued().ShouldBe(new[] { EKeystroke.UpUpForward });
         }
 
         [Test]
         public void RightDiagonalThenLeftStickCombine()
         {
+            input.KeystrokeCombiner.Add(EKeystroke.UpUpForward);
             Frame(0f, EKeystroke.UpR, EKeystroke.ForwardR);
             Frame(0.02f, EKeystroke.Up);
             Flush();
@@ -398,8 +400,9 @@ namespace HadoukInput.Tests
         }
 
         [Test]
-        public void KnownBug_ArrivalOrderChangesTwinStickResult()
+        public void ArrivalOrderChangesTwinStickResult()
         {
+            input.KeystrokeCombiner.Add(EKeystroke.UpUpForward);
             //Left stick first, then the right stick diagonal one axis at a time.
             //Up + UpR becomes UpUp, and UpUp can't combine with ForwardR, so the diagonal is lost.
             //The same keys pressed in one frame produce UpUpForward (see LeftAndRightStickInSameFrameCombine).
@@ -408,7 +411,7 @@ namespace HadoukInput.Tests
             Frame(0.01f, EKeystroke.UpR);
             Frame(0.02f, EKeystroke.ForwardR);
             Flush();
-            Queued().ShouldBe(new[] { EKeystroke.UpUp, EKeystroke.ForwardR });
+            Queued().ShouldBe(new[] { EKeystroke.UpUpForward });
         }
 
         #endregion //Left stick + right stick
@@ -416,18 +419,18 @@ namespace HadoukInput.Tests
         #region Move list
 
         [Test]
-        public void ComboSwallowsButtonThatMoveListNeeds()
+        public void ComboDoesntSwallowButtonThatMoveListNeeds()
         {
             //A game that fires on RTrigger misses the shot if a direction is held
-            input.Moves.AddMove("fire", EKeystroke.RTrigger);
+            input.AddMove("fire", EKeystroke.RTrigger);
             PressTogether(EKeystroke.RTrigger, EKeystroke.Up);
-            input.GetNextMove().ShouldBeEmpty();
+            input.GetNextMove().ShouldBe("fire");
         }
 
         [Test]
         public void PlainButtonMatchesMoveList()
         {
-            input.Moves.AddMove("fire", EKeystroke.RTrigger);
+            input.AddMove("fire", EKeystroke.RTrigger);
             PressTogether(EKeystroke.RTrigger);
             input.GetNextMove().ShouldBe("fire");
         }
@@ -435,7 +438,7 @@ namespace HadoukInput.Tests
         [Test]
         public void CombinedKeystrokeMatchesMoveList()
         {
-            input.Moves.AddMove("uppercut", EKeystroke.AUp);
+            input.AddMove("uppercut", EKeystroke.AUp);
             PressTogether(EKeystroke.A, EKeystroke.Up);
             input.GetNextMove().ShouldBe("uppercut");
         }
@@ -443,8 +446,9 @@ namespace HadoukInput.Tests
         [Test]
         public void HadoukenWithComboedFinalButton()
         {
+            input.KeystrokeCombiner.Add(EKeystroke.AForward);
             //Holding forward while pressing A turns the A into AForward, so the hadouken doesn't match
-            input.Moves.AddMove("hadouken", EKeystroke.Down, EKeystroke.Forward, EKeystroke.A);
+            input.AddMove("hadouken", EKeystroke.Down, EKeystroke.Forward, EKeystroke.A);
             Frame(0f, EKeystroke.Down);
             Frame(0.06f);
             Frame(0.1f, EKeystroke.Forward, EKeystroke.A);
