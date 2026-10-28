@@ -339,6 +339,11 @@ namespace HadoukInput
             }
         }
 
+        public void RemoveMoves(MoveListModel moveListModel)
+        {
+            Moves.RemoveMoves(moveListModel);
+        }
+
         /// <summary>
         /// read input from a xna resource
         /// </summary>
