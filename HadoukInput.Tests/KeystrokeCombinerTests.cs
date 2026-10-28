@@ -491,6 +491,16 @@ namespace HadoukInput.Tests
             input.GetNextMove().ShouldBe("SuperWeapon");
         }
 
+        [Test]
+        public void SpecialNotSuper()
+        {
+            input.AddMove("SuperWeapon", EKeystroke.LTriggerRTriggerRShoulder);
+            input.AddMove("SpecialGun", EKeystroke.RTriggerRShoulder);
+            input.AddMove("SpecialMissile", EKeystroke.LTriggerRShoulder);
+            PressTogether(EKeystroke.LTrigger, EKeystroke.RShoulder);
+            input.GetNextMove().ShouldBe("SpecialMissile");
+        }
+
         #endregion //Move list
     }
 }
